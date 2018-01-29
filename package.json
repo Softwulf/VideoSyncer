@@ -1,0 +1,13 @@
+{
+  "name": "videosyncer",
+  "version": "5.0.0",
+  "description": "",
+  "author": "ElectronicManuel",
+  "dependencies": {
+    "extensionizer": "^1.0.0",
+    "firebase": "^4.9.0",
+    "re-base": "^3.2.2",
+    "semantic-ui-css": "^2.2.14",
+    "semantic-ui-react": "^0.77.2"
+  }
+}
