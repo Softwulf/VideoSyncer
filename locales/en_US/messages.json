@@ -1,59 +1,29 @@
 {
-    "title": {
-        "message": "Weh Skeleton"
+    "app_name": {
+        "message": "VideoSyncer"
     },
-    "weh_prefs_label_myparam_string": {
-        "message": "String parameter"
+    "logout": {
+        "message": "Logout"
     },
-    "weh_prefs_description_myparam_string": {
-        "message": "Only letters and spaces, 20 characters max"
+    "login": {
+        "message": "Login"
     },
-    "weh_prefs_label_myparam_integer": {
-        "message": "Integer parameter"
+    "login_question": {
+        "message": "Please login to begin"
     },
-    "weh_prefs_description_myparam_integer": {
-        "message": "Minimum -10, maximum 100"
+    "no_profiles": {
+        "message": "No profiles found"
     },
-    "weh_prefs_label_myparam_float": {
-        "message": "Float parameter"
+    "no_profiles_detail": {
+        "message": "You should create one"
     },
-    "weh_prefs_description_myparam_float": {
-        "message": "Minimum 1.5, maximum 10.8"
+    "just_one_sec": {
+        "message": "Just one second"
     },
-    "weh_prefs_label_myparam_boolean": {
-        "message": "Boolean parameter"
+    "loading_profiles": {
+        "message": "We're loading your profiles"
     },
-    "weh_prefs_description_myparam_boolean": {
-        "message": "This is a boolean"
-    },
-    "weh_prefs_label_myparam_choice": {
-        "message": "Choice parameter"
-    },
-    "weh_prefs_description_myparam_choice": {
-        "message": "Pick one option"
-    },
-
-    "sample_panel_text": {
-        "message": "Hello there !"
-    },
-    "settings": {
-        "message": "Settings"
-    },
-    "translation": {
-        "message": "Translation"
-    },
-
-    "save": {
-        "message": "Save"
-    },
-    "cancel": {
-        "message": "Cancel"
-    },
-    "default": {
-        "message": "Default"
-    },
-    "version": {
-        "message": "Version"
+    "new": {
+        "message": "New"
     }
-
 }

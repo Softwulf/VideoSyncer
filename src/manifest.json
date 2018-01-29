@@ -43,7 +43,7 @@
             "512": "content/images/icon512.png"
 		},
 		"default_title": "VideoSyncer",
-		"default_popup": "content/popup/index.html"
+		"default_popup": "content/popup/index.html?panel=main"
 	},
 	"permissions": [
 		"tabs",
