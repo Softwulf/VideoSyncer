@@ -29,7 +29,7 @@ user.login = function(interactive) {
                 }
                 firebaseLogin(token, resolve, reject);
             });
-        } else if (browser.identity.launchWebAuthFlow) { // Not running on Chrome, using launchWebAuthFlow
+        } else if (browser.identity && browser.identity.launchWebAuthFlow) { // Not running on Chrome, using launchWebAuthFlow
             oauthConfig.google.getLocalToken().then((token) => { // get local token
                 firebaseLogin(token, resolve, reject); // login    
             }).catch((err) => {
