@@ -56,6 +56,7 @@ class App extends React.Component {
             this.message('Logged in', 'success');
         }).catch((err) => {
             this.setState({ loading: false });
+            this.message(err.message, 'error', 5000);
         });
     }
 
