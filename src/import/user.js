@@ -17,6 +17,29 @@ function firebaseLogin(token, resolve, reject) {
     });
 }
 
+function revokeToken(token) {
+    console.log('revoking token: ', token);
+    const revokeRequest = new Request(oauthConfig.google.revokeURL + '?token='+token, {
+        method: "GET"
+    });
+    return fetch(revokeRequest);
+}
+
+function storeTokenAndLogin(resolve, reject) {
+    oauth().then((token) => {
+        browser.storage.local.set({google_token: token}).then(() => {
+            console.log('Token set: ', token);
+            firebaseLogin(token, resolve, reject);
+        }).catch((err) => {
+            reject(err.message);
+        });
+    }).catch((err) => {
+        reject({
+            message: 'Failed to authenticate with google: '+err.message
+        });
+    });
+}
+
 user.login = function(interactive) {
     return new Promise((resolve, reject) => {
         if (chrome.identity.getAuthToken) { // Running on chrome with integrated OAuth2
@@ -31,15 +54,16 @@ user.login = function(interactive) {
                 firebaseLogin(token, resolve, reject);
             });
         } else if (browser.identity.launchWebAuthFlow) { // Not running on Chrome, using launchWebAuthFlow
-
-            oauth().then((token) => {
-                firebaseLogin(token, resolve, reject);
+            browser.storage.local.get('google_token').then((result) => {
+                if(result.google_token) {
+                    firebaseLogin(result.google_token, resolve, reject);
+                } else {
+                    storeTokenAndLogin(resolve, reject);
+                }
             }).catch((err) => {
-                reject({
-                    message: 'Failed to authenticate with google: '+err.message
-                });
+                storeTokenAndLogin(resolve, reject);
             });
-        } else { // No OAuth APIs, doing it myself
+        } else { // No OAuth APIs -> no login
             reject({
                 message: 'OAuth2 not supported, consider updating your browser'
             });
@@ -52,20 +76,33 @@ user.logout = function() {
         firebase.auth().signOut()
             .then(function() {
                 if (chrome.identity.getAuthToken) { // Running on chrome with integrated OAuth2
+                    console.log('Rocking that google logout');
                     chrome.identity.getAuthToken({
                         'interactive': false
                     }, function(token) {
                         chrome.identity.removeCachedAuthToken({
                             token: token
-                        }, function() {
+                        });
+                        revokeToken(token).then(() => {
+                            resolve();
+                        }).catch((err) => {
                             resolve();
                         });
                     });
                 } else { // Not running on Chrome, implementing OAuth myself
-                    /*const revokeRequest = new Request(oauthConfig.chrome.revokeURL + '?token='+, {
-                        method: "GET"
+                    browser.storage.local.get('google_token').then((result) => {
+                        console.log('Token queried,', result);
+                        if(result.google_token) {
+                            console.log('indeed, result.token');
+                            browser.storage.local.remove('google_token').then(() => {
+                                console.log('removed');
+                                resolve();
+                            }).catch((err) => {
+                                console.error('Error removing token', err);
+                            });
+                            revokeToken(result.google_token);
+                        }
                     });
-                    oauthConfig*/
                 }
             })
             .catch(function(error) {
