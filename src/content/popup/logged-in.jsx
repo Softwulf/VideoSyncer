@@ -3,60 +3,26 @@ import ReactDOM from 'react-dom';
 
 import { firebase, base } from '../../import/firebase-config';
 import user from '../../import/user';
-import toastr from '../../import/toastr';
 
 import { Accordion, Icon, Button, Segment, Message, Grid } from 'semantic-ui-react'
 
 import weh from 'weh-content';
 
-class Profile extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-        }
-    }
-
-    componentWillMount() {
-        base.syncState('profiles/' + firebase.auth().currentUser.uid + '/' + this.props.profile.key, {
-            context: this,
-            state: 'profile'
-        });
-    }
-
-    render() {
-        if (this.state.profile) {
-            return (
-                <div key={ this.state.profile.key }>
-                <Accordion.Title>
-                    <Icon name='dropdown' />
-                    { this.state.profile.name }
-                </Accordion.Title>
-                <Accordion.Content>
-                    <p>
-                    A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a
-                    {' '}welcome guest in many households across the world.
-                    </p>
-                </Accordion.Content>
-                </div>
-            );
-        } else {
-            return null;
-        }
-    }
-}
-
 class ProfileList extends React.Component {
     constructor(props) {
         super(props);
+
+        this.removeProfile = this.removeProfile.bind(this);
     }
 
     removeProfile(key) {
+        const instance = this;
         base.remove('profiles/' + firebase.auth().currentUser.uid+'/'+key, function(err){
             if(!err){
-                toastr.success('Successfully deleted')
+                instance.props.message('Profile removed', 'success')
             } else {
-                toastr.error('Failed to remove')
+                console.error('Failed to remove profile', err);
+                instance.props.message('Failed to remove profile', 'error')
             }
         });
     }
@@ -75,7 +41,7 @@ class ProfileList extends React.Component {
             }
         }));
         return (
-            <Accordion panels={panels} fluid styled  />
+            <Accordion className='profileList' panels={panels} fluid styled  />
         );
     }
 }
@@ -83,11 +49,12 @@ class ProfileList extends React.Component {
 class Main extends React.Component {
     constructor(props) {
         super(props);
-        var instance = this;
 
         this.state = {
 
         }
+
+        this.addProfile = this.addProfile.bind(this);
     }
 
     componentWillMount() {
@@ -99,15 +66,18 @@ class Main extends React.Component {
     }
 
     addProfile() {
+        const instance = this;
+
         var profileRef = base.push('profiles/' + firebase.auth().currentUser.uid, {
             data: {
                 name: 'new_profile'
             },
             then(err) {
                 if (!err) {
-                    console.log('added');
+                    instance.props.message('Profile created', 'success');
                 } else {
-                    console.log('failed...', err);
+                    console.log('Failed to create profile', err);
+                    instance.props.message('Failed to create profile', 'error');
                 }
             }
         });
@@ -117,7 +87,7 @@ class Main extends React.Component {
         var mainComp;
         if (this.state.profiles && this.state.profiles.length > 0) {
             mainComp = (
-                <ProfileList profiles={ this.state.profiles } />
+                <ProfileList profiles={ this.state.profiles } message={this.props.message} />
             );
         } else if( this.state.profiles && this.state.profiles.length <= 0) {
             mainComp = (
@@ -129,16 +99,10 @@ class Main extends React.Component {
         }
         return (
             <div>
-                <Grid>
-                    <Grid.Row columns={2} fluid>
-                        <Grid.Column>
-                            <Button onClick={this.addProfile} primary icon='add'/>
-                        </Grid.Column>
-                        <Grid.Column>
-                            <Button onClick={user.logout} negative icon='shutdown' />
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                <div>
+                    <Button onClick={this.addProfile} primary icon='add'/>
+                    <Button onClick={user.logout} negative icon='shutdown' />
+                </div>
 
                 <Message icon hidden={this.state.profiles !== undefined}>
                     <Icon name='circle notched' loading />

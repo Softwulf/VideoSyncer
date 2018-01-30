@@ -8,7 +8,6 @@
     "firebase": "^4.9.0",
     "re-base": "^3.2.2",
     "semantic-ui-css": "^2.2.14",
-    "semantic-ui-react": "^0.77.2",
-    "toastr": "^2.1.4"
+    "semantic-ui-react": "^0.77.2"
   }
 }

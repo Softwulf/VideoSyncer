@@ -12,7 +12,7 @@ import { firebase } from '../../import/firebase-config';
 import user from '../../import/user';
 import LoggedIn from './logged-in';
 
-import { Button, Loader, Container, Header, Icon, Segment } from 'semantic-ui-react';
+import { Button, Loader, Container, Header, Icon, Segment, Message } from 'semantic-ui-react';
 
 class App extends React.Component {
     constructor(props) {
@@ -21,18 +21,39 @@ class App extends React.Component {
         var instance = this;
 
         this.state = {
-            loading: false
+            loading: false,
+            message: null
         }
+
+        this.message = this.message.bind(this);
 
         firebase.auth().onAuthStateChanged(function (user) {
             instance.setState({ loading: false });
         });
     }
 
+    message(content, type, timeout) {
+        var duration = 2000;
+        if(timeout) duration = timeout;
+        this.setState({
+            message: {
+                content: content,
+                type: type
+            }
+        });
+        setTimeout(() => {
+            // only timeout message if it has not been overwritten
+            if(this.state.message && this.state.message.content == content) {
+                this.setState({message: null});
+            }
+        }, duration);
+    }
+
     login(interactive) {
         this.setState({ loading: true });
         user.login(true).then(() => {
             this.setState({ loading: false });
+            this.message('Logged in', 'success');
         }).catch((err) => {
             this.setState({ loading: false });
         });
@@ -43,7 +64,7 @@ class App extends React.Component {
 
         if (firebase.auth().currentUser) {
             content = (
-                <LoggedIn user={firebase.auth().currentUser} />
+                <LoggedIn user={firebase.auth().currentUser} message={this.message} />
             );
         } else {
             content = (
@@ -70,12 +91,24 @@ class App extends React.Component {
                         {content}
                     </Container>
                 </div>
-                <Segment inverted>
+                <InfoMessage message={this.state.message} />
+                <Segment inverted attached className='page-footer'>
                     <Header as='h4' color='teal' icon='refresh' content={weh._('app_name')} />
                 </Segment>
             </div>
         );
     }
+}
+
+const InfoMessage = ({message}) => {
+
+    if(message == null) {
+        return null;
+    }
+
+    return (
+        <Message attached='top' content={message.content} success={message.type == 'success'} warning={message.type == 'warn'} error={message.type == 'error'} />
+    );
 }
 
 // ========================================
