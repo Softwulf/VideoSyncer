@@ -1,4 +1,4 @@
-/*global chrome*/
+/*global browser*/
 import oauthConfig from './oauth-config';
 import { firebase } from './firebase-config';
 
@@ -30,7 +30,7 @@ user.login = function(interactive) {
 
                 firebaseLogin(token, resolve, reject);
             });
-        } else if (chrome.identity.launchWebAuthFlow) { // Not running on Chrome, using launchWebAuthFlow
+        } else if (browser.identity.launchWebAuthFlow) { // Not running on Chrome, using launchWebAuthFlow
 
             oauth().then((token) => {
                 firebaseLogin(token, resolve, reject);
@@ -76,7 +76,7 @@ user.logout = function() {
 
 const REDIRECT_URL = "https://crosssitefeeding.ch/vsync";
 const CLIENT_ID = "879765482619-vhj2vq252njdsjci6co3qheave27qmp6.apps.googleusercontent.com";
-const SCOPES = chrome.runtime.getManifest().oauth2.scopes;
+const SCOPES = browser.runtime.getManifest().oauth2.scopes;
 const AUTH_URL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URL)}&scope=${encodeURIComponent(SCOPES.join(' '))}`;
 const VALIDATION_BASE_URL="https://www.googleapis.com/oauth2/v3/tokeninfo";
 
@@ -142,15 +142,15 @@ function oauth() {
 
         /*var redirectURL = "https://crosssitefeeding.ch/vsync";
 
-        var authURL = oauthConfig.chrome.authURL;
-        var clientID = oauthConfig.chrome.client_id;
-        var scopes = oauthConfig.chrome.scopes;
+        var authURL = oauthConfig.browser.authURL;
+        var clientID = oauthConfig.browser.client_id;
+        var scopes = oauthConfig.browser.scopes;
         authURL += `?client_id=${clientID}`;
         authURL += `&response_type=token`;
         authURL += `&redirect_uri=${encodeURIComponent(redirectURL)}`;
         authURL += `&scope=${encodeURIComponent(scopes.join(' '))}`;
 
-        chrome.identity.launchWebAuthFlow(
+        browser.identity.launchWebAuthFlow(
             {
                 url: authURL,
                 interactive: true

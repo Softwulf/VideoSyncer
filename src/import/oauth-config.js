@@ -1,4 +1,4 @@
-/*global chrome*/
+/*global browser*/
 
 var config = {
     chrome: {
@@ -6,7 +6,7 @@ var config = {
         authURL: 'https://accounts.google.com/o/oauth2/auth',
         revokeURL: 'https://accounts.google.com/o/oauth2/revoke',
         redirectURL: 'https://crosssitefeeding.ch/vsync',
-        scopes: chrome.runtime.getManifest().oauth2.scopes
+        scopes: browser.runtime.getManifest().oauth2.scopes
     }
 };
 
