@@ -21,7 +21,7 @@ class App extends React.Component {
         var instance = this;
 
         this.state = {
-            loading: false,
+            loading: true,
             message: null
         }
 
