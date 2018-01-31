@@ -46,14 +46,13 @@
         "default_popup": "content/popup/index.html?panel=main"
     },
     "permissions": [
+        "<all_urls>",
         "tabs",
         "contextMenus",
         "identity",
         "storage",
         "webRequest",
-        "webRequestBlocking",
-        "http://*/*",
-        "https://*/*"
+        "webRequestBlocking"
     ],
     "content_security_policy": "script-src 'self' https://cdn.firebase.com https://*.firebaseio.com https://unpkg.com; object-src 'self'",
     "applications": {

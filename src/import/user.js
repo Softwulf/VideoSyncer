@@ -10,11 +10,7 @@ var user = {};
 
 function firebaseLogin(token, resolve, reject) {
     var credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-    firebase.auth().signInWithCredential(credential).then((user) => {
-        resolve(user);
-    }).catch((error) => {
-        reject(error);
-    });
+    return firebase.auth().signInWithCredential(credential);
 }
 
 user.login = function(interactive) {
@@ -27,23 +23,33 @@ user.login = function(interactive) {
                     reject(chrome.runtime.lastError);
                     return;
                 }
-                firebaseLogin(token, resolve, reject);
+                firebaseLogin(token).then(resolve).catch(reject);
             });
-        } else if (browser.identity && browser.identity.launchWebAuthFlow) { // Not running on Chrome, using launchWebAuthFlow
+        } else /*if (browser.identity && browser.identity.launchWebAuthFlow)*/ { // Not running on Chrome, using launchWebAuthFlow
             oauthConfig.google.getLocalToken().then((token) => { // get local token
-                firebaseLogin(token, resolve, reject); // login    
+                firebaseLogin(token).then(resolve).catch((err) => { // Login with local token, if this doesnt work get a new token
+                    oauthConfig.google.fetchAndStoreToken().then((token) => {
+                        firebaseLogin(token).then(resolve).catch((err) => {
+                            reject({message: err.message});
+                        });
+                    }).catch((err) => {
+                        reject({message: err.message}); // throw
+                    });
+                });
             }).catch((err) => {
                 oauthConfig.google.fetchAndStoreToken().then((token) => { // if no local token -> fetch new token and persist it
-                    firebaseLogin(token, resolve, reject); // login
+                    firebaseLogin(token).then(resolve).catch((err) => {
+                        reject({message: err.message});
+                    });
                 }).catch((err) => {
                     reject({message: err.message}); // throw
                 });
             });
-        } else { // No OAuth APIs -> no login
+        } /*else { // No OAuth APIs -> no login
             reject({
                 message: 'OAuth2 not supported, consider updating your browser'
             });
-        }
+        }*/
     });
 }
 
@@ -62,15 +68,10 @@ user.logout = function() {
                     });
                 });
             } else { // Not running on Chrome, implementing OAuth myself
-                oauthConfig.google.getLocalToken().then((token) => {
-                    oauthConfig.google.removeLocalToken().then(() => { // remove local token #doesnt matter if it fails
-                        resolve();
-                    }).catch((err) => {
-                        resolve();
-                    });
-                    oauthConfig.google.revokeToken(token); // asynchronously revoke token
-                }).catch(() => { // if no token was found no need to remove it
+                oauthConfig.google.revokeAndRemoveLocalToken().then(() => {
                     resolve();
+                }).catch((err) => { // if no token was found no need to remove it
+                    reject(err);
                 });
             }
         }).catch(function(error) {
