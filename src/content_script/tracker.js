@@ -3,6 +3,8 @@ import jquery from 'jquery';
 
 import message_protocol from '../import/message-protocol';
 
+var pageURL = null;
+
 // listen for push updates from background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if(message.type == message_protocol.pushProfiles) {
@@ -13,7 +15,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // request profiles NOW
 chrome.runtime.sendMessage({
     type: message_protocol.fetchProfiles
-}, handleProfileListChange);
+}, (response) => {
+    pageURL = response.url;
+    console.log('This frame ('+window.location.href+') has pageURL ('+pageURL+')');
+    handleProfileListChange(response.profiles);
+});
 
 /*
  * Begin actual Code
@@ -26,7 +32,7 @@ function handleProfileListChange(profiles) {
         
             var profileParsed = profiles[property];
             profileParsed.key = property;
-            if(window.location.href.indexOf(profileParsed.urlPattern) !== -1) { // Url Pattern matches
+            if(pageURL && pageURL.indexOf(profileParsed.urlPattern) !== -1) { // Url Pattern matches
                 console.log('This site matched with profile: '+profileParsed.name);
                 profile = profileParsed;
                 handleSingleProfileChange();

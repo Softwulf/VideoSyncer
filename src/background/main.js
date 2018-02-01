@@ -14,10 +14,19 @@ var profilesRef = null;
 // respond to fetches from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if(message.type == message_protocol.fetchProfiles) {
+        console.log('SENDER:', sender);
         if(profilesRef) {
-            profilesRef.once('value', sendResponse); // fetch profiles and respond
+            profilesRef.once('value', (profiles) => { // fetch profiles and respond
+                sendResponse({
+                    profiles: profiles,
+                    url: sender.tab.url
+                });
+            }); 
         } else {
-            sendResponse(null); // if not logged in respond with NULL
+            sendResponse({ // if not logged in respond with NULL
+                profiles: null,
+                url: sender.tab.url
+            });
         }
     }
 });
