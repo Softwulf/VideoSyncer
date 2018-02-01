@@ -26,7 +26,7 @@ class ProfileList extends React.Component {
                 content: (
                     <span>
                         { this.setupIncomplete(profile) && 
-                            <Popup wide hideOnScroll trigger={ <Icon name='warning' color='yellow' /> } header={ weh._('player_incomplete') } content={ weh._('player_incomplete_detail') } />
+                            <Popup wide hideOnScroll trigger={ <Icon name='warning sign' color='yellow' /> } header={ weh._('player_incomplete') } content={ weh._('player_incomplete_detail') } />
                         }
                         <span>{profile.name}</span>
                     </span>

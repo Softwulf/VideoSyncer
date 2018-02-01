@@ -15,22 +15,6 @@
             "openid"
         ]
     },
-    "background": {
-        "scripts": [
-            "background/main.js"
-        ],
-        "persistent": true
-    },
-    "icons": {
-        "16": "content/images/icon16.png",
-        "24": "content/images/icon24.png",
-        "32": "content/images/icon32.png",
-        "48": "content/images/icon48.png",
-        "64": "content/images/icon64.png",
-        "128": "content/images/icon128.png",
-        "256": "content/images/icon256.png",
-        "512": "content/images/icon512.png"
-    },
     "browser_action": {
         "default_icon": {
             "16": "content/images/icon16.png",
@@ -44,6 +28,37 @@
         },
         "default_title": "VideoSyncer",
         "default_popup": "content/popup/index.html?panel=main"
+    },
+    "background": {
+        "scripts": [
+            "background/main.js"
+        ],
+        "persistent": true
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "js": [
+                "content_script/tracker.js"
+            ],
+            "css": [
+                "content_script/tracker.css"
+            ],
+            "all_frames": true
+        }
+    ],
+    "icons": {
+        "16": "content/images/icon16.png",
+        "24": "content/images/icon24.png",
+        "32": "content/images/icon32.png",
+        "48": "content/images/icon48.png",
+        "64": "content/images/icon64.png",
+        "128": "content/images/icon128.png",
+        "256": "content/images/icon256.png",
+        "512": "content/images/icon512.png"
     },
     "permissions": [
         "<all_urls>",

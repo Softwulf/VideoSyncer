@@ -107,7 +107,7 @@ const InfoMessage = ({message}) => {
 
     var icon = 'info';
     if(message.type == 'success') icon = 'checkmark';
-    if(message.type == 'warn') icon = 'warning';
+    if(message.type == 'warn') icon = 'warning sign';
     if(message.type == 'error') icon = 'ban';
 
     return (
