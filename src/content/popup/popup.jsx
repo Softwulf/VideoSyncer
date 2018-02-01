@@ -105,8 +105,16 @@ const InfoMessage = ({message}) => {
         return null;
     }
 
+    var icon = 'info';
+    if(message.type == 'success') icon = 'checkmark';
+    if(message.type == 'warn') icon = 'warning';
+    if(message.type == 'error') icon = 'ban';
+
     return (
-        <Message attached='top' content={message.content} success={message.type == 'success'} warning={message.type == 'warn'} error={message.type == 'error'} />
+        <Message attached='top' success={message.type == 'success'} warning={message.type == 'warn'} error={message.type == 'error'} icon>
+            <Icon name={icon} />
+            <Message.Header content={message.content} />
+        </Message>
     );
 }
 

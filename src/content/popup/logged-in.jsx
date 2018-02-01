@@ -15,21 +15,35 @@ class ProfileList extends React.Component {
         super(props);
     }
 
+    setupIncomplete(profile) {
+        return profile.playerQuery == null || profile.playerHost == null;
+    }
+
     render() {
         const profiles = this.props.profiles;
         const panels = profiles.map((profile) => ({
             title: {
-                content: profile.name,
+                content: (
+                    <span>
+                        { this.setupIncomplete(profile) && 
+                            <Popup hideOnScroll flowing trigger={ <Icon name='warning' color='yellow' /> } header={ weh._('player_incomplete') } content={ weh._('player_incomplete_detail') } />
+                        }
+                        <span>{profile.name}</span>
+                    </span>
+                ),
                 key: profile.key
             },
             content: {
                 content: (
                     <Grid columns={2} stretched>
                         <Grid.Column>
-                            <Button onClick={() => {this.props.editProfile(profile)}} >{ weh._('edit') }</Button>
+                            <Button basic content={weh._('edit')} labelPosition='left' icon='edit' onClick={() => {this.props.editProfile(profile)}} />
                         </Grid.Column>
                         <Grid.Column>
-                            <Popup trigger={ <Button negative onClick={() => {this.props.removeProfile(profile);}} icon='delete' /> } header={ weh._('delete') } />
+                            <Button basic={!this.setupIncomplete(profile)} content={weh._('setup')} labelPosition='left' icon='external' color={(this.setupIncomplete(profile) && 'yellow') || 'black'} />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Button basic negative onClick={() => {this.props.removeProfile(profile);}} content={weh._('delete')} labelPosition='left' icon='delete' />
                         </Grid.Column>
                     </Grid>
                 )
@@ -151,10 +165,10 @@ class Main extends React.Component {
               <div>
                 <Grid columns={2} stretched className='buttonBar'>
                     <Grid.Column>
-                        <Popup trigger={ <Button onClick={ this.addProfile } primary icon='add' /> } header={ weh._('create') } content={ weh._('create_detail') } />
+                        <Button icon='plus' labelPosition='left' content={weh._('create')} basic onClick={ this.addProfile } />
                     </Grid.Column>
                     <Grid.Column>
-                        <Popup trigger={ <Button onClick={ user.logout } negative icon='shutdown' /> } header={ weh._('logout') } content={ weh._('logout_detail') } />
+                        <Popup hideOnScroll trigger={ <Button basic onClick={ user.logout } negative icon='shutdown' /> } header={ weh._('logout') } content={ weh._('logout_detail') } />
                     </Grid.Column>
                 </Grid>
                 
