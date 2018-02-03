@@ -16,7 +16,15 @@ class ProfileList extends React.Component {
     }
 
     setupIncomplete(profile) {
-        return profile.playerQuery == null || profile.playerHost == null;
+        return profile.videoQuery == null || profile.videoHost == null;
+    }
+
+    getUrl(profile) {
+        if(profile.currentURL) {
+            return profile.currentURL;
+        } else {
+            return 'N/A';
+        }
     }
 
     render() {
@@ -28,7 +36,7 @@ class ProfileList extends React.Component {
                         { this.setupIncomplete(profile) && 
                             <Popup wide hideOnScroll trigger={ <Icon name='warning sign' color='yellow' /> } header={ weh._('player_incomplete') } content={ weh._('player_incomplete_detail') } />
                         }
-                        <span>{profile.name}</span>
+                        <span>{profile.name} - {profile.currentTime}</span>
                     </span>
                 ),
                 key: profile.key
@@ -36,6 +44,9 @@ class ProfileList extends React.Component {
             content: {
                 content: (
                     <Grid columns={2} stretched>
+                        <Grid.Column width={2}>
+                            <span>Current URL: {this.getUrl(profile)}</span>
+                        </Grid.Column>
                         <Grid.Column>
                             <Button basic content={weh._('edit')} labelPosition='left' icon='edit' onClick={() => {this.props.editProfile(profile)}} />
                         </Grid.Column>
@@ -84,8 +95,12 @@ class Main extends React.Component {
                 data: {
                     name: profile.name,
                     urlPattern: profile.urlPattern,
+                    startTime: 0,
                     endTime: parseInt(profile.endTime),
-                    currentTime: 0
+                    currentTime: 0,
+                    currentURL: null,
+                    videoHost: null,
+                    videoQuery: null
                 },
                 then(err) {
                     if (!err) {
@@ -109,7 +124,10 @@ class Main extends React.Component {
                 data: {
                     name: profile.name,
                     urlPattern: profile.urlPattern,
-                    endTime: parseInt(profile.endTime)
+                    startTime: 0,
+                    endTime: parseInt(profile.endTime),
+                    videoHost: null,
+                    videoQuery: null
                 },
                 then(err) {
                     if (!err) {

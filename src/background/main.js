@@ -11,10 +11,9 @@ import message_protocol from '../import/message-protocol';
 
 var profilesRef = null;
 
-// respond to fetches from content script
+// respond to fetches and updates from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if(message.type == message_protocol.fetchProfiles) {
-        console.log('SENDER:', sender);
         if(profilesRef) {
             profilesRef.once('value', (profiles) => { // fetch profiles and respond
                 sendResponse({
@@ -27,6 +26,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 profiles: null,
                 url: sender.tab.url
             });
+        }
+    } else if(message.type == message_protocol.updateProfileTime) {
+        var time = message.time;
+        var key = message.key;
+
+        if(profilesRef) {
+            var updateObject = {};
+            updateObject[key+'/currentTime'] = time;
+            profilesRef.update(updateObject)
+        }
+    } else if(message.type == message_protocol.updateProfileURL) {
+        var url = message.url;
+        var key = message.key;
+        var startTime = message.startTime;
+
+        if(profilesRef) {
+            var updateObject = {};
+            updateObject[key+'/currentURL'] = url;
+            updateObject[key+'/currentTime'] = startTime;
+            profilesRef.update(updateObject)
         }
     }
 });
