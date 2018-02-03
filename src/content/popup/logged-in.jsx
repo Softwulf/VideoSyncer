@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import browser from 'webextension-polyfill';
+import message_protocol from '../../import/message-protocol';
+
 import { firebase, base } from '../../import/firebase-config';
 import user from '../../import/user';
 
@@ -27,6 +30,30 @@ class ProfileList extends React.Component {
         }
     }
 
+    openProfile(profile) {
+        if(profile.currentURL) {
+            window.open(profile.currentURL);
+        }
+        else {
+            window.open(profile.urlPattern);
+        }
+    }
+
+    setupProfile(profile) {
+        function notifyAllTabs(message, callback) {
+            chrome.tabs.query({}, function(tabs){
+                for(let i = 0; i < tabs.length;i++) {
+                    chrome.tabs.sendMessage(tabs[i].id, message, callback);  
+                }
+            });
+        }
+
+        notifyAllTabs({
+            type: message_protocol.callVideoSelection,
+            key: profile.key
+        });
+    }
+
     render() {
         const profiles = this.props.profiles;
         const panels = profiles.map((profile) => ({
@@ -44,14 +71,14 @@ class ProfileList extends React.Component {
             content: {
                 content: (
                     <Grid columns={2} stretched>
-                        <Grid.Column width={2}>
-                            <span>Current URL: {this.getUrl(profile)}</span>
+                        <Grid.Column>
+                            <Button basic content={weh._('launch')} labelPosition='left' icon='play' onClick={() => {this.openProfile(profile)}} />
                         </Grid.Column>
                         <Grid.Column>
                             <Button basic content={weh._('edit')} labelPosition='left' icon='edit' onClick={() => {this.props.editProfile(profile)}} />
                         </Grid.Column>
                         <Grid.Column>
-                            <Button basic={!this.setupIncomplete(profile)} content={weh._('setup')} labelPosition='left' icon='external' color={(this.setupIncomplete(profile) && 'yellow') || 'black'} />
+                            <Button onClick={() => {this.setupProfile(profile)}} basic={!this.setupIncomplete(profile)} content={weh._('setup')} labelPosition='left' icon='external' color={(this.setupIncomplete(profile) && 'yellow') || 'black'} />
                         </Grid.Column>
                         <Grid.Column>
                             <Button basic negative onClick={() => {this.props.removeProfile(profile);}} content={weh._('delete')} labelPosition='left' icon='delete' />

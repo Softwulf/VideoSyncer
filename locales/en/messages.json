@@ -6,6 +6,10 @@
         "message": "VideoSyncer will automatically keep track of your current watching time and enables you to jump back in, right were you left off."
     },
 
+    "launch": {
+        "message": "Launch"
+    },
+
     "yes": {
         "message": "Yes"
     },

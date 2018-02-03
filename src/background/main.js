@@ -9,10 +9,19 @@ import message_protocol from '../import/message-protocol';
  * Profile Sync with content scripts
  */
 
+function notifyAllTabs(message, callback) {
+    chrome.tabs.query({}, function(tabs){
+        for(let i = 0; i < tabs.length;i++) {
+            chrome.tabs.sendMessage(tabs[i].id, message, callback);  
+        }
+    });
+}
+
 var profilesRef = null;
 
 // respond to fetches and updates from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // FETCH
     if(message.type == message_protocol.fetchProfiles) {
         if(profilesRef) {
             profilesRef.once('value', (profiles) => { // fetch profiles and respond
@@ -27,15 +36,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 url: sender.tab.url
             });
         }
+    // UPDATE TIME
     } else if(message.type == message_protocol.updateProfileTime) {
         var time = message.time;
         var key = message.key;
+        var frameId = message.frameId;
 
         if(profilesRef) {
             var updateObject = {};
             updateObject[key+'/currentTime'] = time;
+            updateObject[key+'/latestFrame'] = frameId;
             profilesRef.update(updateObject)
         }
+    // UPDATE URL
     } else if(message.type == message_protocol.updateProfileURL) {
         var url = message.url;
         var key = message.key;
@@ -45,6 +58,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             var updateObject = {};
             updateObject[key+'/currentURL'] = url;
             updateObject[key+'/currentTime'] = startTime;
+            profilesRef.update(updateObject)
+        }
+    // UPDATE VIDEO QUERY
+    } else if(message.type == message_protocol.updateProfileVideoQuery) {
+        var key = message.key;
+        var host = message.host;
+        var query = message.query;
+
+        if(profilesRef) {
+            var updateObject = {};
+            updateObject[key+'/videoHost'] = host;
+            updateObject[key+'/videoQuery'] = query;
             profilesRef.update(updateObject)
         }
     }
@@ -63,13 +88,9 @@ function handleLoginStateChange(user) {
     
         profilesRef.on('value', function(profiles) { // push profile update to content scripts
             console.log('Profiles changed, notifying all watch pages', profiles.val());
-            chrome.tabs.query({}, function(tabs){
-                for(let i = 0; i < tabs.length;i++) {
-                    chrome.tabs.sendMessage(tabs[i].id, {
-                        type: message_protocol.pushProfiles,
-                        profiles: profiles.val()
-                    }, function(response) {});  
-                }
+            notifyAllTabs({
+                type: message_protocol.pushProfiles,
+                profiles: profiles.val()
             });
         }, function(error) {
             console.error('Failed to read profiles: ', err);
