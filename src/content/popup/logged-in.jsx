@@ -19,7 +19,7 @@ class ProfileList extends React.Component {
     }
 
     setupIncomplete(profile) {
-        return profile.videoQuery == null || profile.videoHost == null;
+        return profile.videoHost == null;
     }
 
     getUrl(profile) {

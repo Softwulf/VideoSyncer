@@ -119,10 +119,12 @@ function findMatchingProfile(profiles) {
                 console.log('This site matched with profile: '+profileParsed.name);
                 profile = profileParsed;
                 handleDataChange();
-                return;
+                break;
             }
-
+        }
+        if(!profile) {
             // No profile matched -> disable videosyncer
+            console.log(pageURL, profileParsed.urlPattern);
             profile = null;
             handleDataChange();
         }
@@ -163,7 +165,7 @@ function handleDataChange() {
                     var update = true;
 
                     if(profile.latestFrame) {
-                        console.log(latestFrame + ' was set');
+                        console.log(profile.latestFrame + ' was set');
                         if(profile.latestFrame == frameId) {
                             console.log('latestframe matched');
                             update = false;
@@ -173,6 +175,9 @@ function handleDataChange() {
                     if(!alreadyInit) {
                         update = true;
                     }
+
+                    console.debug('update: ', update);
+                    console.debug('alreadyInit: ', alreadyInit);
 
                     if(update) {
                         videoPlayer.currentTime = profile.currentTime;
@@ -205,6 +210,8 @@ function handleDataChange() {
         localTime = null;
         // enable new profile to be initiated from this page
         alreadyInit = false;
+
+        console.debug('removing things');
     }
 
     renderStatusDiv();
