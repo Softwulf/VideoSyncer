@@ -2,59 +2,47 @@
  * interfaces with the video element
  */
 import jquery from 'jquery';
+import Observable from './observable';
+import autobind from 'auto-bind';
 
-var exports = {
-    videoPlayer: null
-}
+export default class VideoInterface extends Observable {
+    constructor(observing) {
+        super('video', observing);
 
-exports.init = function(sync, video) {
-    exports.sync = sync;
-    sync.on('change_full', exports.findVideo);
-    sync.on('change_query', exports.findVideo);
-    sync.on('change_removed', exports.removeVideo);
-    sync.on('change_timechange', exports.updateTime);
-}
+        this.videoPlayer = null;
 
-var listeners = [];
+        autobind(this);
 
-// setup listeners
-exports.on = (event, listener) => {
-    listeners.push({event: event, listener: listener});
-}
+        this.sync.on('change_full', this.findVideo);
+        this.sync.on('change_query', this.findVideo);
+        this.sync.on('change_removed', this.removeVideo);
+        this.sync.on('change_timechange', this.updateTime);
+    }
 
-function call(event, data) {
-    for(let i = 0; i < listeners.length; i++) {
-        var obj = listeners[i];
-        if(obj.event == event) {
-            obj.listener(data);
+    findVideo(queryInput) {
+        if(this.videoPlayer) return; // Player already found
+        var query = 'video';
+        if(queryInput) query = queryInput;
+        var videoSelect = jquery(query);
+        if(videoSelect.length) {
+            // there IS a videoplayer
+            console.log('beginning to call', this);
+            console.log('call method: ', this.call);
+            this.videoPlayer = videoSelect.get(0);
+            this.call('found', {player: this.videoPlayer});
+        } else {
+            this.call('remove');
+        }
+    }
+
+    removeVideo() {
+        this.call('remove');
+        this.videoPlayer = null;
+    }
+
+    updateTime() {
+        if(this.videoPlayer) {
+            this.videoPlayer.currentTime = this.sync.profile.currentTime;
         }
     }
 }
-
-exports.findVideo = (queryInput) => {
-    if(this.videoPlayer) return; // Player already found
-    var query = 'video';
-    if(queryInput) query = queryInput;
-    var videoSelect = jquery(query);
-    if(videoSelect.length) {
-        // there IS a videoplayer
-        exports.videoPlayer = videoSelect.get(0);
-        call('found', {player: exports.videoPlayer});
-        console.log('FOUND');
-    } else {
-        call('remove');
-    }
-}
-
-exports.removeVideo = () => {
-    call('remove');
-    this.videoPlayer = null
-}
-
-exports.updateTime = () => {
-    if(this.videoPlayer) {
-        this.videoPlayer.currentTime = this.sync.profile.currentTime;
-    }
-}
-
-export default exports;

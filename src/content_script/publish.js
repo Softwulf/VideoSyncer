@@ -2,68 +2,65 @@
  * Publishes data to the db via the background page
  */
 import message_protocol from '../import/message-protocol';
+import Observable from './observable';
+import autobind from 'auto-bind';
 
-var exports = {
-};
+export default class VideoInterface extends Observable {
+    constructor(observing) {
+        super('publish', observing);
 
-exports.init = function(sync, video) {
-    exports.sync = sync;
-    exports.video = video;
-}
+        autobind(this);
+    }
 
-function publish(type, data) {
-    if(exports.sync && exports.sync.profile) {
-        var payload = {
-            type: type,
-            key: exports.sync.profile.key,
-            frameId: exports.sync.frameId
-        };
-    
-        for (var property in data) {
-            if (!data.hasOwnProperty(property)) continue;
+    publish(type, data) {
+        if(this.sync && this.sync.profile) {
+            var payload = {
+                type: type,
+                key: this.sync.profile.key,
+                frameId: this.sync.frameId
+            };
         
-            var value = data[property];
-            payload[property] = value;
+            for (var property in data) {
+                if (!data.hasOwnProperty(property)) continue;
+            
+                var value = data[property];
+                payload[property] = value;
+            }
+        
+            console.debug('Payload: ', payload);
+        
+            chrome.runtime.sendMessage(payload);
+        } else {
+            console.error('Sync/Profile not setup yet');
         }
-    
-        console.debug('Payload: ', payload);
-    
-        chrome.runtime.sendMessage(payload);
-    } else {
-        console.error('Sync/Profile not setup yet');
+    }
+
+    publishNewUrl(url, currentTime) {
+        if(url) {
+            this.publish({
+                type: message_protocol.updateProfileURL,
+                url: url,
+                currentTime: currentTime
+            });
+        }
+    }
+
+    publishLocalTime(time) {
+        if(time) {
+            this.publish({
+                type: message_protocol.updateProfileTime,
+                time: time
+            });
+        }
+    }
+
+    publishVideoQuery(host, query) {
+        if(host) {
+            this.publish({
+                type: message_protocol.updateProfileVideoQuery,
+                host: host,
+                query: query
+            });
+        }
     }
 }
-
-/*
- * Publishing functions
- */
-exports.publishNewUrl = function(url, currentTime) {
-    if(url && profileKey) {
-        publish({
-            type: message_protocol.updateProfileURL,
-            url: url,
-            currentTime: currentTime
-        });
-    }
-}
-
-exports.publishLocalTime = function(frameId, profileKey, time) {
-    if(time && profileKey) {
-        publish({
-            type: message_protocol.updateProfileTime,
-            time: time
-        });
-    }
-}
-
-exports.publishVideoQuery = function(frameId, profileKey, host, query) {
-    if(host) {
-        publish({
-            type: message_protocol.updateProfileVideoQuery,
-            host: host,
-            query: query
-        });
-    }
-}
-
-export default exports;

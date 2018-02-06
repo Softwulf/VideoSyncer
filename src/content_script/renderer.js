@@ -2,41 +2,40 @@
  * renders html elements
  */
 import jquery from 'jquery';
+import Observable from './observable';
+import autobind from 'auto-bind';
 
-var exports = {
-    insertId: 'videosyncer_content_div', // ID of inserted status div
-};
+export default class VideoInterface extends Observable {
+    constructor(observing) {
+        super('renderer', observing);
 
-exports.init = function(sync, video) {
-    exports.sync = sync;
-    exports.video = video;
-}
+        this.insertId = 'videosyncer_content_div'; // ID of inserted status div
 
-// Render the status div 
-exports.renderStatusDiv = function() {
-    var insertId = exports.insertId;
-    if(!exports.sync) {
-        console.error('Sync not setup yet');
-        return;
+        autobind(this);
     }
-    if(!exports.video) {
-        console.error('Video interface not setup yet');
-        return;
-    }
-    if (exports.sync.profile) { // if profile exists -> modify status div
-        var profile = exports.sync.profile;
 
-        var contentHtml = `
-            <p>${profile.name} - ${window.location.host} - ${profile.currentTime} - ${exports.sync.frameId}</p>
-        `;
-        if (jquery('#' + insertId).length == 0) { // if content div is not inserted, add it now
-            jquery('body').prepend('<div id="' + insertId + '"></div>');
+    renderStatusDiv() {
+        if(!this.sync) {
+            console.error('Sync not setup yet');
+            return;
         }
-
-        jquery('#' + insertId).html(contentHtml);
-    } else { // if it does NOT exist -> remove status div
-        jquery('#' + insertId).remove();
+        if(!this.video) {
+            console.error('Video interface not setup yet');
+            return;
+        }
+        if (this.sync.profile) { // if profile exists -> modify status div
+            var profile = this.sync.profile;
+    
+            var contentHtml = `
+                <p>${profile.name} - ${window.location.host} - ${profile.currentTime} - ${this.sync.frameId}</p>
+            `;
+            if (jquery('#' + this.insertId).length == 0) { // if content div is not inserted, add it now
+                jquery('body').prepend('<div id="' + this.insertId + '"></div>');
+            }
+    
+            jquery('#' + this.insertId).html(contentHtml);
+        } else { // if it does NOT exist -> remove status div
+            jquery('#' + this.insertId).remove();
+        }
     }
 }
-
-export default exports;

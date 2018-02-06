@@ -4,6 +4,7 @@
   "description": "",
   "author": "ElectronicManuel",
   "dependencies": {
+    "auto-bind": "^1.2.0",
     "extensionizer": "^1.0.0",
     "firebase": "^4.9.0",
     "re-base": "^3.2.2",

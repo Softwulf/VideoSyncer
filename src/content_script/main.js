@@ -7,11 +7,10 @@ import Publish from './publish';
 import Renderer from './renderer';
 import Events from './events';
 
-// String the components together
-VideoInterface.init(Sync);
+var sync = new Sync(null);
+var video = new VideoInterface([sync]);
+var publish = new Publish([sync, video]);
+var renderer = new Renderer([sync, video]);
+var events = new Events([sync, video]);
 
-Publish.init(Sync, VideoInterface);
-
-Renderer.init(Sync, VideoInterface);
-
-Events.init(Sync, VideoInterface);
+sync.fetch();
