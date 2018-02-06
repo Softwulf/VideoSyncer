@@ -12,10 +12,28 @@ export default class VideoInterface extends Observable {
         this.syncDelay = 1; // delay between syncs (in seconds)
         this.lastSync = new Date();
 
+        this.setupNow = false;
+
+        // constants
+        this.selectHover = 'videosyncer_hover';
+
         autobind(this);
 
         this.video.on('remove', this.removeVideoHandlers);
         this.video.on('found', this.attachVideoHandlers);
+
+        this.sync.on('click', this.handleClickInvocation);
+        this.sync.on('change_currenturl', this.handleUrlChange);
+
+        jquery('body').children().mouseover((e) => {
+            jquery('.'+this.selectHover).removeClass(this.selectHover);
+            if(this.setupNow) {
+                jquery(e.target).addClass(this.selectHover);
+                return false;
+            }
+        }).mouseout((e) => {
+            jquery(this).removeClass(this.selectHover);
+        });
     }
 
     removeVideoHandlers() {
@@ -33,12 +51,25 @@ export default class VideoInterface extends Observable {
         jquery(videoPlayer).on('timeupdate', this.handleTimeupdate);
     }
 
+    handleUrlChange() {
+        if(this.sync.newEpisode()) {
+            if(window.top == window.self) {
+                window.location.href = this.sync.profile.currentURL;
+            }
+            this.video.videoPlayer.pause();
+        }
+    }
+
     handlePlay(event) {
-        console.log('PLAY')
+        var newEpisode = this.sync.newEpisode();
+        if(newEpisode) {
+            this.video.videoPlayer.currentTime = this.sync.profile.startTime;
+            this.publish.publishNewUrl(this.sync.pageUrl);
+        }
     }
 
     handlePause(event) {
-        console.log('PAUSE');
+        this.publish.publishLocalTime(Math.floor(this.video.videoPlayer.currentTime));
     }
 
     handleEnded(event) {
@@ -49,23 +80,29 @@ export default class VideoInterface extends Observable {
         var localTime = Math.floor(event.target.currentTime);
     
         if(event.target.paused) return;
-        /*
-        if((new Date() - lastSync) >= syncDelay * 1000) { // if enough time has passed sync the profile
-            publishLocalTime();
-            lastSync = new Date();
+        
+        if((new Date() - this.lastSync) >= this.syncDelay * 1000) { // if enough time has passed sync the profile
+            this.publish.publishLocalTime(localTime);
+            this.lastSync = new Date();
         }
     
-        if(profile.endTime > 0 && localTime >= profile.endTime) {
-            videoPlayer.pause();
+        if(this.sync.profile && this.sync.profile.endTime > 0 && localTime >= this.sync.profile.endTime) {
+            this.video.videoPlayer.pause();
             alert('ENDED_endtime');
         }
     
-        renderStatusDiv();
-        */
     }
 
     // Click events
+    handleClickInvocation(data) {
+        var value = data.value;
+        var event = data.event;
+        if(event == 'setup') this.setup(value);
+    }
+
     setup(value) {
+        this.setupNow = value;
+        jquery('.'+this.selectHover).removeClass(this.selectHover);
         if(value) {
             jquery('body').on('click', this.handleVideoFinder);
             if(window.top == window.self) {
@@ -88,15 +125,15 @@ export default class VideoInterface extends Observable {
         
         if(video.length > 0 && video.is('video')) {
             var query = video.getPath();
-            
-            this.publish.publishVideoQuery(window.location.host, null);
+
+            this.publish.publishVideoQuery(window.location.host, query);
             
             video.blink(5);
         } else {
             alert('The clicked element is no video player');
         }
     
-        this.disableVideoFinder();
+        this.publish.publishClickCancel('setup');
     }
 }
 

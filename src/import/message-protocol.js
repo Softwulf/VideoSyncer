@@ -4,7 +4,8 @@ var message_protocol = {
     updateProfileTime: 'PROFILES_UPDATE_TIME',
     updateProfileURL: 'PROFILES_UPDATE_URL',
     updateProfileVideoQuery: 'PROFILES_UPDATE_QUERY',
-    callVideoSelection: 'CALL_VIDEOSELECTION'
+    initClick: 'CLICK_INIT',
+    cancelClick: 'CLICK_CANCEL'
 };
 
 export default message_protocol;

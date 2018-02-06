@@ -49,7 +49,7 @@ class ProfileList extends React.Component {
         }
 
         notifyAllTabs({
-            type: message_protocol.callVideoSelection,
+            type: message_protocol.initClick,
             key: profile.key,
             event: 'setup',
             value: true

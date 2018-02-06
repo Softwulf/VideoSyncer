@@ -162,3 +162,14 @@
     color: white !important;
     border-bottom: 1px solid black !important;
 }
+
+// selected videoplayer
+.videosyncer_player {
+    border: 5px solid green;
+    border-radius: 5px;
+}
+
+.videosyncer_hover {
+    border: 5px solid red;
+    border-radius: 5px;
+}

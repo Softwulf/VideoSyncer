@@ -48,6 +48,7 @@ export default class VideoInterface extends Observable {
     updateTime() {
         if(this.videoPlayer) {
             this.videoPlayer.currentTime = this.sync.profile.currentTime;
+            this.videoPlayer.pause();
         }
     }
 }

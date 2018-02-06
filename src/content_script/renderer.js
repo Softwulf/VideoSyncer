@@ -10,7 +10,7 @@ export default class VideoInterface extends Observable {
         super('renderer', observing);
 
         this.insertId = 'videosyncer_content_div'; // ID of inserted status div
-        this.borderStyle = null;
+        this.playerClass = 'videosyncer_player';
 
         autobind(this);
 
@@ -20,15 +20,13 @@ export default class VideoInterface extends Observable {
 
     markVideo(data) {
         var player = data.player;
-        this.borderStyle = player.style.border;
-        player.style.border = '5px solid orange';
+        player.classList.add(this.playerClass);
     }
 
     unmarkVideo() {
         var player = this.video.videoPlayer;
         if(player) {
-            player.style.border = this.borderStyle;
-            this.borderStyle = null;
+            player.classList.remove(this.playerClass);
         }
     }
 

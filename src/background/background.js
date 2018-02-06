@@ -21,6 +21,8 @@ var profilesRef = null;
 
 // respond to fetches and updates from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.debug('Message received ['+message.type+']', message);
+
     // FETCH
     if(message.type == message_protocol.fetchProfiles) {
         if(profilesRef) {
@@ -52,13 +54,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if(message.type == message_protocol.updateProfileURL) {
         var url = message.url;
         var key = message.key;
-        var currentTime = message.currentTime;
 
         if(profilesRef) {
-            var updateObject = {};
-            updateObject[key+'/currentURL'] = url;
-            updateObject[key+'/currentTime'] = startTime;
-            profilesRef.update(updateObject)
+            profilesRef.child(key).once('value', (profile) => { // fetch profiles and respond
+                var startTime = profile.startTime;
+                var updateObject = {};
+                updateObject[key+'/currentURL'] = url;
+                updateObject[key+'/currentTime'] = startTime;
+                profilesRef.update(updateObject)
+            });
         }
     // UPDATE VIDEO QUERY
     } else if(message.type == message_protocol.updateProfileVideoQuery) {
@@ -78,6 +82,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 value: false
             });
         }
+    }
+    // cancel a click event
+    else if(message.type == message_protocol.cancelClick) {
+        var key = message.key;
+        var event = message.event;
+        notifyAllTabs({
+            type: message_protocol.initClick,
+            key: key,
+            event: event,
+            value: false
+        });
     }
 });
 

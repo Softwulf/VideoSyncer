@@ -11,6 +11,6 @@ var sync = new Sync(null);
 var video = new VideoInterface([sync]);
 var publish = new Publish([sync, video]);
 var renderer = new Renderer([sync, video]);
-var events = new Events([sync, video]);
+var events = new Events([sync, video, publish]);
 
 sync.fetch();

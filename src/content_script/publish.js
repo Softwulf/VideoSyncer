@@ -27,7 +27,7 @@ export default class VideoInterface extends Observable {
                 payload[property] = value;
             }
         
-            console.debug('Payload: ', payload);
+            console.debug('Sending message to extension: ', payload);
         
             chrome.runtime.sendMessage(payload);
         } else {
@@ -35,20 +35,17 @@ export default class VideoInterface extends Observable {
         }
     }
 
-    publishNewUrl(url, currentTime) {
+    publishNewUrl(url) {
         if(url) {
-            this.publish({
-                type: message_protocol.updateProfileURL,
-                url: url,
-                currentTime: currentTime
+            this.publish(message_protocol.updateProfileURL, {
+                url: url
             });
         }
     }
 
     publishLocalTime(time) {
         if(time) {
-            this.publish({
-                type: message_protocol.updateProfileTime,
+            this.publish(message_protocol.updateProfileTime, {
                 time: time
             });
         }
@@ -56,10 +53,17 @@ export default class VideoInterface extends Observable {
 
     publishVideoQuery(host, query) {
         if(host) {
-            this.publish({
-                type: message_protocol.updateProfileVideoQuery,
+            this.publish(message_protocol.updateProfileVideoQuery, {
                 host: host,
                 query: query
+            });
+        }
+    }
+
+    publishClickCancel(event) {
+        if(event) {
+            this.publish(message_protocol.cancelClick, {
+                event: event
             });
         }
     }

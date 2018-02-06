@@ -32,7 +32,7 @@ export default class Sync extends Observable {
                 this.handleIncomingData(message.profiles);
             }
             // listen for video selections
-            else if(message.type == message_protocol.callVideoSelection) {
+            else if(message.type == message_protocol.initClick) {
                 if(this.profile && this.profile.key == message.key) {
                     this.call('click', {event: message.event, value: message.value})
                 }
@@ -92,7 +92,7 @@ export default class Sync extends Observable {
                 this.call('change_full');
             }
             // if url changed and this is not the latest frame
-            else if(previousProfile.currentURL != matchedProfile.currentURL && matchedProfile.latestFrame != this.frameId) {
+            else if(previousProfile.currentURL != matchedProfile.currentURL) {
                 this.call('change_currenturl');
             }
             // if query changed
@@ -110,6 +110,14 @@ export default class Sync extends Observable {
         }
     
         this.previousProfile = matchedProfile;
+    }
+
+    newEpisode() {
+        if(this.profile) {
+            return this.pageUrl.indexOf(this.profile.currentURL) == -1;
+        } else {
+            return false;
+        }
     }
 
     // generate frame ID
