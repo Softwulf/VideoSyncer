@@ -38,7 +38,8 @@ export default class VideoInterface extends Observable {
     publishNewUrl(url) {
         if(url) {
             this.publish(message_protocol.updateProfileURL, {
-                url: url
+                url: url,
+                startTime: this.sync.profile.startTime
             });
         }
     }

@@ -54,15 +54,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if(message.type == message_protocol.updateProfileURL) {
         var url = message.url;
         var key = message.key;
+        var startTime = message.startTime;
 
         if(profilesRef) {
-            profilesRef.child(key).once('value', (profile) => { // fetch profiles and respond
-                var startTime = profile.startTime;
-                var updateObject = {};
-                updateObject[key+'/currentURL'] = url;
-                updateObject[key+'/currentTime'] = startTime;
-                profilesRef.update(updateObject)
-            });
+            var updateObject = {};
+            updateObject[key+'/currentURL'] = url;
+            updateObject[key+'/currentTime'] = startTime;
+            profilesRef.update(updateObject)
         }
     // UPDATE VIDEO QUERY
     } else if(message.type == message_protocol.updateProfileVideoQuery) {
