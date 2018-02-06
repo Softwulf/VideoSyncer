@@ -18,7 +18,6 @@ import autobind from 'auto-bind';
 export default class Sync extends Observable {
     constructor(observing) {
         super('sync', observing);
-        const self = this;
 
         this.frameId = this.generateId();
         this.pageUrl = null;
@@ -30,31 +29,28 @@ export default class Sync extends Observable {
         // listen for push updates from background
         chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             if(message.type == message_protocol.pushProfiles) {
-                self.handleIncomingData(message.profiles);
+                this.handleIncomingData(message.profiles);
             }
             // listen for video selections
             else if(message.type == message_protocol.callVideoSelection) {
-                if(self.profile && self.profile.key == message.key) {
-                    self.call('click', {event: message.event, value: message.value})
+                if(this.profile && this.profile.key == message.key) {
+                    this.call('click', {event: message.event, value: message.value})
                 }
             }
         });
     }
 
     fetch() {
-        var self = this;
         chrome.runtime.sendMessage({
             type: message_protocol.fetchProfiles
         }, (response) => {
-            self.pageUrl = response.url;
-            self.handleIncomingData(response.profiles);
+            this.pageUrl = response.url;
+            this.handleIncomingData(response.profiles);
         });
     }
 
     handleIncomingData(profiles) {
-        var self = this;
-
-        var previousProfile = self.previousProfile;
+        var previousProfile = this.previousProfile;
         var matchedProfile = null;
 
         if(profiles) {
@@ -64,9 +60,9 @@ export default class Sync extends Observable {
                 var profileParsed = profiles[property];
 
                 profileParsed.key = property;
-                if(self.pageUrl && self.pageUrl.indexOf(profileParsed.urlPattern) !== -1) { // Url Pattern matches
+                if(this.pageUrl && this.pageUrl.indexOf(profileParsed.urlPattern) !== -1) { // Url Pattern matches
                     // A profile matched -> enable videosyncer
-                    if(!self.previousProfile && window.top == window.self) {
+                    if(!this.previousProfile && window.top == window.self) {
                         console.log('This site matched with profile: '+profileParsed.name);
                     }
                     matchedProfile = profileParsed;

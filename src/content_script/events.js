@@ -46,7 +46,7 @@ export default class VideoInterface extends Observable {
     }
 
     handleTimeupdate(event) {
-        localTime = Math.floor(event.target.currentTime);
+        var localTime = Math.floor(event.target.currentTime);
     
         if(event.target.paused) return;
         /*

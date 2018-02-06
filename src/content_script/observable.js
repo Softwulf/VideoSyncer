@@ -1,3 +1,5 @@
+import autoBind from 'auto-bind';
+
 export default class Observable {
     constructor(name, observing) {
         this.name = name;
@@ -9,6 +11,8 @@ export default class Observable {
                 this[observing[i].name] = observing[i];
             }
         }
+
+        autoBind(this);
     }
 
     on(event, listener) {
@@ -16,6 +20,7 @@ export default class Observable {
     }
 
     call(event, data) {
+        console.debug(this.name + ' called event ['+event+']');
         for(let i = 0; i < this.listeners.length; i++) {
             var obj = this.listeners[i];
             if(obj.event == event) {

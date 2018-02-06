@@ -14,6 +14,8 @@ export default class VideoInterface extends Observable {
         autobind(this);
 
         this.sync.on('change_full', this.findVideo);
+        this.sync.on('change_full', this.updateTime);
+
         this.sync.on('change_query', this.findVideo);
         this.sync.on('change_removed', this.removeVideo);
         this.sync.on('change_timechange', this.updateTime);
@@ -21,13 +23,16 @@ export default class VideoInterface extends Observable {
 
     findVideo(queryInput) {
         if(this.videoPlayer) return; // Player already found
+
         var query = 'video';
-        if(queryInput) query = queryInput;
+        if(queryInput) {
+            query = queryInput;
+        }
+
         var videoSelect = jquery(query);
+
         if(videoSelect.length) {
             // there IS a videoplayer
-            console.log('beginning to call', this);
-            console.log('call method: ', this.call);
             this.videoPlayer = videoSelect.get(0);
             this.call('found', {player: this.videoPlayer});
         } else {
