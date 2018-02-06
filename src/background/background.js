@@ -52,7 +52,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if(message.type == message_protocol.updateProfileURL) {
         var url = message.url;
         var key = message.key;
-        var startTime = message.startTime;
+        var currentTime = message.currentTime;
 
         if(profilesRef) {
             var updateObject = {};
@@ -70,7 +70,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             var updateObject = {};
             updateObject[key+'/videoHost'] = host;
             updateObject[key+'/videoQuery'] = query;
-            profilesRef.update(updateObject)
+            profilesRef.update(updateObject);
+            // tell tabs to cancel selection
+            notifyAllTabs({
+                type: message_protocol.callVideoSelection,
+                key: key,
+                value: false
+            });
         }
     }
 });

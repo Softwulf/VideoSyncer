@@ -31,7 +31,7 @@
     },
     "background": {
         "scripts": [
-            "background/main.js"
+            "background/background.js"
         ],
         "persistent": true
     },
@@ -42,7 +42,7 @@
                 "https://*/*"
             ],
             "js": [
-                "content_script/tracker.js"
+                "content_script/main.js"
             ],
             "css": [
                 "content_script/tracker.css"
