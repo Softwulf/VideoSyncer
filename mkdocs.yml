@@ -1,0 +1,12 @@
+site_name: VideoSyncer
+repo_url: 'https://github.com/ElectronicManuel/VideoSyncer-REACT'
+copyright: 'Copyright &copy; 2018 ElectronicManuel'
+theme:
+    name: 'material'
+    palette:
+        primary: 'indigo'
+        accent: 'amber'
+    logo: 'img/favicon.ico'
+
+markdown_extensions:
+  - admonition
