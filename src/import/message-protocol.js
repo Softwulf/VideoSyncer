@@ -3,9 +3,9 @@ var message_protocol = {
     fetchProfiles: 'PROFILES_FETCH',
     updateProfileTime: 'PROFILES_UPDATE_TIME',
     updateProfileURL: 'PROFILES_UPDATE_URL',
-    updateProfileVideoQuery: 'PROFILES_UPDATE_QUERY',
     initClick: 'CLICK_INIT',
-    cancelClick: 'CLICK_CANCEL'
+    cancelClick: 'CLICK_CANCEL',
+    updateProfileNext: 'PROFILES_UPDATE_NEXT'
 };
 
 export default message_protocol;

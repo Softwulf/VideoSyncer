@@ -22,6 +22,10 @@ class ProfileList extends React.Component {
         return profile.videoHost == null;
     }
 
+    nextIncomplete(profile) {
+        return profile.nextQuery == null;
+    }
+
     getUrl(profile) {
         if(profile.currentURL) {
             return profile.currentURL;
@@ -39,19 +43,28 @@ class ProfileList extends React.Component {
         }
     }
 
-    setupProfile(profile) {
-        function notifyAllTabs(message, callback) {
-            chrome.tabs.query({}, function(tabs){
-                for(let i = 0; i < tabs.length;i++) {
-                    chrome.tabs.sendMessage(tabs[i].id, message, callback);  
-                }
-            });
-        }
+    notifyAllTabs(message, callback) {
+        chrome.tabs.query({}, function(tabs){
+            for(let i = 0; i < tabs.length;i++) {
+                chrome.tabs.sendMessage(tabs[i].id, message, callback);  
+            }
+        });
+    }
 
-        notifyAllTabs({
+    setupProfile(profile) {
+        this.notifyAllTabs({
             type: message_protocol.initClick,
             key: profile.key,
             event: 'setup',
+            value: true
+        });
+    }
+
+    setupNext(profile) {
+        this.notifyAllTabs({
+            type: message_protocol.initClick,
+            key: profile.key,
+            event: 'next',
             value: true
         });
     }
@@ -81,6 +94,9 @@ class ProfileList extends React.Component {
                         </Grid.Column>
                         <Grid.Column>
                             <Button onClick={() => {this.setupProfile(profile)}} basic={!this.setupIncomplete(profile)} content={weh._('setup')} labelPosition='left' icon='external' color={(this.setupIncomplete(profile) && 'yellow') || 'black'} />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Button onClick={() => {this.setupNext(profile)}} basic={!this.nextIncomplete(profile)} content={weh._('next')} labelPosition='left' icon='external' color={(this.nextIncomplete(profile) && 'yellow') || 'black'} />
                         </Grid.Column>
                         <Grid.Column>
                             <Button basic negative onClick={() => {this.props.removeProfile(profile);}} content={weh._('delete')} labelPosition='left' icon='delete' />
@@ -127,9 +143,6 @@ class Main extends React.Component {
                     startTime: 0,
                     endTime: parseInt(profile.endTime),
                     currentTime: 0,
-                    currentURL: null,
-                    videoHost: null,
-                    videoQuery: null
                 },
                 then(err) {
                     if (!err) {
@@ -155,8 +168,6 @@ class Main extends React.Component {
                     urlPattern: profile.urlPattern,
                     startTime: 0,
                     endTime: parseInt(profile.endTime),
-                    videoHost: null,
-                    videoQuery: null
                 },
                 then(err) {
                     if (!err) {

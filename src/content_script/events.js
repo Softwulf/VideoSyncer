@@ -13,6 +13,7 @@ export default class VideoInterface extends Observable {
         this.lastSync = new Date();
 
         this.setupNow = false;
+        this.nextNow = false;
 
         // constants
         this.selectHover = 'videosyncer_hover';
@@ -27,7 +28,7 @@ export default class VideoInterface extends Observable {
 
         jquery('body').children().mouseover((e) => {
             jquery('.'+this.selectHover).removeClass(this.selectHover);
-            if(this.setupNow) {
+            if(this.setupNow || this.nextNow) {
                 jquery(e.target).addClass(this.selectHover);
                 return false;
             }
@@ -60,6 +61,20 @@ export default class VideoInterface extends Observable {
         }
     }
 
+    gotoNext() {
+        if(this.sync.profile && this.sync.profile.nextHost) {
+            if(window.location.host == this.sync.profile.nextHost) {
+                var nextButton = jquery(this.sync.profile.nextQuery);
+                console.log(nextButton);
+                if(nextButton.length > 0) {
+                    nextButton.click();
+                }
+            }
+        } else {
+            console.error('No next setup yet');
+        }
+    }
+
     handlePlay(event) {
         var newEpisode = this.sync.newEpisode();
         if(newEpisode) {
@@ -73,7 +88,7 @@ export default class VideoInterface extends Observable {
     }
 
     handleEnded(event) {
-        alert('ENDED_endtime');
+        this.gotoNext();
     }
 
     handleTimeupdate(event) {
@@ -88,7 +103,7 @@ export default class VideoInterface extends Observable {
     
         if(this.sync.profile && this.sync.profile.endTime > 0 && localTime >= this.sync.profile.endTime) {
             this.video.videoPlayer.pause();
-            alert('ENDED_endtime');
+            this.gotoNext();
         }
     
     }
@@ -98,6 +113,39 @@ export default class VideoInterface extends Observable {
         var value = data.value;
         var event = data.event;
         if(event == 'setup') this.setup(value);
+        if(event == 'next') this.next(value);
+    }
+
+    next(value) {
+        this.nextNow = value;
+        jquery('.'+this.selectHover).removeClass(this.selectHover);
+        if(value) {
+            jquery('body').on('click', this.handleNextFinder);
+            if(window.top == window.self) {
+                alert('Click on the next button');
+            }
+        } else {
+            jquery('body').off('click', this.handleNextFinder);
+        }
+    }
+
+    handleNextFinder(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    
+        var next = jquery(event.target);
+        
+        if(next.length > 0) {
+            var query = next.getPath();
+
+            this.publish.publishNextQuery(window.location.host, query);
+            
+            next.blink(5);
+        } else {
+            alert('There was no element being clicked');
+        }
+    
+        this.publish.publishClickCancel('next');
     }
 
     setup(value) {

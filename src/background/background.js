@@ -75,8 +75,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             profilesRef.update(updateObject);
             // tell tabs to cancel selection
             notifyAllTabs({
-                type: message_protocol.callVideoSelection,
+                type: message_protocol.cancelClick,
                 key: key,
+                event: 'setup',
+                value: false
+            });
+        }
+    // Update Next query
+    } else if(message.type == message_protocol.updateProfileNext) {
+        var key = message.key;
+        var host = message.host;
+        var query = message.query;
+
+        if(profilesRef) {
+            var updateObject = {};
+            updateObject[key+'/nextHost'] = host;
+            updateObject[key+'/nextQuery'] = query;
+            profilesRef.update(updateObject);
+            // tell tabs to cancel selection
+            notifyAllTabs({
+                type: message_protocol.cancelClick,
+                key: key,
+                event: 'next',
                 value: false
             });
         }

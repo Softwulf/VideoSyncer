@@ -61,6 +61,15 @@ export default class VideoInterface extends Observable {
         }
     }
 
+    publishNextQuery(host, query) {
+        if(host) {
+            this.publish(message_protocol.updateProfileNext, {
+                host: host,
+                query: query
+            });
+        }
+    }
+
     publishClickCancel(event) {
         if(event) {
             this.publish(message_protocol.cancelClick, {
