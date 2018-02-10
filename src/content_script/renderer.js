@@ -2,7 +2,7 @@
  * renders html elements
  */
 import jquery from 'jquery';
-import Observable from './observable';
+import Observable from '../import/observable';
 import autobind from 'auto-bind';
 
 export default class VideoInterface extends Observable {
@@ -31,7 +31,7 @@ export default class VideoInterface extends Observable {
     }
 
     renderStatusDiv() {
-        if(!this.sync) {
+        if(!this.client) {
             console.error('Sync not setup yet');
             return;
         }
@@ -39,11 +39,11 @@ export default class VideoInterface extends Observable {
             console.error('Video interface not setup yet');
             return;
         }
-        if (this.sync.profile) { // if profile exists -> modify status div
-            var profile = this.sync.profile;
+        if (this.client.profile) { // if profile exists -> modify status div
+            var profile = this.client.profile;
     
             var contentHtml = `
-                <p>${profile.name} - ${window.location.host} - ${profile.currentTime} - ${this.sync.frameId}</p>
+                <p>${profile.name} - ${window.location.host} - ${profile.currentTime} - ${this.client.frameId}</p>
             `;
             if (jquery('#' + this.insertId).length == 0) { // if content div is not inserted, add it now
                 jquery('body').prepend('<div id="' + this.insertId + '"></div>');

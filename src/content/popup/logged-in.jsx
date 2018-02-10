@@ -2,16 +2,30 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import browser from 'webextension-polyfill';
-import message_protocol from '../../import/message-protocol';
 
-import { firebase, base } from '../../import/firebase-config';
+import { firebase, base } from '../../import/config/firebase-config';
 import user from '../../import/user';
 
 import { Accordion, Icon, Button, Segment, Message, Grid, Popup } from 'semantic-ui-react'
 
-import swalc from '../../import/swal-config';
+import swalc from '../../import/config/swal-config';
+import { SyncServer } from '../../import/sync';
 
 import weh from 'weh-content';
+
+const Server = new SyncServer();
+
+function toHHMMSS(time) {
+    var sec_num = parseInt(time, 10); // don't forget the second param
+    var hours   = Math.floor(sec_num / 3600);
+    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+    return hours+':'+minutes+':'+seconds;
+}
 
 class ProfileList extends React.Component {
     constructor(props) {
@@ -20,6 +34,10 @@ class ProfileList extends React.Component {
 
     setupIncomplete(profile) {
         return profile.videoHost == null;
+    }
+
+    nextIncomplete(profile) {
+        return profile.nextQuery == null;
     }
 
     getUrl(profile) {
@@ -40,20 +58,11 @@ class ProfileList extends React.Component {
     }
 
     setupProfile(profile) {
-        function notifyAllTabs(message, callback) {
-            chrome.tabs.query({}, function(tabs){
-                for(let i = 0; i < tabs.length;i++) {
-                    chrome.tabs.sendMessage(tabs[i].id, message, callback);  
-                }
-            });
-        }
+        Server.clickInit(profile, 'SETUP');
+    }
 
-        notifyAllTabs({
-            type: message_protocol.initClick,
-            key: profile.key,
-            event: 'setup',
-            value: true
-        });
+    setupNext(profile) {
+        Server.clickInit(profile, 'NEXT');
     }
 
     render() {
@@ -65,7 +74,7 @@ class ProfileList extends React.Component {
                         { this.setupIncomplete(profile) && 
                             <Popup wide hideOnScroll trigger={ <Icon name='warning sign' color='yellow' /> } header={ weh._('player_incomplete') } content={ weh._('player_incomplete_detail') } />
                         }
-                        <span>{profile.name} - {profile.currentTime}</span>
+                        <span>{profile.name} - {toHHMMSS(profile.currentTime)}</span>
                     </span>
                 ),
                 key: profile.key
@@ -80,7 +89,10 @@ class ProfileList extends React.Component {
                             <Button basic content={weh._('edit')} labelPosition='left' icon='edit' onClick={() => {this.props.editProfile(profile)}} />
                         </Grid.Column>
                         <Grid.Column>
-                            <Button onClick={() => {this.setupProfile(profile)}} basic={!this.setupIncomplete(profile)} content={weh._('setup')} labelPosition='left' icon='external' color={(this.setupIncomplete(profile) && 'yellow') || 'black'} />
+                            <Button onClick={() => {this.setupProfile(profile)}} basic={!this.setupIncomplete(profile)} content={weh._('setup')} labelPosition='left' icon='external' color={(this.setupIncomplete(profile) && 'yellow') || null} />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Button onClick={() => {this.setupNext(profile)}} basic={!this.nextIncomplete(profile)} content={weh._('next')} labelPosition='left' icon='external' color={(this.nextIncomplete(profile) && 'yellow') || null} />
                         </Grid.Column>
                         <Grid.Column>
                             <Button basic negative onClick={() => {this.props.removeProfile(profile);}} content={weh._('delete')} labelPosition='left' icon='delete' />
@@ -124,12 +136,9 @@ class Main extends React.Component {
                 data: {
                     name: profile.name,
                     urlPattern: profile.urlPattern,
-                    startTime: 0,
+                    startTime: parseInt(profile.startTime),
                     endTime: parseInt(profile.endTime),
                     currentTime: 0,
-                    currentURL: null,
-                    videoHost: null,
-                    videoQuery: null
                 },
                 then(err) {
                     if (!err) {
@@ -153,10 +162,8 @@ class Main extends React.Component {
                 data: {
                     name: profile.name,
                     urlPattern: profile.urlPattern,
-                    startTime: 0,
+                    startTime: parseInt(profile.startTime),
                     endTime: parseInt(profile.endTime),
-                    videoHost: null,
-                    videoQuery: null
                 },
                 then(err) {
                     if (!err) {

@@ -1,96 +1,51 @@
 import browser from 'webextension-polyfill';
-import oauthConfig from '../import/oauth-config';
-import { firebase, db } from '../import/firebase-config';
+import oauthConfig from '../import/config/oauth-config';
+import { firebase, db } from '../import/config/firebase-config';
 import weh from 'weh-background';
 
-import message_protocol from '../import/message-protocol';
+import { SyncServer, Protocol } from '../import/sync';
+
+const Server = new SyncServer(true);
+var profilesRef = null;
 
 /*
  * Profile Sync with content scripts
  */
 
-function notifyAllTabs(message, callback) {
-    chrome.tabs.query({}, function(tabs){
-        for(let i = 0; i < tabs.length;i++) {
-            chrome.tabs.sendMessage(tabs[i].id, message, callback);  
-        }
-    });
-}
 
-var profilesRef = null;
-
-// respond to fetches and updates from content script
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.debug('Message received ['+message.type+']', message);
-
-    // FETCH
-    if(message.type == message_protocol.fetchProfiles) {
-        if(profilesRef) {
-            profilesRef.once('value', (profiles) => { // fetch profiles and respond
-                sendResponse({
-                    profiles: profiles,
-                    url: sender.tab.url
-                });
-            }); 
-        } else {
-            sendResponse({ // if not logged in respond with NULL
-                profiles: null,
-                url: sender.tab.url
+// Handle client profile fetch
+Server.on(Protocol.CLIENT_FETCH_PROFILES, (message) => {
+    if(profilesRef) {
+        profilesRef.once('value', (profiles) => { // fetch profiles and respond
+            message.sendResponse({
+                profiles: profiles,
+                url: message.sender.tab.url
             });
-        }
-    // UPDATE TIME
-    } else if(message.type == message_protocol.updateProfileTime) {
-        var time = message.time;
-        var key = message.key;
-        var frameId = message.frameId;
-
-        if(profilesRef) {
-            var updateObject = {};
-            updateObject[key+'/currentTime'] = time;
-            updateObject[key+'/latestFrame'] = frameId;
-            profilesRef.update(updateObject)
-        }
-    // UPDATE URL
-    } else if(message.type == message_protocol.updateProfileURL) {
-        var url = message.url;
-        var key = message.key;
-        var startTime = message.startTime;
-
-        if(profilesRef) {
-            var updateObject = {};
-            updateObject[key+'/currentURL'] = url;
-            updateObject[key+'/currentTime'] = startTime;
-            profilesRef.update(updateObject)
-        }
-    // UPDATE VIDEO QUERY
-    } else if(message.type == message_protocol.updateProfileVideoQuery) {
-        var key = message.key;
-        var host = message.host;
-        var query = message.query;
-
-        if(profilesRef) {
-            var updateObject = {};
-            updateObject[key+'/videoHost'] = host;
-            updateObject[key+'/videoQuery'] = query;
-            profilesRef.update(updateObject);
-            // tell tabs to cancel selection
-            notifyAllTabs({
-                type: message_protocol.callVideoSelection,
-                key: key,
-                value: false
-            });
-        }
-    }
-    // cancel a click event
-    else if(message.type == message_protocol.cancelClick) {
-        var key = message.key;
-        var event = message.event;
-        notifyAllTabs({
-            type: message_protocol.initClick,
-            key: key,
-            event: event,
-            value: false
+        }); 
+    } else {
+        message.sendResponse({ // if not logged in respond with NULL
+            profiles: null,
+            url: message.sender.tab.url
         });
+    }
+});
+
+// Update profile in DB
+Server.on(Protocol.CLIENT_UPDATE_PROFILE, (message) => {
+    var key = message.key;
+    var profile = message.profile;
+    if(profilesRef) {
+        var updateObject = {};
+
+        // only update the given fields
+        for (var property in profile) {
+            if (!profile.hasOwnProperty(property)) continue;
+        
+            var value = profile[property];
+
+            updateObject[key+'/'+property] = value;
+        }
+        profilesRef.update(updateObject)
     }
 });
 
@@ -107,10 +62,7 @@ function handleLoginStateChange(user) {
     
         profilesRef.on('value', function(profiles) { // push profile update to content scripts
             console.log('Profiles changed, notifying all watch pages', profiles.val());
-            notifyAllTabs({
-                type: message_protocol.pushProfiles,
-                profiles: profiles.val()
-            });
+            Server.pushProfiles(profiles.val());
         }, function(error) {
             console.error('Failed to read profiles: ', err);
         });
@@ -119,10 +71,7 @@ function handleLoginStateChange(user) {
 
         profilesRef = null;
         // remove profiles from all content scripts
-        chrome.runtime.sendMessage({
-            type: message_protocol.pushProfiles,
-            profiles: null
-        });
+        Server.pushProfiles(null);
     }
 }
 

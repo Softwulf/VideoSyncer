@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 
 import weh from 'weh-content';
 
-import { firebase } from '../../import/firebase-config';
+import { firebase } from '../../import/config/firebase-config';
 import user from '../../import/user';
 import LoggedIn from './logged-in';
 
