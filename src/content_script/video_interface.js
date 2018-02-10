@@ -2,7 +2,7 @@
  * interfaces with the video element
  */
 import jquery from 'jquery';
-import Observable from './observable';
+import Observable from '../import/observable';
 import autobind from 'auto-bind';
 
 export default class VideoInterface extends Observable {
@@ -13,20 +13,20 @@ export default class VideoInterface extends Observable {
 
         autobind(this);
 
-        this.sync.on('change_full', this.findVideo);
-        this.sync.on('change_full', this.updateTime);
+        this.client.on('change_full', this.findVideo);
+        this.client.on('change_full', this.updateTime);
 
-        this.sync.on('change_query', this.findVideo);
-        this.sync.on('change_removed', this.removeVideo);
-        this.sync.on('change_timechange', this.updateTime);
+        this.client.on('change_query', this.findVideo);
+        this.client.on('change_removed', this.removeVideo);
+        this.client.on('change_timechange', this.updateTime);
     }
 
-    findVideo(queryInput) {
+    findVideo() {
         if(this.videoPlayer) return; // Player already found
 
         var query = 'video';
-        if(queryInput) {
-            query = queryInput;
+        if(this.client.profile.videoQuery) {
+            query = this.client.profile.videoQuery;
         }
 
         var videoSelect = jquery(query);
@@ -47,7 +47,7 @@ export default class VideoInterface extends Observable {
 
     updateTime() {
         if(this.videoPlayer) {
-            this.videoPlayer.currentTime = this.sync.profile.currentTime;
+            this.videoPlayer.currentTime = this.client.profile.currentTime;
             this.videoPlayer.pause();
         }
     }

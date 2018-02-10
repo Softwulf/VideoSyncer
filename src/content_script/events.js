@@ -2,7 +2,7 @@
  * Handles content script events
  */
 import jquery from 'jquery';
-import Observable from './observable';
+import Observable from '../import/observable';
 import autobind from 'auto-bind';
 
 export default class VideoInterface extends Observable {
@@ -23,12 +23,18 @@ export default class VideoInterface extends Observable {
         this.video.on('remove', this.removeVideoHandlers);
         this.video.on('found', this.attachVideoHandlers);
 
-        this.sync.on('click', this.handleClickInvocation);
-        this.sync.on('change_currenturl', this.handleUrlChange);
+        this.client.on('change_currenturl', this.handleUrlChange);
+        this.client.on('gotoNext', this.gotoNext);
 
+        this.client.on('CLICK_INIT_NEXT', this.initNextClick);
+        this.client.on('CLICK_CANCEL_NEXT', this.cancelNextClick);
+        this.client.on('CLICK_INIT_SETUP', this.initSetupClick);
+        this.client.on('CLICK_CANCEL_SETUP', this.cancelSetupClick);
+
+        // mark elements on hover
         jquery('body').children().mouseover((e) => {
             jquery('.'+this.selectHover).removeClass(this.selectHover);
-            if(this.setupNow || this.nextNow) {
+            if(this.client.clicks.NEXT || this.client.clicks.SETUP) {
                 jquery(e.target).addClass(this.selectHover);
                 return false;
             }
@@ -53,22 +59,25 @@ export default class VideoInterface extends Observable {
     }
 
     handleUrlChange() {
-        if(this.sync.newEpisode()) {
+        if(this.client.tabUrl.indexOf(this.client.profile.currentURL) == -1) {
             if(window.top == window.self) {
-                window.location.href = this.sync.profile.currentURL;
+                window.location.href = this.client.profile.currentURL;
             }
             this.video.videoPlayer.pause();
         }
     }
 
     gotoNext() {
-        if(this.sync.profile && this.sync.profile.nextHost) {
-            if(window.location.host == this.sync.profile.nextHost) {
-                var nextButton = jquery(this.sync.profile.nextQuery);
+        console.log('GotoNext');
+        if(this.client.profile && this.client.profile.nextHost) {
+            if(window.location.host == this.client.profile.nextHost) {
+                var nextButton = jquery(this.client.profile.nextQuery);
                 console.log(nextButton);
                 if(nextButton.length > 0) {
                     nextButton.click();
                 }
+            } else {
+                console.error('this is not ye right frame');
             }
         } else {
             console.error('No next setup yet');
@@ -76,19 +85,26 @@ export default class VideoInterface extends Observable {
     }
 
     handlePlay(event) {
-        var newEpisode = this.sync.newEpisode();
+        var newEpisode = this.client.tabUrl.indexOf(this.client.profile.currentURL);
         if(newEpisode) {
-            this.video.videoPlayer.currentTime = this.sync.profile.startTime;
-            this.publish.publishNewUrl(this.sync.pageUrl);
+            this.video.videoPlayer.currentTime = this.client.profile.startTime;
+            this.client.updateProfile({
+                currentURL: this.client.tabUrl,
+                currentTime: this.client.profile.startTime,
+                latestFrame: this.client.frameId
+            });
         }
     }
 
     handlePause(event) {
-        this.publish.publishLocalTime(Math.floor(this.video.videoPlayer.currentTime));
+        this.client.updateProfile({
+            currentTime: Math.floor(this.video.videoPlayer.currentTime),
+            latestFrame: this.client.frameId
+        });
     }
 
     handleEnded(event) {
-        this.gotoNext();
+        this.client.broadcastToClients('gotoNext', {});
     }
 
     handleTimeupdate(event) {
@@ -97,36 +113,32 @@ export default class VideoInterface extends Observable {
         if(event.target.paused) return;
         
         if((new Date() - this.lastSync) >= this.syncDelay * 1000) { // if enough time has passed sync the profile
-            this.publish.publishLocalTime(localTime);
+            this.client.updateProfile({
+                currentTime: localTime,
+                latestFrame: this.client.frameId
+            });
             this.lastSync = new Date();
         }
     
-        if(this.sync.profile && this.sync.profile.endTime > 0 && localTime >= this.sync.profile.endTime) {
+        if(this.client.profile && this.client.profile.endTime > 0 && localTime >= this.client.profile.endTime) {
             this.video.videoPlayer.pause();
-            this.gotoNext();
+            this.client.broadcastToClients('gotoNext', {});
         }
     
     }
 
     // Click events
-    handleClickInvocation(data) {
-        var value = data.value;
-        var event = data.event;
-        if(event == 'setup') this.setup(value);
-        if(event == 'next') this.next(value);
-    }
 
-    next(value) {
-        this.nextNow = value;
+    // NEXT
+    initNextClick() {
         jquery('.'+this.selectHover).removeClass(this.selectHover);
-        if(value) {
-            jquery('body').on('click', this.handleNextFinder);
-            if(window.top == window.self) {
-                alert('Click on the next button');
-            }
-        } else {
-            jquery('body').off('click', this.handleNextFinder);
+        jquery('body').on('click', this.handleNextFinder);
+        if(window.top == window.self) {
+            alert('Click on the next button');
         }
+    }
+    cancelNextClick() {
+        jquery('body').off('click', this.handleNextFinder);
     }
 
     handleNextFinder(event) {
@@ -138,27 +150,29 @@ export default class VideoInterface extends Observable {
         if(next.length > 0) {
             var query = next.getPath();
 
-            this.publish.publishNextQuery(window.location.host, query);
+            this.client.updateProfile({
+                nextHost: window.location.host,
+                nextQuery: query,
+            });
             
             next.blink(5);
         } else {
             alert('There was no element being clicked');
         }
     
-        this.publish.publishClickCancel('next');
+        this.client.cancelClick('NEXT');
     }
 
-    setup(value) {
-        this.setupNow = value;
+    // SETUP
+    initSetupClick() {
         jquery('.'+this.selectHover).removeClass(this.selectHover);
-        if(value) {
-            jquery('body').on('click', this.handleVideoFinder);
-            if(window.top == window.self) {
-                alert('Click on the video element you want to track');
-            }
-        } else {
-            jquery('body').off('click', this.handleVideoFinder);
+        jquery('body').on('click', this.handleVideoFinder);
+        if(window.top == window.self) {
+            alert('Click on the video element you want to track');
         }
+    }
+    cancelSetupClick() {
+        jquery('body').off('click', this.handleVideoFinder);
     }
 
     handleVideoFinder(event) {
@@ -174,14 +188,17 @@ export default class VideoInterface extends Observable {
         if(video.length > 0 && video.is('video')) {
             var query = video.getPath();
 
-            this.publish.publishVideoQuery(window.location.host, query);
+            this.client.updateProfile({
+                videoHost: window.location.host,
+                videoQuery: query
+            });
             
             video.blink(5);
         } else {
             alert('The clicked element is no video player');
         }
     
-        this.publish.publishClickCancel('setup');
+        this.client.cancelClick('SETUP');
     }
 }
 

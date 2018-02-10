@@ -1,16 +1,14 @@
 /*
  * Connects all the different components
  */
-import Sync from './sync';
+import { SyncClient } from '../import/sync';
 import VideoInterface from './video_interface';
-import Publish from './publish';
 import Renderer from './renderer';
 import Events from './events';
 
-var sync = new Sync(null);
-var video = new VideoInterface([sync]);
-var publish = new Publish([sync, video]);
-var renderer = new Renderer([sync, video]);
-var events = new Events([sync, video, publish]);
+var Client = new SyncClient();
+var video = new VideoInterface([Client]);
+var renderer = new Renderer([Client, video]);
+var events = new Events([Client, video]);
 
-sync.fetch();
+Client.fetchProfile();

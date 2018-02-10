@@ -49,6 +49,12 @@
     "url_desc": {
         "message": "URL pattern (ex. example.com/series/sherlock/)"
     },
+    "starttime": {
+        "message": "Starting time"
+    },
+    "starttime_desc": {
+        "message": "When does an episode start (in seconds)"
+    },
     "endtime": {
         "message": "Ending time"
     },

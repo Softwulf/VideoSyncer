@@ -34,7 +34,7 @@ exports.editProfile = function(profile) {
             input: 'text',
             confirmButtonText: weh._('next') + ' &rarr;',
             showCancelButton: true,
-            progressSteps: ['1', '2', '3']
+            progressSteps: ['1', '2', '3', '4']
         })
 
         var steps = [
@@ -72,6 +72,12 @@ exports.editProfile = function(profile) {
                 }
             },
             {
+                title: weh._('starttime'),
+                text: weh._('starttime_desc'),
+                input: 'number',
+                inputValue: profile.startTime
+            },
+            {
                 title: weh._('endtime'),
                 text: weh._('endtime_desc'),
                 input: 'number',
@@ -85,13 +91,15 @@ exports.editProfile = function(profile) {
             if (result.value) {
                 profile.name = result.value[0];
                 profile.urlPattern = result.value[1];
-                profile.endTime = result.value[2];
+                profile.startTime = result.value[2];
+                profile.endTime = result.value[3];
 
                 if(!profile.endTime || profile.endTime == '') {
                     profile.endTime = 0;
                 }
-
-                console.log(profile.endTime);
+                if(!profile.startTime || profile.startTime == '') {
+                    profile.startTime = 0;
+                }
 
                 resolve(profile);
             } else {

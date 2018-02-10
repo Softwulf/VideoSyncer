@@ -1,6 +1,6 @@
 /*global browser*/
-import oauthConfig from './oauth-config';
-import { firebase } from './firebase-config';
+import oauthConfig from './config/oauth-config';
+import { firebase } from './config/firebase-config';
 
 import extension from 'extensionizer';
 
