@@ -4,18 +4,13 @@ import { firebase, db } from '../import/firebase-config';
 import weh from 'weh-background';
 
 import message_protocol from '../import/message-protocol';
+import { SyncServer } from '../import/sync';
+
+const Server = new SyncServer();
 
 /*
  * Profile Sync with content scripts
  */
-
-function notifyAllTabs(message, callback) {
-    chrome.tabs.query({}, function(tabs){
-        for(let i = 0; i < tabs.length;i++) {
-            chrome.tabs.sendMessage(tabs[i].id, message, callback);  
-        }
-    });
-}
 
 var profilesRef = null;
 
@@ -74,7 +69,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             updateObject[key+'/videoQuery'] = query;
             profilesRef.update(updateObject);
             // tell tabs to cancel selection
-            notifyAllTabs({
+            Server.notifyAllTabs({
                 type: message_protocol.cancelClick,
                 key: key,
                 event: 'setup',
@@ -93,7 +88,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             updateObject[key+'/nextQuery'] = query;
             profilesRef.update(updateObject);
             // tell tabs to cancel selection
-            notifyAllTabs({
+            Server.notifyAllTabs({
                 type: message_protocol.cancelClick,
                 key: key,
                 event: 'next',
@@ -105,7 +100,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     else if(message.type == message_protocol.cancelClick) {
         var key = message.key;
         var event = message.event;
-        notifyAllTabs({
+        Server.notifyAllTabs({
             type: message_protocol.initClick,
             key: key,
             event: event,
@@ -127,7 +122,7 @@ function handleLoginStateChange(user) {
     
         profilesRef.on('value', function(profiles) { // push profile update to content scripts
             console.log('Profiles changed, notifying all watch pages', profiles.val());
-            notifyAllTabs({
+            Server.notifyAllTabs({
                 type: message_protocol.pushProfiles,
                 profiles: profiles.val()
             });

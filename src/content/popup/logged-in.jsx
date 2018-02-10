@@ -10,8 +10,11 @@ import user from '../../import/user';
 import { Accordion, Icon, Button, Segment, Message, Grid, Popup } from 'semantic-ui-react'
 
 import swalc from '../../import/swal-config';
+import { SyncServer } from '../../import/sync';
 
 import weh from 'weh-content';
+
+const Server = new SyncServer();
 
 class ProfileList extends React.Component {
     constructor(props) {
@@ -43,16 +46,8 @@ class ProfileList extends React.Component {
         }
     }
 
-    notifyAllTabs(message, callback) {
-        chrome.tabs.query({}, function(tabs){
-            for(let i = 0; i < tabs.length;i++) {
-                chrome.tabs.sendMessage(tabs[i].id, message, callback);  
-            }
-        });
-    }
-
     setupProfile(profile) {
-        this.notifyAllTabs({
+        Server.notifyAllTabs({
             type: message_protocol.initClick,
             key: profile.key,
             event: 'setup',
@@ -61,7 +56,7 @@ class ProfileList extends React.Component {
     }
 
     setupNext(profile) {
-        this.notifyAllTabs({
+        Server.notifyAllTabs({
             type: message_protocol.initClick,
             key: profile.key,
             event: 'next',
