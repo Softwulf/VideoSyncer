@@ -104,7 +104,7 @@ export default class VideoInterface extends Observable {
     }
 
     handleEnded(event) {
-        this.client.broadcastToClients('gotoNext', {});
+        this.handleEnded();
     }
 
     handleTimeupdate(event) {
@@ -121,10 +121,30 @@ export default class VideoInterface extends Observable {
         }
     
         if(this.client.profile && this.client.profile.endTime > 0 && localTime >= this.client.profile.endTime) {
-            this.video.videoPlayer.pause();
-            this.client.broadcastToClients('gotoNext', {});
+            if(!this.video.videoPlayer.vsync_ended) {
+                this.video.videoPlayer.vsync_ended = true;
+                this.handleEnded();
+            }
         }
     
+    }
+
+    handleEnded() {
+        this.video.videoPlayer.pause();
+        this.exitFullscreen();
+        this.client.broadcastToClients('gotoNext', {});
+    }
+
+    exitFullscreen() {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
     }
 
     // Click events
