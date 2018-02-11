@@ -112,8 +112,7 @@ class Client extends Observable {
     handleMessage(message, sender, sendResponse) {
         // handle broadcast
         if(message.type == PROTOCOL.BROADCAST) {
-            console.log('broadcast received', message);
-            if(message.key == this.profile.key)  {
+            if(this.profile && message.key == this.profile.key)  {
                 this.call(message.subType, message);
             }
         }
@@ -123,14 +122,14 @@ class Client extends Observable {
         }
         // handle click init
         else if(message.type == PROTOCOL.CLICK_INIT) {
-            if(message.key == this.profile.key) {
+            if(this.profile && message.key == this.profile.key) {
                 this.clicks[message.event] = true;
                 this.call('CLICK_INIT_'+message.event);
             }
         }
         // handle click cancel
         else if(message.type == PROTOCOL.CLICK_CANCEL) {
-            if(message.key == this.profile.key) {
+            if(this.profile && message.key == this.profile.key) {
                 this.clicks[message.event] = false;
                 this.call('CLICK_CANCEL_'+message.event);
             }

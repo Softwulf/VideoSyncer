@@ -18,7 +18,7 @@ Server.on(Protocol.CLIENT_FETCH_PROFILES, (message) => {
     if(profilesRef) {
         profilesRef.once('value', (profiles) => { // fetch profiles and respond
             message.sendResponse({
-                profiles: profiles,
+                profiles: profiles.val(),
                 url: message.sender.tab.url
             });
         }); 
