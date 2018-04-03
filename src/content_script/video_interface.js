@@ -22,8 +22,7 @@ export default class VideoInterface extends Observable {
     }
 
     findVideo() {
-        if(this.videoPlayer) return; // Player already found
-
+        console.debug('findVideo');
         var query = 'video';
         if(this.client.profile.videoQuery) {
             query = this.client.profile.videoQuery;
@@ -34,6 +33,8 @@ export default class VideoInterface extends Observable {
         if(videoSelect.length) {
             // there IS a videoplayer
             this.videoPlayer = videoSelect.get(0);
+            this.videoPlayer.vsync_isStarted = false;
+            this.videoPlayer.vsync_ended = false;
             this.call('found', {player: this.videoPlayer});
         } else {
             this.call('remove');

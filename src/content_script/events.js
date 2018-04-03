@@ -5,15 +5,12 @@ import jquery from 'jquery';
 import Observable from '../import/observable';
 import autobind from 'auto-bind';
 
-export default class VideoInterface extends Observable {
+export default class Events extends Observable {
     constructor(observing) {
         super('events', observing);
 
         this.syncDelay = 1; // delay between syncs (in seconds)
         this.lastSync = new Date();
-
-        this.setupNow = false;
-        this.nextNow = false;
 
         // constants
         this.selectHover = 'videosyncer_hover';
@@ -25,6 +22,8 @@ export default class VideoInterface extends Observable {
 
         this.client.on('change_currenturl', this.handleUrlChange);
         this.client.on('gotoNext', this.gotoNext);
+        this.client.on('countToNext', this.countToNext);
+        this.client.on('cancelAutoplay', this.cancelAutoplay);
 
         this.client.on('CLICK_INIT_NEXT', this.initNextClick);
         this.client.on('CLICK_CANCEL_NEXT', this.cancelNextClick);
@@ -67,17 +66,75 @@ export default class VideoInterface extends Observable {
         }
     }
 
+    cancelAutoplay() {
+        if(window.top == window.self) {
+            this.autoPlay = null;
+        }
+    }
+
+    countToNext() {
+        if(window.top == window.self && this.client.profile && this.client.profile.nextHost) {
+            var setupCountdown = (counter) => {
+                jquery('body').prepend(`
+                <div class="vsync_countdown">
+                    <h1>Next in ${counter} seconds</h1>
+                    <button id="vsync_nextCancel">Cancel</button>
+                </div>`);
+                jquery('.vsync_countdown').on('click', '#vsync_nextCancel', () => {
+                    console.debug('autoplay cancelled');
+                    this.cancelAutoplay();
+                    teardownCountdown();
+                });
+            }
+
+            var updateCountdown = (counter) => {
+                jquery('.vsync_countdown').html(`
+                <h1>Next in ${counter} seconds</h1>
+                <button id="vsync_nextCancel">Cancel</button>`);
+            }
+
+            var teardownCountdown = () => {
+                jquery('.vsync_countdown').remove();
+            }
+
+            console.debug('countToNext');
+            this.autoPlay = true;
+
+            var counter = 15; // time until next episode (in seconds)
+            setupCountdown(counter);
+
+            // init countdown
+            var nextTick = () => {
+                if(!this.autoPlay) {
+                    return;
+                }
+                updateCountdown(counter);
+                counter--;
+                if(counter >= 0 && this.autoPlay) {
+                    setTimeout(nextTick, 1000);
+                } else {
+                    if(this.autoPlay) {
+                        this.client.broadcastToClients('gotoNext', {});
+                    }
+                    teardownCountdown();
+                }
+            }
+            nextTick();
+        }
+    }
+
     gotoNext() {
-        console.log('GotoNext');
+        console.debug('GotoNext');
         if(this.client.profile && this.client.profile.nextHost) {
+            console.debug(`next host [${window.location.host} - ${this.client.profile.nextHost}]`);
             if(window.location.host == this.client.profile.nextHost) {
                 var nextButton = jquery(this.client.profile.nextQuery);
-                console.log(nextButton);
+                console.debug(nextButton);
                 if(nextButton.length > 0) {
-                    nextButton.click();
+                    nextButton.get(0).click();
                 }
             } else {
-                console.error('this is not ye right frame');
+                console.debug('this is not ye right frame');
             }
         } else {
             console.error('No next setup yet');
@@ -85,7 +142,7 @@ export default class VideoInterface extends Observable {
     }
 
     handlePlay(event) {
-        var newEpisode = this.client.tabUrl.indexOf(this.client.profile.currentURL);
+        var newEpisode = this.client.tabUrl.indexOf(this.client.profile.currentURL) == -1;
         if(newEpisode) {
             this.video.videoPlayer.currentTime = this.client.profile.startTime;
             this.client.updateProfile({
@@ -93,6 +150,13 @@ export default class VideoInterface extends Observable {
                 currentTime: this.client.profile.startTime,
                 latestFrame: this.client.frameId
             });
+        } else {
+            console.debug('not a new episode, checking if there is a need to set current time', !this.video.videoPlayer.vsync_isStarted)
+            console.debug('current time: ',this.client.profile.currentTime);
+            if(!this.video.videoPlayer.vsync_isStarted) {
+                this.video.videoPlayer.currentTime = this.client.profile.currentTime;
+                this.video.videoPlayer.vsync_isStarted = true;
+            }
         }
     }
 
@@ -132,7 +196,7 @@ export default class VideoInterface extends Observable {
     handleEnded() {
         this.video.videoPlayer.pause();
         this.exitFullscreen();
-        this.client.broadcastToClients('gotoNext', {});
+        this.client.broadcastToClients('countToNext', {});
     }
 
     exitFullscreen() {

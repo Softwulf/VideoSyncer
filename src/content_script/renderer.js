@@ -5,7 +5,7 @@ import jquery from 'jquery';
 import Observable from '../import/observable';
 import autobind from 'auto-bind';
 
-export default class VideoInterface extends Observable {
+export default class Renderer extends Observable {
     constructor(observing) {
         super('renderer', observing);
 
