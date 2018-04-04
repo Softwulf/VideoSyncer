@@ -31,7 +31,8 @@ class Server extends Observable {
         if(this.runningInBackground) {
             // handle broadcast
             if(message.type == PROTOCOL.BROADCAST) {
-                message.type == PROTOCOL.BROADCAST_SPREAD;
+                message.type = PROTOCOL.BROADCAST_SPREAD;
+                console.debug('Spreading broadcast to clients');
                 this.notifyAllTabs(message);
             } else if(message.type == PROTOCOL.CLIENT_CLICK_CANCEL) {
                 this.clickCancel({key: message.key}, message.event);
@@ -110,8 +111,10 @@ class Client extends Observable {
     }
 
     handleMessage(message, sender, sendResponse) {
+        console.debug('incoming runtime message:', message);
         // handle broadcast
-        if(message.type == PROTOCOL.BROADCAST) {
+        if(message.type == PROTOCOL.BROADCAST_SPREAD) {
+            console.debug('Received incoming broadcast', message);
             if(this.profile && message.key == this.profile.key)  {
                 this.call(message.subType, message);
             }
@@ -145,6 +148,7 @@ class Client extends Observable {
     }
 
     broadcastToClients(type, message) {
+        console.debug(`Broadcasting message [${type}]`);
         var payload = message;
         payload.type = PROTOCOL.BROADCAST;
         payload.subType = type;
