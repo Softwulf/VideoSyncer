@@ -74,7 +74,7 @@ export default class Events extends Observable {
 
     countToNext() {
         console.log(`count to next ${window.top == window.self && this.client.profile && this.client.profile.nextHost} `)
-        if(window.top == window.self && this.client.profile && this.client.profile.nextHost) {
+        if(window.top == window.self && this.client.profile && this.client.profile.nextHost && !this.autoPlay) {
             var setupCountdown = (counter) => {
                 jquery('body').prepend(`
                 <div class="vsync_countdown">

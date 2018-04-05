@@ -31,9 +31,17 @@ class Server extends Observable {
         if(this.runningInBackground) {
             // handle broadcast
             if(message.type == PROTOCOL.BROADCAST) {
-                message.type = PROTOCOL.BROADCAST_SPREAD;
+                var spreadDto = {
+                    type: PROTOCOL.BROADCAST_SPREAD,
+                    subType: message.subType,
+                    key: message.key,
+                    data: null
+                }
+
+                if(message.data) spreadDto.data = message.data;
+                
                 console.debug('Spreading broadcast to clients');
-                this.notifyAllTabs(message);
+                this.notifyAllTabs(spreadDto);
             } else if(message.type == PROTOCOL.CLIENT_CLICK_CANCEL) {
                 this.clickCancel({key: message.key}, message.event);
             }
@@ -71,7 +79,7 @@ class Server extends Observable {
         console.debug('Notifying tabs: ', message);
         chrome.tabs.query({}, function(tabs){
             for(let i = 0; i < tabs.length;i++) {
-                chrome.tabs.sendMessage(tabs[i].id, message, callback);  
+                chrome.tabs.sendMessage(tabs[i].id, message, callback);
             }
         });
     }
