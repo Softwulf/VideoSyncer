@@ -101,7 +101,7 @@ export default class Events extends Observable {
             console.debug('countToNext');
             this.autoPlay = true;
 
-            var counter = 15; // time until next episode (in seconds)
+            var counter = 5; // time until next episode (in seconds)
             setupCountdown(counter);
 
             // init countdown
