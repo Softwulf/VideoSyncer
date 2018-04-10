@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "VideoSyncer_REACT",
+    "name": "VideoSyncer",
     "default_locale": "en",
     "version": "5.0.0",
     "author": "ElectronicManuel",
@@ -64,9 +64,7 @@
         "tabs",
         "contextMenus",
         "identity",
-        "storage",
-        "webRequest",
-        "webRequestBlocking"
+        "storage"
     ],
     "content_security_policy": "script-src 'self' https://cdn.firebase.com https://*.firebaseio.com https://unpkg.com; object-src 'self'",
     "applications": {
