@@ -109,4 +109,8 @@ exports.editProfile = function(profile) {
     });
 }
 
+exports.showProfileUrl = function(url) {
+    return swal(url);
+}
+
 export default exports;

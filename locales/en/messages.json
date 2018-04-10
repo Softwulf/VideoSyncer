@@ -33,6 +33,9 @@
     "login": {
         "message": "Login"
     },
+    "login_google": {
+        "message": "Login with Google"
+    },
     "login_question": {
         "message": "Please login to begin"
     },
@@ -153,5 +156,9 @@
     },
     "player_incomplete_detail": {
         "message": "To complete the setup, define what video player to track. This prevents mistakes when multiple video players are loaded in the same page. Just click the 'Setup' button."
+    },
+
+    "show_url": {
+        "message": "URL"
     }
 }

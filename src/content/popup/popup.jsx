@@ -9,8 +9,9 @@ import weh from 'weh-content';
 import { firebase } from '../../import/config/firebase-config';
 import user from '../../import/user';
 import LoggedIn from './logged-in';
+import { AuthComponent } from '../../import/config/firebaseui-config';
 
-import { Button, Loader, Container, Header, Icon, Segment, Message } from 'semantic-ui-react';
+import { Button, Loader, Container, Header, Icon, Segment, Message, Divider } from 'semantic-ui-react';
 
 class App extends React.Component {
     constructor(props) {
@@ -77,8 +78,13 @@ class App extends React.Component {
                             </Header.Subheader>
                         </Header.Content>
                     </Header>
-                    <Button loading={this.state.loading} onClick={() => { this.login(true) }} content={weh._('login')} color='google plus' icon='google plus' labelPosition='left'>
-                    </Button>
+                    <center><a href="https://vsync.crosssitefeeding.ch/migrate/" target="_blank"><Header as='h3' color='blue' content='Where did my account go?' /></a></center>
+                    <Segment padded>
+                        <Button loading={this.state.loading} onClick={() => { this.login(true) }} content={weh._('login_google')} color='google plus' icon='google plus' labelPosition='left' fluid></Button>
+                        <Divider horizontal>Or</Divider>
+                        <AuthComponent />
+                    </Segment>
+                    
                 </div>
             );
         }
