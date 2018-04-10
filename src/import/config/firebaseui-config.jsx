@@ -6,6 +6,7 @@ import React from 'react';
 
 // Configure FirebaseUI.
 const uiConfig = {
+    credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
     signInOptions: [
         {
             provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
