@@ -1,16 +1,19 @@
 {
-  "name": "videosyncer",
-  "version": "5.0.0",
-  "description": "",
-  "author": "ElectronicManuel",
-  "dependencies": {
-    "auto-bind": "^1.2.0",
-    "extensionizer": "^1.0.0",
-    "firebase": "^4.9.0",
-    "re-base": "^3.2.2",
-    "semantic-ui-css": "^2.2.14",
-    "semantic-ui-react": "^0.77.2",
-    "sweetalert2": "^7.8.2",
-    "webextension-polyfill": "^0.2.1"
-  }
+    "name": "videosyncer",
+    "version": "5.0.0",
+    "description": "",
+    "author": "ElectronicManuel",
+    "dependencies": {
+        "auto-bind": "^1.2.0",
+        "extensionizer": "^1.0.0",
+        "firebase": "^4.9.0",
+        "re-base": "^3.2.2",
+        "react": "^16.3.1",
+        "react-dom": "^16.3.1",
+        "react-firebaseui": "^1.1.8",
+        "semantic-ui-css": "^2.2.14",
+        "semantic-ui-react": "^0.77.2",
+        "sweetalert2": "^7.8.2",
+        "webextension-polyfill": "^0.2.1"
+    }
 }

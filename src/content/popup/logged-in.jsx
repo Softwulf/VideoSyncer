@@ -95,6 +95,9 @@ class ProfileList extends React.Component {
                             <Button onClick={() => {this.setupNext(profile)}} basic={!this.nextIncomplete(profile)} content={weh._('next')} labelPosition='left' icon='external' color={(this.nextIncomplete(profile) && 'yellow') || null} />
                         </Grid.Column>
                         <Grid.Column>
+                            <Button onClick={() => {swalc.showProfileUrl(this.getUrl(profile))}} content={weh._('show_url')} basic labelPosition='left' icon='linkify' />
+                        </Grid.Column>
+                        <Grid.Column>
                             <Button basic negative onClick={() => {this.props.removeProfile(profile);}} content={weh._('delete')} labelPosition='left' icon='delete' />
                         </Grid.Column>
                     </Grid>
