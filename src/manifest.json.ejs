@@ -57,8 +57,6 @@
         "storage"
     ],
     "content_security_policy": "script-src 'self' https://cdn.firebase.com https://*.firebaseio.com https://unpkg.com; object-src 'self'",
-    <% if (target=='chrome') { %>
-    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgTrw9RTstP1dZMzdBPOPcovwvR67lC0MPfV1lbYpTYRqcorAgK/wSsa1Ejo2xqbwqzVNagU2Wuc0VpjfBSaOsRBCbhYgSL7ZNcAal9cr6wVAfXP86bXPDHIyowzc8c30LAoBW4AsN1mPAFHBFXMm5A7rT0McoH9JlCaD9vVA8wkPblNaPsQCQseWSu4oy9tFyAjOvgINgJd170Iv9NCoAMqJGipixK6GvKhdA2wknkV+LUydTQJkGHsmhC0X+x9+h4cNCFgCfQDGk3lgD3J/MYjoOzFkLGvWo/f1ZKrL1ubMeS9aHKLd9ScuTGjVymja5as+qhaE2zkZkGFQao7x7QIDAQAB",
     "oauth2": {
         "client_id": "879765482619-krf1pmj6v6o6lmdhbabluucj629qlt45.apps.googleusercontent.com",
         "scopes": [
@@ -67,9 +65,11 @@
             "openid"
         ]
     }
+    <% if (target=='chrome') { %>
+    ,"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgTrw9RTstP1dZMzdBPOPcovwvR67lC0MPfV1lbYpTYRqcorAgK/wSsa1Ejo2xqbwqzVNagU2Wuc0VpjfBSaOsRBCbhYgSL7ZNcAal9cr6wVAfXP86bXPDHIyowzc8c30LAoBW4AsN1mPAFHBFXMm5A7rT0McoH9JlCaD9vVA8wkPblNaPsQCQseWSu4oy9tFyAjOvgINgJd170Iv9NCoAMqJGipixK6GvKhdA2wknkV+LUydTQJkGHsmhC0X+x9+h4cNCFgCfQDGk3lgD3J/MYjoOzFkLGvWo/f1ZKrL1ubMeS9aHKLd9ScuTGjVymja5as+qhaE2zkZkGFQao7x7QIDAQAB"
     <% } %>
     <% if (target=='firefox') { %>
-    "applications": {
+    ,"applications": {
         "gecko": {
             "id": "{560ece31-4892-44b1-b1cc-331bad846f57}"
         }
