@@ -17,6 +17,6 @@
         "webextension-polyfill": "^0.2.1"
     },
     "scripts": {
-        "start": "weh --ejsdata version=0.0.0 --ejsdata env=chrome"
+        "start": "weh --ejsdata version=0.0.0 --ejsdata target=chrome"
     }
 }
