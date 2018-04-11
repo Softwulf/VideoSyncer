@@ -6,7 +6,7 @@ var config = {
         client_id: "879765482619-vhj2vq252njdsjci6co3qheave27qmp6.apps.googleusercontent.com",
         authURL: 'https://accounts.google.com/o/oauth2/auth',
         revokeURL: 'https://accounts.google.com/o/oauth2/revoke',
-        redirectURL: 'https://crosssitefeeding.ch/vsync/_oauth',
+        redirectURL: 'https://vsync.ch/_oauth',
         validationBaseURL: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
         scopes: browser.runtime.getManifest().oauth2.scopes,
         storageKey: 'google_token',
