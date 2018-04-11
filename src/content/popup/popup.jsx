@@ -78,7 +78,7 @@ class App extends React.Component {
                             </Header.Subheader>
                         </Header.Content>
                     </Header>
-                    <center><a href="https://vsync.crosssitefeeding.ch/migrate/" target="_blank"><Header as='h3' color='blue' content='Where did my account go?' /></a></center>
+                    <center><a href="https://vsync.ch/migrate/" target="_blank"><Header as='h3' color='blue' content='Where did my account go?' /></a></center>
                     <Segment padded>
                         <Button loading={this.state.loading} onClick={() => { this.login(true) }} content={weh._('login_google')} color='google plus' icon='google plus' labelPosition='left' fluid></Button>
                         <Divider horizontal>Or</Divider>
