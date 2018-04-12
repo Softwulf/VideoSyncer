@@ -11,7 +11,7 @@ import user from '../../import/user';
 import LoggedIn from './logged-in';
 import { AuthComponent } from '../../import/config/firebaseui-config';
 
-import { Button, Loader, Container, Header, Icon, Segment, Message, Divider } from 'semantic-ui-react';
+import { Button, Loader, Container, Header, Icon, Segment, Message, Divider, Image } from 'semantic-ui-react';
 
 class App extends React.Component {
     constructor(props) {
@@ -97,8 +97,11 @@ class App extends React.Component {
                     </Container>
                 </div>
                 <InfoMessage message={this.state.message} />
-                <Segment inverted attached className='page-footer'>
-                    <Header as='h4' color='teal' icon='refresh' content={weh._('app_name')} />
+                <Segment compact attached className='page-footer' color='grey'>
+                    <Header as='h4' color='black'>
+                        <Image src='/content/images/logo.svg' verticalAlign='middle' />
+                        {' '+weh._('app_name')}
+                    </Header>
                 </Segment>
             </div>
         );
