@@ -76,12 +76,12 @@ export default class Events extends Observable {
         console.log(`count to next ${window.top == window.self && this.client.profile && this.client.profile.nextHost} `)
         if(window.top == window.self && this.client.profile && this.client.profile.nextHost && !this.autoPlay) {
             var setupCountdown = (counter) => {
-                jquery('body').prepend(`
+                jquery(this.renderer.shadowRoot).prepend(`
                 <div class="vsync_countdown">
                     <h1>Next in ${counter} seconds</h1>
                     <button id="vsync_nextCancel">Cancel</button>
                 </div>`);
-                jquery('.vsync_countdown').on('click', '#vsync_nextCancel', () => {
+                jquery('.vsync_countdown', this.renderer.shadowRoot).on('click', '#vsync_nextCancel', () => {
                     console.debug('autoplay cancelled');
                     this.cancelAutoplay();
                     teardownCountdown();
@@ -89,13 +89,13 @@ export default class Events extends Observable {
             }
 
             var updateCountdown = (counter) => {
-                jquery('.vsync_countdown').html(`
+                jquery('.vsync_countdown', this.renderer.shadowRoot).html(`
                 <h1>Next in ${counter} seconds</h1>
                 <button id="vsync_nextCancel">Cancel</button>`);
             }
 
             var teardownCountdown = () => {
-                jquery('.vsync_countdown').remove();
+                jquery('.vsync_countdown', this.renderer.shadowRoot).remove();
             }
 
             console.debug('countToNext');

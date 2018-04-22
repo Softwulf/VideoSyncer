@@ -17,6 +17,10 @@
         "webextension-polyfill": "^0.2.1"
     },
     "scripts": {
-        "start": "weh --ejsdata version=0.0.0 --ejsdata target=chrome"
+        "start": "node ./node_modules/weh/ --ejsdata version=0.0.0 --ejsdata target=chrome",
+        "build": "node ./node_modules/weh/ --prod --no-watch"
+    },
+    "devDependencies": {
+        "weh": "^2.0.0"
     }
 }
