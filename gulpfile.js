@@ -90,7 +90,7 @@ gulp.task('webpack', ['tmp'], () => {
 });
 
 gulp.task('html', ['tmp'], () => {
-    return gulp.src(tempDir+'/src/**/*.html')
+    return gulp.src(tempDir+'/src/**/*.[!js]')
         .pipe(gulp.dest(distDir));
 });
 
