@@ -5,7 +5,9 @@ var clean = require('gulp-clean');
 var ejs = require('gulp-ejs');
 var beautify = require('gulp-beautify');
 var jsonFormat = require('gulp-json-format');
-const webpack = require('webpack-stream');
+var webpack = require('webpack-stream');
+var glob = require('glob');
+var path = require('path');
 
 var argv = require('yargs')
     .option('target', {
@@ -32,8 +34,8 @@ var argv = require('yargs')
 // init args
 var target = argv.target;
 var version = argv.release;
-var tempDir = './distTmp/'+target+'/';
-var distDir = './dist/'+target+'/';
+var tempDir = './distTmp/' + target + '/';
+var distDir = './dist/' + target + '/';
 
 // BEGIN TMP
 
@@ -43,58 +45,102 @@ gulp.task('clean', () => {
     }).pipe(clean());
 });
 
-gulp.task('ejs', ['clean'], () => {
-    return gulp.src('src/**/*')
+gulp.task('raw', ['clean'], () => {
+    return gulp.src('src/**/*.!(js|entry.js|json|css|html)')
+        .pipe(gulp.dest(tempDir + 'src'));
+});
+
+gulp.task('ejs', ['raw'], () => {
+    return gulp.src('src/**/*.@(js|entry.js|json|css|html)')
         .pipe(ejs({
             target: target,
             version: version
         }))
-        .pipe(gulp.dest(tempDir+'src'));
+        .pipe(gulp.dest(tempDir + 'src'));
 });
 
 gulp.task('beautify-js', ['ejs'], () => {
-    return gulp.src(tempDir+'src/**/*.js')
-        .pipe(beautify({indent_with_tabs: true}))
-        .pipe(gulp.dest(tempDir+'src'));
+    return gulp.src(tempDir + 'src/**/*.js')
+        .pipe(beautify({
+            indent_with_tabs: true
+        }))
+        .pipe(gulp.dest(tempDir + 'src'));
 });
 
 gulp.task('beautify-json', ['ejs'], () => {
-    return gulp.src(tempDir+'src/**/*.json')
+    return gulp.src(tempDir + 'src/**/*.json')
         .pipe(jsonFormat(4))
-        .pipe(gulp.dest(tempDir+'src'));
+        .pipe(gulp.dest(tempDir + 'src'));
 });
 
 gulp.task('tmp-locales', ['ejs'], () => {
     return gulp.src('locales/**/*.json')
         .pipe(jsonFormat(4))
-        .pipe(gulp.dest(tempDir+'locales'));
+        .pipe(gulp.dest(tempDir + 'locales'));
 })
 
-gulp.task('tmp', ['clean', 'ejs', 'beautify-js', 'beautify-json', 'tmp-locales']);
+gulp.task('tmp', ['clean', 'raw', 'ejs', 'beautify-js', 'beautify-json', 'tmp-locales']);
 
 // END TMP
 
 // BEGIN FINAL-BUILD
 
 gulp.task('final-locales', ['tmp'], () => {
-    return gulp.src(tempDir+'locales/**/*')
-        .pipe(gulp.dest(distDir+'_locales'));
+    return gulp.src(tempDir + 'locales/**/*')
+        .pipe(gulp.dest(distDir + '_locales'));
 });
 
 gulp.task('webpack', ['tmp'], () => {
-    return gulp.src(tempDir+'/src/**/*.js')
+    // map files
+    var entryArray = glob.sync(tempDir + '/**/*.entry.js');
+    var entryObject = entryArray.reduce((acc, item) => {
+        const name = item.replace(tempDir+'src/', '').replace('.entry.js', '.js');
+        acc[name] = item;
+        return acc;
+    }, {});
+
+    return gulp.src(tempDir + '/src/**/*.js')
         .pipe(webpack({
-            devtool: 'source-map'
-          }))
+            devtool: 'source-map',
+            entry: entryObject,
+            output: {
+                filename: '[name]',
+            },
+            module: {
+                loaders: [
+                    {
+                        test: /\.js?$/,
+                        exclude: /node_modules/,
+                        loader: 'babel-loader',
+                        query: {
+                            presets: ['es2015', 'react', 'stage-0'],
+                        },
+                    },
+                    {
+                        test: /\.css$/,
+                        loader: ['style-loader', 'css-loader']
+					},
+                    {
+                        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+                        use: {
+                            loader: 'url-loader',
+                            options: {
+                                limit: 0
+                            }
+                        }
+                    }
+                ]
+            }
+        }))
         .pipe(gulp.dest(distDir))
 });
 
-gulp.task('html', ['tmp'], () => {
-    return gulp.src(tempDir+'/src/**/*.[!js]')
+gulp.task('files', ['webpack'], () => {
+    return gulp.src(tempDir + '/src/**/*.!(js)')
         .pipe(gulp.dest(distDir));
 });
 
-gulp.task('final-build', ['final-locales', 'webpack', 'html']);
+gulp.task('final-build', ['final-locales', 'webpack', 'files']);
 
 // END FINAL-BUILD
 

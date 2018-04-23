@@ -13,6 +13,8 @@ import { AuthComponent } from '../../import/config/firebaseui-config';
 
 import { Button, Loader, Container, Header, Icon, Segment, Message, Divider, Image } from 'semantic-ui-react';
 
+console.log('heeey booi');
+
 class App extends React.Component {
     constructor(props) {
         super(props);
