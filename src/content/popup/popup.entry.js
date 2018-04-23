@@ -13,8 +13,6 @@ import { AuthComponent } from '../../import/config/firebaseui-config';
 
 import { Button, Loader, Container, Header, Icon, Segment, Message, Divider, Image } from 'semantic-ui-react';
 
-console.log('heeey booi');
-
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -82,7 +80,7 @@ class App extends React.Component {
                     </Header>
                     <center><a href="https://vsync.ch/migrate/" target="_blank"><Header as='h3' color='blue' content='Where did my account go?' /></a></center>
                     <Segment padded>
-                        <Button loading={this.state.loading} onClick={() => { this.login(true) }} content={browser.i18n.getMessage('login_google')} color='google plus' icon='google plus' labelPosition='left' fluid></Button>
+                        <Button loading={this.state.loading} onClick={() => { this.login(true) }} content={browser.i18n.getMessage('login_google')} color='google plus' icon='google plus' labelPosition='left' fluid />
                         <Divider horizontal>Or</Divider>
                         <AuthComponent />
                     </Segment>
