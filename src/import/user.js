@@ -4,8 +4,6 @@ import { firebase } from './config/firebase-config';
 
 import extension from 'extensionizer';
 
-import weh from 'weh-content';
-
 var user = {};
 
 function firebaseLogin(token, resolve, reject) {

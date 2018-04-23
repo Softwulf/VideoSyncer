@@ -1,0 +1,29 @@
+.loginHeader {
+	padding-top: 1em !important;
+}
+
+.profileList {
+	margin-top: 1em !important;
+}
+
+.buttonBar {
+    margin-top: .5em !important;
+}
+
+.page-footer {
+    margin-top: 1em !important;
+}
+
+#toast-container .toast-progress {
+    opacity: 1 !important;
+}
+
+#toast-container .toast {
+    opacity: 1 !important;
+    background-image: none !important;
+
+}
+
+#toast-container .success {
+    background-color: #087234 !important;
+}

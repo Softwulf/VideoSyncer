@@ -11,8 +11,6 @@ import { Accordion, Icon, Button, Segment, Message, Grid, Popup } from 'semantic
 import swalc from '../../import/config/swal-config';
 import { SyncServer } from '../../import/sync';
 
-import weh from 'weh-content';
-
 const Server = new SyncServer();
 
 function toHHMMSS(time) {
@@ -72,7 +70,7 @@ class ProfileList extends React.Component {
                 content: (
                     <span>
                         { this.setupIncomplete(profile) && 
-                            <Popup wide hideOnScroll trigger={ <Icon name='warning sign' color='yellow' /> } header={ weh._('player_incomplete') } content={ weh._('player_incomplete_detail') } />
+                            <Popup wide hideOnScroll trigger={ <Icon name='warning sign' color='yellow' /> } header={ browser.i18n.getMessage('player_incomplete') } content={ browser.i18n.getMessage('player_incomplete_detail') } />
                         }
                         <span>{profile.name} - {toHHMMSS(profile.currentTime)}</span>
                     </span>
@@ -83,22 +81,22 @@ class ProfileList extends React.Component {
                 content: (
                     <Grid columns={2} stretched>
                         <Grid.Column>
-                            <Button basic content={weh._('launch')} labelPosition='left' icon='play' onClick={() => {this.openProfile(profile)}} />
+                            <Button basic content={browser.i18n.getMessage('launch')} labelPosition='left' icon='play' onClick={() => {this.openProfile(profile)}} />
                         </Grid.Column>
                         <Grid.Column>
-                            <Button basic content={weh._('edit')} labelPosition='left' icon='edit' onClick={() => {this.props.editProfile(profile)}} />
+                            <Button basic content={browser.i18n.getMessage('edit')} labelPosition='left' icon='edit' onClick={() => {this.props.editProfile(profile)}} />
                         </Grid.Column>
                         <Grid.Column>
-                            <Button onClick={() => {this.setupProfile(profile)}} basic={!this.setupIncomplete(profile)} content={weh._('setup')} labelPosition='left' icon='external' color={(this.setupIncomplete(profile) && 'yellow') || null} />
+                            <Button onClick={() => {this.setupProfile(profile)}} basic={!this.setupIncomplete(profile)} content={browser.i18n.getMessage('setup')} labelPosition='left' icon='external' color={(this.setupIncomplete(profile) && 'yellow') || null} />
                         </Grid.Column>
                         <Grid.Column>
-                            <Button onClick={() => {this.setupNext(profile)}} basic={!this.nextIncomplete(profile)} content={weh._('next')} labelPosition='left' icon='external' color={(this.nextIncomplete(profile) && 'yellow') || null} />
+                            <Button onClick={() => {this.setupNext(profile)}} basic={!this.nextIncomplete(profile)} content={browser.i18n.getMessage('next')} labelPosition='left' icon='external' color={(this.nextIncomplete(profile) && 'yellow') || null} />
                         </Grid.Column>
                         <Grid.Column>
-                            <Button onClick={() => {swalc.showProfileUrl(this.getUrl(profile))}} content={weh._('show_url')} basic labelPosition='left' icon='linkify' />
+                            <Button onClick={() => {swalc.showProfileUrl(this.getUrl(profile))}} content={browser.i18n.getMessage('show_url')} basic labelPosition='left' icon='linkify' />
                         </Grid.Column>
                         <Grid.Column>
-                            <Button basic negative onClick={() => {this.props.removeProfile(profile);}} content={weh._('delete')} labelPosition='left' icon='delete' />
+                            <Button basic negative onClick={() => {this.props.removeProfile(profile);}} content={browser.i18n.getMessage('delete')} labelPosition='left' icon='delete' />
                         </Grid.Column>
                     </Grid>
                 )
@@ -145,15 +143,15 @@ class Main extends React.Component {
                 },
                 then(err) {
                     if (!err) {
-                        instance.props.message(weh._('profile_created', profile.name), 'success');
+                        instance.props.message(browser.i18n.getMessage('profile_created', profile.name), 'success');
                     } else {
                         console.log('Failed to create profile', err);
-                        instance.props.message(weh._('profile_created_failed'), 'error');
+                        instance.props.message(browser.i18n.getMessage('profile_created_failed'), 'error');
                     }
                 }
             });
         }).catch((err) => {
-            instance.props.message(weh._('profile_created_cancelled'), 'info');
+            instance.props.message(browser.i18n.getMessage('profile_created_cancelled'), 'info');
         });
     }
 
@@ -170,15 +168,15 @@ class Main extends React.Component {
                 },
                 then(err) {
                     if (!err) {
-                        instance.props.message(weh._('profile_edit', profile.name), 'success');
+                        instance.props.message(browser.i18n.getMessage('profile_edit', profile.name), 'success');
                     } else {
                         console.log('Failed to edit profile', err);
-                        instance.props.message(weh._('profile_edit_failed'), 'error');
+                        instance.props.message(browser.i18n.getMessage('profile_edit_failed'), 'error');
                     }
                 }
             });
         }).catch((err) => {
-            instance.props.message(weh._('profile_edit_cancelled'), 'info');
+            instance.props.message(browser.i18n.getMessage('profile_edit_cancelled'), 'info');
         });
     }
 
@@ -188,14 +186,14 @@ class Main extends React.Component {
         swalc.askForProfileRemoval(profile).then(() => {
             base.remove('profiles/' + firebase.auth().currentUser.uid + '/' + profile.key, function(err) {
                 if (!err) {
-                    instance.props.message(weh._('profile_removed'), 'success');
+                    instance.props.message(browser.i18n.getMessage('profile_removed'), 'success');
                 } else {
                     console.error('Failed to remove profile', err);
-                    instance.props.message(weh._('profile_removed_failed'), 'error');
+                    instance.props.message(browser.i18n.getMessage('profile_removed_failed'), 'error');
                 }
             });
         }).catch(() => {
-            instance.props.message(weh._('profile_removed_cancelled'), 'info');
+            instance.props.message(browser.i18n.getMessage('profile_removed_cancelled'), 'info');
         });
     }
 
@@ -209,10 +207,10 @@ class Main extends React.Component {
             mainComp = (
                 <Message warning>
                   <Message.Header>
-                    { weh._('no_profiles') }
+                    { browser.i18n.getMessage('no_profiles') }
                   </Message.Header>
                   <p>
-                    { weh._('no_profiles_detail') }
+                    { browser.i18n.getMessage('no_profiles_detail') }
                   </p>
                 </Message>
             );
@@ -222,10 +220,10 @@ class Main extends React.Component {
               <div>
                 <Grid columns={2} stretched className='buttonBar'>
                     <Grid.Column>
-                        <Button icon='plus' labelPosition='left' content={weh._('create')} basic onClick={ this.addProfile } />
+                        <Button icon='plus' labelPosition='left' content={browser.i18n.getMessage('create')} basic onClick={ this.addProfile } />
                     </Grid.Column>
                     <Grid.Column>
-                        <Popup hideOnScroll trigger={ <Button basic onClick={ user.logout } negative icon='shutdown' /> } header={ weh._('logout') } content={ weh._('logout_detail') } />
+                        <Popup hideOnScroll trigger={ <Button basic onClick={ user.logout } negative icon='shutdown' /> } header={ browser.i18n.getMessage('logout') } content={ browser.i18n.getMessage('logout_detail') } />
                     </Grid.Column>
                 </Grid>
                 
@@ -234,9 +232,9 @@ class Main extends React.Component {
                 <Icon name='circle notched' loading />
                 <Message.Content>
                   <Message.Header>
-                    { weh._('just_one_sec') }
+                    { browser.i18n.getMessage('just_one_sec') }
                   </Message.Header>
-                  { weh._('loading_profiles') }
+                  { browser.i18n.getMessage('loading_profiles') }
                 </Message.Content>
               </Message>
               { mainComp }
