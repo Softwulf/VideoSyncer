@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "VideoSyncer<%=target%>",
+    "name": "VideoSyncer",
     "default_locale": "en",
     "version": "<%=version%>",
     "author": "ElectronicManuel",
