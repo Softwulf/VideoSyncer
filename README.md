@@ -5,7 +5,7 @@ Documentation can be found [here](https://vsync.ch/doc/)
 ```shell
 git clone https://github.com/ElectronicManuel/VideoSyncer.git
 cd VideoSyncer
-version=latest
+version=#Set version here
 npm i
 npm run build -- -r $version
 mkdir artefact
