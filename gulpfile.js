@@ -6,6 +6,7 @@ var jsonFormat = require('gulp-json-format');
 var webpack = require('webpack-stream');
 var glob = require('glob');
 var path = require('path');
+var MinifyPlugin = require("babel-minify-webpack-plugin");
 
 var argv = require('yargs')
     .option('target', {
@@ -24,6 +25,12 @@ var argv = require('yargs')
     .option('watch', {
         alias: 'w',
         describe: 'Watch files for changes',
+        type: 'boolean',
+        default: false
+    })
+    .option('production', {
+        alias: 'prod',
+        describe: 'Build in production mode?',
         type: 'boolean',
         default: false
     })
@@ -125,44 +132,55 @@ createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
         return acc;
     }, {});
 
-    return gulp.src(tempDir + '/src/**/*.js')
-        .pipe(webpack({
-            devtool: 'source-map',
-            entry: entryObject,
-            output: {
-                filename: '[name]',
-            },
-            module: {
-                loaders: [
-                    {
-                        test: /\.js?$/,
-                        exclude: /node_modules/,
-                        loader: 'babel-loader',
-                        query: {
-                            presets: ['es2015', 'react', 'stage-0'],
-                        },
+    var webpackConfig = {
+        entry: entryObject,
+        output: {
+            filename: '[name]',
+        },
+        module: {
+            loaders: [
+                {
+                    test: /\.js?$/,
+                    exclude: /node_modules/,
+                    loader: 'babel-loader',
+                    query: {
+                        presets: ['es2015', 'react', 'stage-0'],
                     },
-                    {
-                        test: /\.css$/,
-                        loader: ['style-loader', 'css-loader']
-                    },
-                    {
-                        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                        use: {
-                            loader: 'url-loader',
-                            options: {
-                                limit: 0
-                            }
+                },
+                {
+                    test: /\.css$/,
+                    loader: ['style-loader', 'css-loader']
+                },
+                {
+                    test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+                    use: {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 0
                         }
                     }
-                ]
-            }
-        }))
+                }
+            ]
+        }
+    };
+
+    if(argv.production) {
+        webpackConfig.plugins = [
+            new MinifyPlugin({}, {
+                comments: false
+            })
+        ];
+    } else {
+        webpackConfig.devtool = 'source-map'
+    }
+
+    return gulp.src(tempDir + '/src/**/*.js')
+        .pipe(webpack(webpackConfig))
         .pipe(gulp.dest(distDir))
 });
 
 createTask('files', ['webpack'], (target, tempDir, distDir) => {
-    return gulp.src(tempDir + '/src/**/*.!(js)')
+    return gulp.src(tempDir + '/src/**/*.!(js|entry.js)')
         .pipe(gulp.dest(distDir));
 });
 
