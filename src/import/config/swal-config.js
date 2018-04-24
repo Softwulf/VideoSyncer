@@ -1,17 +1,17 @@
 import swal from 'sweetalert2';
-import weh from 'weh-content';
+import browser from 'webextension-polyfill';
 
 var exports = {};
 
 exports.askForProfileRemoval = function(profile) {
     return new Promise((resolve, reject) => {
         swal({
-            title: weh._('you_sure'),
-            text: weh._('profile_removed_question_detail', profile.name),
+            title: browser.i18n.getMessage('you_sure'),
+            text: browser.i18n.getMessage('profile_removed_question_detail', profile.name),
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: weh._('yes'),
-            cancelButtonText: weh._('no')
+            confirmButtonText: browser.i18n.getMessage('yes'),
+            cancelButtonText: browser.i18n.getMessage('no')
         }).then((result) => {
             if (result.value) {
                 resolve();
@@ -32,15 +32,15 @@ exports.editProfile = function(profile) {
     return new Promise((resolve, reject) => {
         swal.setDefaults({
             input: 'text',
-            confirmButtonText: weh._('next') + ' &rarr;',
+            confirmButtonText: browser.i18n.getMessage('next') + ' &rarr;',
             showCancelButton: true,
             progressSteps: ['1', '2', '3', '4']
         })
 
         var steps = [
             {
-                title: weh._('name'),
-                text: weh._('name_desc'),
+                title: browser.i18n.getMessage('name'),
+                text: browser.i18n.getMessage('name_desc'),
                 input: 'text',
                 inputValue: profile.name,
                 inputAttributes: {
@@ -51,14 +51,14 @@ exports.editProfile = function(profile) {
                         if(value && value.length > 0) {
                             resolve();
                         } else {
-                            resolve(weh._('error_profile_name_empty'));
+                            resolve(browser.i18n.getMessage('error_profile_name_empty'));
                         }
                     });
                 }
             },
             {
-                title: weh._('url'),
-                text: weh._('url_desc'),
+                title: browser.i18n.getMessage('url'),
+                text: browser.i18n.getMessage('url_desc'),
                 input: 'text',
                 inputValue: profile.urlPattern,
                 inputValidator: (value) => {
@@ -66,20 +66,20 @@ exports.editProfile = function(profile) {
                         if(value && value.length > 0) {
                             resolve();
                         } else {
-                            resolve(weh._('error_profile_url_empty'));
+                            resolve(browser.i18n.getMessage('error_profile_url_empty'));
                         }
                     });
                 }
             },
             {
-                title: weh._('starttime'),
-                text: weh._('starttime_desc'),
+                title: browser.i18n.getMessage('starttime'),
+                text: browser.i18n.getMessage('starttime_desc'),
                 input: 'number',
                 inputValue: profile.startTime
             },
             {
-                title: weh._('endtime'),
-                text: weh._('endtime_desc'),
+                title: browser.i18n.getMessage('endtime'),
+                text: browser.i18n.getMessage('endtime_desc'),
                 input: 'number',
                 inputValue: profile.endTime
             }

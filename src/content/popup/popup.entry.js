@@ -4,7 +4,7 @@ import './popup.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import weh from 'weh-content';
+import browser from 'webextension-polyfill';
 
 import { firebase } from '../../import/config/firebase-config';
 import user from '../../import/user';
@@ -72,15 +72,15 @@ class App extends React.Component {
                     <Header as='h2' className='loginHeader'>
                         <Icon name='address card outline' />
                         <Header.Content>
-                            {weh._('login')}
+                            {browser.i18n.getMessage('login')}
                             <Header.Subheader>
-                                {weh._('login_question')}
+                                {browser.i18n.getMessage('login_question')}
                             </Header.Subheader>
                         </Header.Content>
                     </Header>
                     <center><a href="https://vsync.ch/migrate/" target="_blank"><Header as='h3' color='blue' content='Where did my account go?' /></a></center>
                     <Segment padded>
-                        <Button loading={this.state.loading} onClick={() => { this.login(true) }} content={weh._('login_google')} color='google plus' icon='google plus' labelPosition='left' fluid></Button>
+                        <Button loading={this.state.loading} onClick={() => { this.login(true) }} content={browser.i18n.getMessage('login_google')} color='google plus' icon='google plus' labelPosition='left' fluid />
                         <Divider horizontal>Or</Divider>
                         <AuthComponent />
                     </Segment>
@@ -100,7 +100,7 @@ class App extends React.Component {
                 <Segment compact attached className='page-footer' color='grey'>
                     <Header as='h4' color='black'>
                         <Image src='/content/images/logo.svg' verticalAlign='middle' />
-                        {' '+weh._('app_name')}
+                        {' '+browser.i18n.getMessage('app_name')}
                     </Header>
                 </Segment>
             </div>

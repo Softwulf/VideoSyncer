@@ -28,5 +28,4 @@ class AuthComponent extends React.Component {
     }
 }
 
-
 export { firebaseui, AuthComponent }

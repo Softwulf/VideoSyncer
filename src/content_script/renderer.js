@@ -11,8 +11,11 @@ export default class Renderer extends Observable {
 
         this.insertId = 'videosyncer_content_div'; // ID of inserted status div
         this.playerClass = 'videosyncer_player';
+        this.shadowRoot = null;
 
         autobind(this);
+
+        this.insertShadow();
 
         this.video.on('found', this.markVideo);
         this.video.on('remove', this.unmarkVideo);
@@ -28,6 +31,12 @@ export default class Renderer extends Observable {
         if(player) {
             player.classList.remove(this.playerClass);
         }
+    }
+
+    insertShadow() {
+        var shadowHost = jquery('body').prepend('<div id="vsync_container" />');
+        this.shadowRoot = jquery('#vsync_container')[0].attachShadow({mode: 'open'});
+        jquery(this.shadowRoot).prepend(`<style>@import url('${chrome.extension.getURL('content_script/tracker.css')}')</style>`);
     }
 
     renderStatusDiv() {

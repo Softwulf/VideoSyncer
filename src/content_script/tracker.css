@@ -1,5 +1,5 @@
 #videosyncer_content_div {
-    // unset everything
+    /* unset everything */
     animation: none;
     animation-delay: 0;
     animation-direction: normal;
@@ -150,7 +150,7 @@
     z-index: auto;
     /* basic modern patch */
     all: initial;
-    all: unset; // now define some styles myself
+    all: unset; /* now define some styles myself */
     position: relative !important;
     display: block !important;
     visibility: visible !important;
@@ -161,7 +161,7 @@
     border-bottom: 1px solid black !important;
 }
 
-// selected videoplayer
+/* selected videoplayer */
 .videosyncer_player {
     //border: 3px solid rgb(255, 89, 48) !important;
 }
@@ -186,20 +186,22 @@
     padding-top: auto;
     padding-bottom: auto;
     border-radius: 5px;
-    button {
-        -webkit-border-radius: 3;
-        -moz-border-radius: 3;
-        border-radius: 3px;
-        font-family: Arial;
-        color: #ffffff;
-        font-size: 20px;
-        padding: 10px 20px 10px 20px;
-        border: solid #0946ed 2px;
-        text-decoration: none;
-        background: none;
-    }
-    button:hover {
-        background: #3c46fc;
-        text-decoration: none;
-    }
+}
+
+.vsync_countdown button:hover {
+    background: #3c46fc;
+    text-decoration: none;
+}
+
+.vsync_countdown button {
+    -webkit-border-radius: 3;
+    -moz-border-radius: 3;
+    border-radius: 3px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    border: solid #0946ed 2px;
+    text-decoration: none;
+    background: none;
 }

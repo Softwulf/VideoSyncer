@@ -1,7 +1,6 @@
 import browser from 'webextension-polyfill';
 import oauthConfig from '../import/config/oauth-config';
 import { firebase, db } from '../import/config/firebase-config';
-import weh from 'weh-background';
 
 import { SyncServer, Protocol } from '../import/sync';
 
