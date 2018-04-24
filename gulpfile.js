@@ -6,7 +6,7 @@ var jsonFormat = require('gulp-json-format');
 var webpack = require('webpack-stream');
 var glob = require('glob');
 var path = require('path');
-var MinifyPlugin = require("babel-minify-webpack-plugin");
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 var argv = require('yargs')
     .option('target', {
@@ -51,12 +51,12 @@ function createTask(name, depends, exec) {
 
         if (depends) {
             for (var i = 0; i < depends.length; i++) {
-                tmpDepends.push(depends[i]+targetSuffix);
+                tmpDepends.push(depends[i] + targetSuffix);
             }
         }
 
         gulp.task(name + targetSuffix, tmpDepends, () => {
-            if(exec) return exec(target, tempDir, distDir);
+            if (exec) return exec(target, tempDir, distDir);
         })
     }
 
@@ -164,10 +164,10 @@ createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
         }
     };
 
-    if(argv.production) {
+    if (argv.production) {
         webpackConfig.plugins = [
-            new MinifyPlugin({}, {
-                comments: false
+            new UglifyJsPlugin({
+                parallel: true
             })
         ];
     } else {
@@ -194,11 +194,11 @@ var buildList = [];
 
 if (argv.target instanceof Array) {
     for (let target of argv.target) {
-        buildList.push('build-'+target);
+        buildList.push('build-' + target);
     }
 } else {
     var target = argv.target;
-    buildList.push('build-'+target);
+    buildList.push('build-' + target);
 }
 
 gulp.task('default', buildList);
