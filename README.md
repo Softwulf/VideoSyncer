@@ -13,5 +13,5 @@ npm i
 npm run build -- -r $VERSION
 mkdir artefact
 cd dist/firefox
-zip -rq "../../artefact/VideoSyncer_"$VERSION"_firefox.zip" *
+zip -rq "../../artefact/VideoSyncer_"$VERSION"_firefox.xpi" *
 ```
