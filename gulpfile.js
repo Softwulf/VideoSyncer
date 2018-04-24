@@ -1,6 +1,4 @@
 var gulp = require('gulp');
-var concat = require('gulp-concat');
-var sourcemaps = require('gulp-sourcemaps');
 var clean = require('gulp-clean');
 var ejs = require('gulp-ejs');
 var beautify = require('gulp-beautify');
@@ -32,25 +30,53 @@ var argv = require('yargs')
     .argv;
 
 // init args
-var target = argv.target;
+
 var version = argv.release;
-var tempDir = './distTmp/' + target + '/';
-var distDir = './dist/' + target + '/';
+
+function createTask(name, depends, exec) {
+    function build(target) {
+        var tempDir = './distTmp/' + target + '/';
+        var distDir = './dist/' + target + '/';
+
+        var targetSuffix = '-' + target;
+
+        var tmpDepends = [];
+
+        if (depends) {
+            for (var i = 0; i < depends.length; i++) {
+                tmpDepends.push(depends[i]+targetSuffix);
+            }
+        }
+
+        gulp.task(name + targetSuffix, tmpDepends, () => {
+            if(exec) return exec(target, tempDir, distDir);
+        })
+    }
+
+    if (argv.target instanceof Array) {
+        for (let target of argv.target) {
+            build(target);
+        }
+    } else {
+        var target = argv.target;
+        build(target);
+    }
+}
 
 // BEGIN TMP
 
-gulp.task('clean', () => {
+createTask('clean', null, (target, tempDir, distDir) => {
     return gulp.src([distDir, tempDir], {
         read: false
     }).pipe(clean());
 });
 
-gulp.task('raw', ['clean'], () => {
+createTask('raw', ['clean'], (target, tempDir, distDir) => {
     return gulp.src('src/**/*.!(js|entry.js|json|css|html)')
         .pipe(gulp.dest(tempDir + 'src'));
 });
 
-gulp.task('ejs', ['raw'], () => {
+createTask('ejs', ['raw'], (target, tempDir, distDir) => {
     return gulp.src('src/**/*.@(js|entry.js|json|css|html)')
         .pipe(ejs({
             target: target,
@@ -59,7 +85,7 @@ gulp.task('ejs', ['raw'], () => {
         .pipe(gulp.dest(tempDir + 'src'));
 });
 
-gulp.task('beautify-js', ['ejs'], () => {
+createTask('beautify-js', ['ejs'], (target, tempDir, distDir) => {
     return gulp.src(tempDir + 'src/**/*.js')
         .pipe(beautify({
             indent_with_tabs: true
@@ -67,34 +93,34 @@ gulp.task('beautify-js', ['ejs'], () => {
         .pipe(gulp.dest(tempDir + 'src'));
 });
 
-gulp.task('beautify-json', ['ejs'], () => {
+createTask('beautify-json', ['ejs'], (target, tempDir, distDir) => {
     return gulp.src(tempDir + 'src/**/*.json')
         .pipe(jsonFormat(4))
         .pipe(gulp.dest(tempDir + 'src'));
 });
 
-gulp.task('tmp-locales', ['ejs'], () => {
+createTask('tmp-locales', ['ejs'], (target, tempDir, distDir) => {
     return gulp.src('locales/**/*.json')
         .pipe(jsonFormat(4))
         .pipe(gulp.dest(tempDir + 'locales'));
 })
 
-gulp.task('tmp', ['clean', 'raw', 'ejs', 'beautify-js', 'beautify-json', 'tmp-locales']);
+createTask('tmp', ['clean', 'raw', 'ejs', 'beautify-js', 'beautify-json', 'tmp-locales'], null);
 
 // END TMP
 
 // BEGIN FINAL-BUILD
 
-gulp.task('final-locales', ['tmp'], () => {
+createTask('final-locales', ['tmp'], (target, tempDir, distDir) => {
     return gulp.src(tempDir + 'locales/**/*')
         .pipe(gulp.dest(distDir + '_locales'));
 });
 
-gulp.task('webpack', ['tmp'], () => {
+createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
     // map files
     var entryArray = glob.sync(tempDir + '/**/*.entry.js');
     var entryObject = entryArray.reduce((acc, item) => {
-        const name = item.replace(tempDir+'src/', '').replace('.entry.js', '.js');
+        const name = item.replace(tempDir + 'src/', '').replace('.entry.js', '.js');
         acc[name] = item;
         return acc;
     }, {});
@@ -119,7 +145,7 @@ gulp.task('webpack', ['tmp'], () => {
                     {
                         test: /\.css$/,
                         loader: ['style-loader', 'css-loader']
-					},
+                    },
                     {
                         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
                         use: {
@@ -135,16 +161,29 @@ gulp.task('webpack', ['tmp'], () => {
         .pipe(gulp.dest(distDir))
 });
 
-gulp.task('files', ['webpack'], () => {
+createTask('files', ['webpack'], (target, tempDir, distDir) => {
     return gulp.src(tempDir + '/src/**/*.!(js)')
         .pipe(gulp.dest(distDir));
 });
 
-gulp.task('final-build', ['final-locales', 'webpack', 'files']);
+createTask('final-build', ['final-locales', 'webpack', 'files']);
 
 // END FINAL-BUILD
 
-gulp.task('default', ['tmp', 'final-build']);
+createTask('build', ['tmp', 'final-build']);
+
+var buildList = [];
+
+if (argv.target instanceof Array) {
+    for (let target of argv.target) {
+        buildList.push('build-'+target);
+    }
+} else {
+    var target = argv.target;
+    buildList.push('build-'+target);
+}
+
+gulp.task('default', buildList);
 
 // Watch
 if (argv.watch) {

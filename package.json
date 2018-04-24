@@ -17,8 +17,8 @@
         "webextension-polyfill": "^0.2.1"
     },
     "scripts": {
-        "start": "node ./node_modules/weh/ --ejsdata version=0.0.0 --ejsdata target=chrome",
-        "build": "node ./node_modules/weh/ --prod --no-watch",
+        "start": "gulp --t chrome --t firefox --w",
+        "build": "gulp --t chrome --t firefox",
         "gulp": "./node_modules/.bin/gulp"
     },
     "devDependencies": {
@@ -35,10 +35,8 @@
         "gulp-beautify": "^2.0.1",
         "gulp-clean": "^0.4.0",
         "gulp-cli": "^2.0.1",
-        "gulp-concat": "^2.6.1",
         "gulp-ejs": "^3.1.3",
         "gulp-json-format": "^2.0.0",
-        "gulp-sourcemaps": "^2.6.4",
         "style-loader": "^0.21.0",
         "url-loader": "^1.0.1",
         "webpack": "^4.6.0",
