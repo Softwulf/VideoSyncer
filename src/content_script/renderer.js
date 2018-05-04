@@ -35,7 +35,12 @@ export default class Renderer extends Observable {
 
     insertShadow() {
         var shadowHost = jquery('body').prepend('<div id="vsync_container" />');
-        this.shadowRoot = jquery('#vsync_container')[0].attachShadow({mode: 'open'});
+        if(jquery('#vsync_container')[0].attachShadow) {
+            this.shadowRoot = jquery('#vsync_container')[0].attachShadow({mode: 'open'});
+        } else {
+            this.shadowRoot = jquery('#vsync_container').prepend('<div id="shadow-unsupported" />');
+        }
+        
         jquery(this.shadowRoot).prepend(`<style>@import url('${chrome.extension.getURL('content_script/tracker.css')}')</style>`);
     }
 
