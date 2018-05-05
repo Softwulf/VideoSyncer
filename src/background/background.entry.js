@@ -57,7 +57,7 @@ function handleLoginStateChange(user) {
     if (user) { // user is now logged in
         console.log('User is now logged in, notifying all watch pages');
 
-        profilesRef = db.ref('profiles/' + user.uid);
+        profilesRef = db.ref('vsync/profiles/' + user.uid);
     
         profilesRef.on('value', function(profiles) { // push profile update to content scripts
             console.log('Profiles changed, notifying all watch pages', profiles.val());
