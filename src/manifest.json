@@ -70,7 +70,7 @@
     ],
     "content_security_policy":"script-src 'self' https://cdn.firebase.com https://*.firebaseio.com; object-src 'self'",
     "oauth2": {
-        "client_id": "879765482619-krf1pmj6v6o6lmdhbabluucj629qlt45.apps.googleusercontent.com",
+        "client_id": "722597016924-imd1nm72qqcoi8mmi4qnsj0pmqgii68k.apps.googleusercontent.com",
         "scopes": [
             "profile",
             "email",

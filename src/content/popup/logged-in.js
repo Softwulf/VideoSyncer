@@ -122,7 +122,7 @@ class Main extends React.Component {
     }
 
     componentWillMount() {
-        base.syncState('profiles/' + firebase.auth().currentUser.uid, {
+        base.syncState('vsync/profiles/' + firebase.auth().currentUser.uid, {
             context: this,
             state: 'profiles',
             asArray: true
@@ -133,7 +133,7 @@ class Main extends React.Component {
         const instance = this;
 
         swalc.editProfile(null).then((profile) => {
-            var profileRef = base.push('profiles/' + firebase.auth().currentUser.uid, {
+            var profileRef = base.push('vsync/profiles/' + firebase.auth().currentUser.uid, {
                 data: {
                     name: profile.name,
                     urlPattern: profile.urlPattern,
@@ -159,7 +159,7 @@ class Main extends React.Component {
         const instance = this;
 
         swalc.editProfile(profile).then((profile) => {
-            var profileRef = base.update('profiles/' + firebase.auth().currentUser.uid + '/' + profile.key, {
+            var profileRef = base.update('vsync/profiles/' + firebase.auth().currentUser.uid + '/' + profile.key, {
                 data: {
                     name: profile.name,
                     urlPattern: profile.urlPattern,
@@ -184,7 +184,7 @@ class Main extends React.Component {
         const instance = this;
 
         swalc.askForProfileRemoval(profile).then(() => {
-            base.remove('profiles/' + firebase.auth().currentUser.uid + '/' + profile.key, function(err) {
+            base.remove('vsync/profiles/' + firebase.auth().currentUser.uid + '/' + profile.key, function(err) {
                 if (!err) {
                     instance.props.message(browser.i18n.getMessage('profile_removed'), 'success');
                 } else {

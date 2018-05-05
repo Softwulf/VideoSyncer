@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 
 var config = {
     google: {
-        client_id: "879765482619-vhj2vq252njdsjci6co3qheave27qmp6.apps.googleusercontent.com",
+        client_id: "722597016924-1e17rascr0ru5usmlolufui11u9vobqb.apps.googleusercontent.com",
         authURL: 'https://accounts.google.com/o/oauth2/auth',
         revokeURL: 'https://accounts.google.com/o/oauth2/revoke',
         redirectURL: 'https://vsync.ch/_oauth',
