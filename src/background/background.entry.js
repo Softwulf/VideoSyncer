@@ -14,19 +14,21 @@ var profilesRef = null;
 
 // Handle client profile fetch
 Server.on(Protocol.CLIENT_FETCH_PROFILES, (message) => {
-    if(profilesRef) {
-        profilesRef.once('value', (profiles) => { // fetch profiles and respond
-            message.sendResponse({
-                profiles: profiles.val(),
+    return new Promise((resolve, reject) => {
+        if(profilesRef) {
+            profilesRef.once('value', (profiles) => { // fetch profiles and respond
+                resolve({
+                    profiles: profiles.val(),
+                    url: message.sender.tab.url
+                });
+            }); 
+        } else {
+            resolve({ // if not logged in respond with NULL
+                profiles: null,
                 url: message.sender.tab.url
             });
-        }); 
-    } else {
-        message.sendResponse({ // if not logged in respond with NULL
-            profiles: null,
-            url: message.sender.tab.url
-        });
-    }
+        }
+    });
 });
 
 // Update profile in DB

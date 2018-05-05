@@ -2,7 +2,7 @@
 import oauthConfig from './config/oauth-config';
 import { firebase } from './config/firebase-config';
 
-import extension from 'extensionizer';
+import browser from 'webextension-polyfill';
 
 var user = {};
 
@@ -18,6 +18,7 @@ user.login = function(interactive) {
                 'interactive': interactive
             }, function(token) {
                 if (chrome.runtime.lastError) {
+                    console.error('Error: ', chrome.runtime.lastError);
                     reject(chrome.runtime.lastError);
                     return;
                 }

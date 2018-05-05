@@ -1,5 +1,6 @@
 import Observable from './observable';
 import autobind from 'auto-bind';
+import browser from 'webextension-polyfill';
 
 const PROTOCOL = {
     BROADCAST: 'BROADCAST',
@@ -21,10 +22,10 @@ class Server extends Observable {
             this.runningInBackground = runningInBackground;
         }
 
-        chrome.runtime.onMessage.addListener(this.handleMessage);
+        browser.runtime.onMessage.addListener(this.handleMessage);
     }
 
-    handleMessage(message, sender, sendResponse) {
+    handleMessage(message, sender) {
         console.debug('Message received ['+message.type+']', message);
 
         // only handle these events when running in background
@@ -48,8 +49,7 @@ class Server extends Observable {
         }
 
         message.sender = sender;
-        message.sendResponse = sendResponse;
-        this.call(message.type, message);
+        return this.call(message.type, message);
     }
 
     clickInit(profile, event) {
@@ -77,9 +77,9 @@ class Server extends Observable {
 
     notifyAllTabs(message, callback) {
         console.debug('Notifying tabs: ', message);
-        chrome.tabs.query({}, function(tabs){
+        browser.tabs.query({}).then(function(tabs){
             for(let i = 0; i < tabs.length;i++) {
-                chrome.tabs.sendMessage(tabs[i].id, message, callback);
+                browser.tabs.sendMessage(tabs[i].id, message).then(callback);
             }
         });
     }
@@ -106,49 +106,49 @@ class Client extends Observable {
             this.frameId += possible.charAt(Math.floor(Math.random() * possible.length));
         }
 
-        chrome.runtime.onMessage.addListener(this.handleMessage);
+        browser.runtime.onMessage.addListener(this.handleMessage);
     }
 
     fetchProfile() {
-        chrome.runtime.sendMessage({
+        browser.runtime.sendMessage({
             type: PROTOCOL.CLIENT_FETCH_PROFILES
-        }, (response) => {
+        }).then((response) => {
             this.tabUrl = response.url;
             this.handleIncomingProfiles(response.profiles);
         });
     }
 
-    handleMessage(message, sender, sendResponse) {
+    handleMessage(message, sender) {
         console.debug('incoming runtime message:', message);
         // handle broadcast
         if(message.type == PROTOCOL.BROADCAST_SPREAD) {
             console.debug('Received incoming broadcast', message);
             if(this.profile && message.key == this.profile.key)  {
-                this.call(message.subType, message);
+                return this.call(message.subType, message);
             }
         }
         // handle new profile data
         else if(message.type == PROTOCOL.SERVER_CHANGED_PROFILES) {
-            this.handleIncomingProfiles(message.profiles);
+            return this.handleIncomingProfiles(message.profiles);
         }
         // handle click init
         else if(message.type == PROTOCOL.CLICK_INIT) {
             if(this.profile && message.key == this.profile.key) {
                 this.clicks[message.event] = true;
-                this.call('CLICK_INIT_'+message.event);
+                return this.call('CLICK_INIT_'+message.event);
             }
         }
         // handle click cancel
         else if(message.type == PROTOCOL.CLICK_CANCEL) {
             if(this.profile && message.key == this.profile.key) {
                 this.clicks[message.event] = false;
-                this.call('CLICK_CANCEL_'+message.event);
+                return this.call('CLICK_CANCEL_'+message.event);
             }
         }
     }
 
     updateProfile(changes) {
-        chrome.runtime.sendMessage({
+        browser.runtime.sendMessage({
             type: PROTOCOL.CLIENT_UPDATE_PROFILE,
             key: this.profile.key,
             profile: changes,
@@ -161,11 +161,11 @@ class Client extends Observable {
         payload.type = PROTOCOL.BROADCAST;
         payload.subType = type;
         payload.key = this.profile.key;
-        chrome.runtime.sendMessage(payload);
+        browser.runtime.sendMessage(payload);
     }
 
     cancelClick(event) {
-        chrome.runtime.sendMessage({
+        browser.runtime.sendMessage({
             type: PROTOCOL.CLIENT_CLICK_CANCEL,
             key: this.profile.key,
             event: event
