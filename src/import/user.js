@@ -1,49 +1,42 @@
 /*global browser*/
 import oauthConfig from './config/oauth-config';
 import { firebase } from './config/firebase-config';
+import { Protocol } from './sync';
 
 import browser from 'webextension-polyfill';
 
 var user = {};
 
-function firebaseLogin(token, resolve, reject) {
+user.firebaseLogin = function(token, resolve, reject) {
     var credential = firebase.auth.GoogleAuthProvider.credential(null, token);
     return firebase.auth().signInWithCredential(credential);
 }
 
 user.login = function(interactive) {
     return new Promise((resolve, reject) => {
+        function legacyLogin() {
+            browser.runtime.sendMessage({
+                type: Protocol.BACKGROUND_LOGIN
+            }).then((response) => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        }
         if (chrome.identity && chrome.identity.getAuthToken) { // Running on chrome with integrated OAuth2
             chrome.identity.getAuthToken({
                 'interactive': interactive
             }, function(token) {
                 if (chrome.runtime.lastError) {
                     console.error('Error: ', chrome.runtime.lastError);
-                    reject(chrome.runtime.lastError);
+                    //reject(chrome.runtime.lastError);
+                    legacyLogin();
                     return;
                 }
-                firebaseLogin(token).then(resolve).catch(reject);
+                user.firebaseLogin(token).then(resolve).catch(reject);
             });
         } else /*if (browser.identity && browser.identity.launchWebAuthFlow)*/ { // Not running on Chrome, using launchWebAuthFlow
-            oauthConfig.google.getLocalToken().then((token) => { // get local token
-                firebaseLogin(token).then(resolve).catch((err) => { // Login with local token, if this doesnt work get a new token
-                    oauthConfig.google.fetchAndStoreToken().then((token) => {
-                        firebaseLogin(token).then(resolve).catch((err) => {
-                            reject({message: err.message});
-                        });
-                    }).catch((err) => {
-                        reject({message: err.message}); // throw
-                    });
-                });
-            }).catch((err) => {
-                oauthConfig.google.fetchAndStoreToken().then((token) => { // if no local token -> fetch new token and persist it
-                    firebaseLogin(token).then(resolve).catch((err) => {
-                        reject({message: err.message});
-                    });
-                }).catch((err) => {
-                    reject({message: err.message}); // throw
-                });
-            });
+            legacyLogin();
         } /*else { // No OAuth APIs -> no login
             reject({
                 message: 'OAuth2 not supported, consider updating your browser'

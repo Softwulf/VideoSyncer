@@ -11,6 +11,7 @@ const PROTOCOL = {
     CLICK_INIT: 'CLICK_INIT',
     CLICK_CANCEL: 'CLICK_CANCEL',
     CLIENT_CLICK_CANCEL: 'CLIENT_CLICK_CANCEL',
+    BACKGROUND_LOGIN: 'BACKGROUND_LOGIN'
 }
 
 class Server extends Observable {
@@ -79,7 +80,9 @@ class Server extends Observable {
         console.debug('Notifying tabs: ', message);
         browser.tabs.query({}).then(function(tabs){
             for(let i = 0; i < tabs.length;i++) {
-                browser.tabs.sendMessage(tabs[i].id, message).then(callback);
+                browser.tabs.sendMessage(tabs[i].id, message).then(callback).catch((error) => {
+                    console.error('Error notying tab ', tabs[i].url);
+                });
             }
         });
     }
