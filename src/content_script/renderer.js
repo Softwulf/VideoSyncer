@@ -4,6 +4,7 @@
 import jquery from 'jquery';
 import Observable from '../import/observable';
 import autobind from 'auto-bind';
+import browser from 'webextension-polyfill';
 
 export default class Renderer extends Observable {
     constructor(observing) {
@@ -41,7 +42,7 @@ export default class Renderer extends Observable {
             this.shadowRoot = jquery('#vsync_container').prepend('<div id="shadow-unsupported" />');
         }
         
-        jquery(this.shadowRoot).prepend(`<style>@import url('${chrome.extension.getURL('content_script/tracker.css')}')</style>`);
+        jquery(this.shadowRoot).prepend(`<style>@import url('${browser.extension.getURL('content_script/tracker.css')}')</style>`);
     }
 
     renderStatusDiv() {

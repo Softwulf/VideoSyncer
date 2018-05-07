@@ -3,6 +3,7 @@ import oauthConfig from '../import/config/oauth-config';
 import { firebase, db } from '../import/config/firebase-config';
 
 import { SyncServer, Protocol } from '../import/sync';
+import user from '../import/user';
 
 const Server = new SyncServer(true);
 var profilesRef = null;
@@ -14,19 +15,21 @@ var profilesRef = null;
 
 // Handle client profile fetch
 Server.on(Protocol.CLIENT_FETCH_PROFILES, (message) => {
-    if(profilesRef) {
-        profilesRef.once('value', (profiles) => { // fetch profiles and respond
-            message.sendResponse({
-                profiles: profiles.val(),
+    return new Promise((resolve, reject) => {
+        if(profilesRef) {
+            profilesRef.once('value', (profiles) => { // fetch profiles and respond
+                resolve({
+                    profiles: profiles.val(),
+                    url: message.sender.tab.url
+                });
+            }); 
+        } else {
+            resolve({ // if not logged in respond with NULL
+                profiles: null,
                 url: message.sender.tab.url
             });
-        }); 
-    } else {
-        message.sendResponse({ // if not logged in respond with NULL
-            profiles: null,
-            url: message.sender.tab.url
-        });
-    }
+        }
+    });
 });
 
 // Update profile in DB
@@ -95,3 +98,28 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
 }, {
     urls: [oauthConfig.google.redirectURL+'*']
 });
+
+// Handle legacy login requests in background, so closing popup wont cancel
+Server.on(Protocol.BACKGROUND_LOGIN , (message) => {
+    return new Promise((resolve, reject) => {
+        oauthConfig.google.getLocalToken().then((token) => { // get local token
+            user.firebaseLogin(token).then(resolve).catch((err) => { // Login with local token, if this doesnt work get a new token
+                oauthConfig.google.fetchAndStoreToken().then((token) => {
+                    user.firebaseLogin(token).then(resolve).catch((err) => {
+                        reject({message: err.message});
+                    });
+                }).catch((err) => {
+                    reject({message: err.message}); // throw
+                });
+            });
+        }).catch((err) => {
+            oauthConfig.google.fetchAndStoreToken().then((token) => { // if no local token -> fetch new token and persist it
+                user.firebaseLogin(token).then(resolve).catch((err) => {
+                    reject({message: err.message});
+                });
+            }).catch((err) => {
+                reject({message: err.message}); // throw
+            });
+        });
+    });
+})

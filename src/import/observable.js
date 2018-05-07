@@ -20,12 +20,17 @@ export default class Observable {
     }
 
     call(event, data) {
+        var toReturn = null;
         console.debug(this.name + ' called event ['+event+']', data);
         for(let i = 0; i < this.listeners.length; i++) {
             var obj = this.listeners[i];
             if(obj.event == event) {
-                obj.listener(data);
+                var returnData = obj.listener(data);
+                if(toReturn == null && returnData != null) {
+                    toReturn = returnData;
+                }
             }
         }
+        return toReturn;
     }
 }

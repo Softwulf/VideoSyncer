@@ -79,7 +79,9 @@ var config = {
             return new Promise((resolve, reject) => {
 
                 // just open a new window with the authURL, background page will catch webrequest to redirectURL and login
-                var oauthWindow = window.open(authURL, 'google_oauth', 'modal');
+                browser.windows.create({
+                    url: authURL
+                });
             });
         },
 

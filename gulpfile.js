@@ -39,6 +39,7 @@ var argv = require('yargs')
 // init args
 
 var version = argv.release;
+var production = argv.production;
 
 function createTask(name, depends, exec) {
     function build(target) {
@@ -87,7 +88,8 @@ createTask('ejs', ['raw'], (target, tempDir, distDir) => {
     return gulp.src('src/**/*.@(js|entry.js|json|css|html)')
         .pipe(ejs({
             target: target,
-            version: version
+            version: version,
+            production: production
         }))
         .pipe(gulp.dest(tempDir + 'src'));
 });
