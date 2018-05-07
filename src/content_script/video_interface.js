@@ -5,6 +5,8 @@ import jquery from 'jquery';
 import Observable from '../import/observable';
 import autobind from 'auto-bind';
 
+const $ = jquery;
+
 export default class VideoInterface extends Observable {
     constructor(observing) {
         super('video', observing);
@@ -23,22 +25,24 @@ export default class VideoInterface extends Observable {
 
     findVideo() {
         console.debug('findVideo');
-        var query = 'video';
-        if(this.client.profile.videoQuery) {
-            query = this.client.profile.videoQuery;
-        }
+        $(() => {
+            var query = 'video';
+            if(this.client.profile.videoQuery) {
+                query = this.client.profile.videoQuery;
+            }
 
-        var videoSelect = jquery(query);
+            var videoSelect = $(query);
 
-        if(videoSelect.length) {
-            // there IS a videoplayer
-            this.videoPlayer = videoSelect.get(0);
-            this.videoPlayer.vsync_isStarted = false;
-            this.videoPlayer.vsync_ended = false;
-            this.call('found', {player: this.videoPlayer});
-        } else {
-            this.call('remove');
-        }
+            if(videoSelect.length) {
+                // there IS a videoplayer
+                this.videoPlayer = videoSelect.get(0);
+                this.videoPlayer.vsync_isStarted = false;
+                this.videoPlayer.vsync_ended = false;
+                this.call('found', {player: this.videoPlayer});
+            } else {
+                this.call('remove');
+            }
+        });
     }
 
     removeVideo() {
