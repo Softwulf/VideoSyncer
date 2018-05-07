@@ -31,7 +31,6 @@ user.login = function(interactive) {
                     console.error('Error: ', chrome.runtime.lastError);
                     //reject(chrome.runtime.lastError);
                     legacyLogin();
-                    return;
                 }
                 user.firebaseLogin(token).then(resolve).catch(reject);
             });
