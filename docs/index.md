@@ -1,5 +1,9 @@
-# Documentation
-!!! warning
-    This documentation is not complete yet
-## But there still are some things in this docu :)
-Just not yet
+# Contents
+{:.no_toc}
+
+* Will be replaced with the ToC, excluding the "Contents" header
+{:toc}
+
+# H1 header
+
+## H2 header
