@@ -1,5 +1,5 @@
 # Documentation
-Documentation can be found [here](https://vsync.ch/doc/)
+Documentation can be found [here](https://doc.vsync.ch)
 
 # How to build
 ## Local (already downloaded source)
