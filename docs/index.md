@@ -5,7 +5,8 @@
 {:toc}
 
 # Other References
-1. [Developer Guide](developer.html)
+- [Developer Guide](developer.html)
+- [My Account is gone, what now?](migrate.html) 
 
 # Getting started
 ## Create account / Login
