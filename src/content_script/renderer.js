@@ -21,9 +21,7 @@ export default class Renderer extends Observable {
 
         autobind(this);
 
-        if(window.top == window.self) {
-            this.insertShadow();
-        }
+        
 
         this.video.on('found', this.markVideo);
         this.video.on('remove', this.unmarkVideo);
@@ -31,6 +29,10 @@ export default class Renderer extends Observable {
         this.frameCom.addTopFrameListener('VIDEO_FOUND', this.videoFound);
 
         this.frameCom.addTopFrameListener('VIDEO_GONE', this.videoGone);
+
+        this.client.on('change_currenturl', this.insertShadow);
+        this.client.on('change_full', this.insertShadow);
+        this.client.on('change_removed', this.insertShadow);
     }
 
     videoFound() {
@@ -54,15 +56,23 @@ export default class Renderer extends Observable {
     }
 
     insertShadow() {
-        var shadowHost = jquery('body').prepend('<div id="vsync_container" />');
-        if(jquery('#vsync_container')[0].attachShadow) {
-            this.shadowRoot = jquery('#vsync_container')[0].attachShadow({mode: 'open'});
-        } else {
-            this.shadowRoot = jquery('#vsync_container').prepend('<div id="shadow-unsupported" />');
+        if(window.top == window.self) {
+            if(this.client.profile) {
+                if($('#vsync_container').length == 0) {
+                    var shadowHost = jquery('body').prepend('<div id="vsync_container" />');
+                    if(jquery('#vsync_container')[0].attachShadow) {
+                        this.shadowRoot = jquery('#vsync_container')[0].attachShadow({mode: 'open'});
+                    } else {
+                        this.shadowRoot = jquery('#vsync_container').prepend('<div id="shadow-unsupported" />');
+                    }
+                    
+                    jquery(this.shadowRoot).prepend(`<style>@import url('${browser.extension.getURL('content_script/tracker.css')}')</style>`);
+                    $(this.shadowRoot).append('<div id="vsync_status"></div>');
+                }
+            } else {
+                $('#vsync_container').remove();
+            }
         }
-        
-        jquery(this.shadowRoot).prepend(`<style>@import url('${browser.extension.getURL('content_script/tracker.css')}')</style>`);
-        $(this.shadowRoot).append('<div id="vsync_status"></div>');
     }
 
 }
