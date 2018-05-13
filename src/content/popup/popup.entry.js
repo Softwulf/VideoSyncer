@@ -50,10 +50,16 @@ class App extends React.Component {
 
     login(interactive) {
         this.setState({ loading: true });
-        user.login(true).then(() => {
+        user.login(true).then((resp) => {
+            if(resp) {
+                console.debug('Login response: ', resp);
+            }
             this.setState({ loading: false });
             this.message('Logged in', 'success');
         }).catch((err) => {
+            if(err) {
+                console.error('Login ERROR: ', err);
+            }
             this.setState({ loading: false });
             this.message(err.message, 'error', 5000);
         });
