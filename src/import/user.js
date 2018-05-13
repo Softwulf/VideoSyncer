@@ -29,10 +29,14 @@ user.login = function(interactive) {
             }, function(token) {
                 if (chrome.runtime.lastError) {
                     console.error('Error: ', chrome.runtime.lastError);
-                    //reject(chrome.runtime.lastError);
-                    legacyLogin();
+                    if(chrome.runtime.lastError.message == 'Function unsupported.') { // OPERA only: run legacy login
+                        legacyLogin();
+                    } else {
+                        reject(chrome.runtime.lastError);
+                    }
+                } else {
+                    user.firebaseLogin(token).then(resolve).catch(reject);
                 }
-                user.firebaseLogin(token).then(resolve).catch(reject);
             });
         } else /*if (browser.identity && browser.identity.launchWebAuthFlow)*/ { // Not running on Chrome, using launchWebAuthFlow
             legacyLogin();

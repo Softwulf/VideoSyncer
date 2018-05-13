@@ -24,13 +24,13 @@ Server.on(Protocol.CLIENT_FETCH_PROFILES, (message) => {
             profilesRef.once('value', (profiles) => { // fetch profiles and respond
                 resolve({
                     profiles: profiles.val(),
-                    url: message.sender.tab.url
+                    url: message.sender.tab != null ? message.sender.tab.url : ''
                 });
             });
         } else {
             resolve({ // if not logged in respond with NULL
                 profiles: null,
-                url: message.sender.tab.url
+                url: message.sender.tab != null ? message.sender.tab.url : ''
             });
         }
     });

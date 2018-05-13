@@ -52,24 +52,37 @@ var config = {
                 });
             }
         
-            return fetch(validationRequest).then(checkResponse);
+            return new Promise((resolve, reject) => {
+                fetch(validationRequest).then(checkResponse).then(resolve).catch(reject);
+            });
         },
 
         fetchToken() {
-            console.debug('fetchToken');
+            return new Promise((resolve, reject) => {
+                console.debug('fetchToken');
 
-            const instance = this;
-            if(browser.identity && browser.identity.launchWebAuthFlow) {
-                return browser.identity.launchWebAuthFlow({
-                    interactive: true,
-                    url: instance.authURLFilled()
-                }).then(instance.validate);
-            } else {
-                return instance.fetchTokenLegacy({
-                    authURL: instance.authURLFilled(),
-                    redirectURL: instance.redirectURL
-                }).then(instance.validate);
-            }
+                const instance = this;
+
+                function innerLegacyFetch() {
+                    instance.fetchTokenLegacy({
+                        authURL: instance.authURLFilled(),
+                        redirectURL: instance.redirectURL
+                    }).then(instance.validate).then(resolve).catch(reject);
+                }
+
+                if(browser.identity && browser.identity.launchWebAuthFlow) {
+                    try {
+                        browser.identity.launchWebAuthFlow({
+                            interactive: true,
+                            url: instance.authURLFilled()
+                        }).then(instance.validate).then(resolve).catch(reject);
+                    } catch(err) {
+                        innerLegacyFetch();
+                    }
+                } else {
+                    innerLegacyFetch();
+                }
+            });
         },
 
         fetchTokenLegacy(urls) {
@@ -127,7 +140,7 @@ var config = {
                     if(result[instance.storageKey]) {
                         resolve(result[instance.storageKey]);
                     } else {
-                        resolve();
+                        reject({message: 'No OAuth key found'})
                     }
                 }).catch((err) => {
                     reject(err);
