@@ -33,9 +33,6 @@
             "js": [
                 "content_script/main.js"
             ],
-            "css": [
-                "content_script/tracker.css"
-            ],
             "all_frames": true
         }
     ],

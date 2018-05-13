@@ -11,6 +11,4 @@ var video = new VideoInterface([Client]);
 var renderer = new Renderer([Client, video]);
 var events = new Events([Client, video, renderer]);
 
-
-
 Client.fetchProfile();

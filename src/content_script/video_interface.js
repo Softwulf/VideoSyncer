@@ -4,6 +4,7 @@
 import jquery from 'jquery';
 import Observable from '../import/observable';
 import autobind from 'auto-bind';
+import { FrameCom } from '../import/communication';
 
 const $ = jquery;
 
@@ -12,6 +13,8 @@ export default class VideoInterface extends Observable {
         super('video', observing);
 
         this.videoPlayer = null;
+
+        this.frameCom = new FrameCom();
 
         autobind(this);
 
@@ -39,8 +42,10 @@ export default class VideoInterface extends Observable {
                 this.videoPlayer.vsync_isStarted = false;
                 this.videoPlayer.vsync_ended = false;
                 this.call('found', {player: this.videoPlayer});
+                this.frameCom.callTopFrame('VIDEO_FOUND', {});
             } else {
                 this.call('remove');
+                this.frameCom.callTopFrame('VIDEO_GONE', {});
             }
         });
     }

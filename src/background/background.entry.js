@@ -5,6 +5,10 @@ import { firebase, db } from '../import/config/firebase-config';
 import { SyncServer, Protocol } from '../import/sync';
 import user from '../import/user';
 
+import { BackgroundGateway } from '../import/communication';
+
+const gateway = new BackgroundGateway();
+
 const Server = new SyncServer(true);
 var profilesRef = null;
 
@@ -16,13 +20,13 @@ var profilesRef = null;
 // Handle client profile fetch
 Server.on(Protocol.CLIENT_FETCH_PROFILES, (message) => {
     return new Promise((resolve, reject) => {
-        if(profilesRef) {
+        if (profilesRef) {
             profilesRef.once('value', (profiles) => { // fetch profiles and respond
                 resolve({
                     profiles: profiles.val(),
                     url: message.sender.tab.url
                 });
-            }); 
+            });
         } else {
             resolve({ // if not logged in respond with NULL
                 profiles: null,
@@ -36,16 +40,16 @@ Server.on(Protocol.CLIENT_FETCH_PROFILES, (message) => {
 Server.on(Protocol.CLIENT_UPDATE_PROFILE, (message) => {
     var key = message.key;
     var profile = message.profile;
-    if(profilesRef) {
+    if (profilesRef) {
         var updateObject = {};
 
         // only update the given fields
         for (var property in profile) {
             if (!profile.hasOwnProperty(property)) continue;
-        
+
             var value = profile[property];
 
-            updateObject[key+'/'+property] = value;
+            updateObject[key + '/' + property] = value;
         }
         profilesRef.update(updateObject)
     }
@@ -61,7 +65,7 @@ function handleLoginStateChange(user) {
         console.log('User is now logged in, notifying all watch pages');
 
         profilesRef = db.ref('vsync/profiles/' + user.uid);
-    
+
         profilesRef.on('value', function(profiles) { // push profile update to content scripts
             console.log('Profiles changed, notifying all watch pages', profiles.val());
             Server.pushProfiles(profiles.val());
@@ -96,30 +100,49 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
         console.error('Could not validate redirect URL: ', err);
     });
 }, {
-    urls: [oauthConfig.google.redirectURL+'*']
+    urls: [oauthConfig.google.redirectURL + '*']
 });
 
 // Handle legacy login requests in background, so closing popup wont cancel
-Server.on(Protocol.BACKGROUND_LOGIN , (message) => {
+Server.on(Protocol.BACKGROUND_LOGIN, (message) => {
     return new Promise((resolve, reject) => {
         oauthConfig.google.getLocalToken().then((token) => { // get local token
             user.firebaseLogin(token).then(resolve).catch((err) => { // Login with local token, if this doesnt work get a new token
                 oauthConfig.google.fetchAndStoreToken().then((token) => {
                     user.firebaseLogin(token).then(resolve).catch((err) => {
-                        reject({message: err.message});
+                        reject({
+                            message: err.message
+                        });
                     });
                 }).catch((err) => {
-                    reject({message: err.message}); // throw
+                    reject({
+                        message: err.message
+                    }); // throw
                 });
             });
         }).catch((err) => {
             oauthConfig.google.fetchAndStoreToken().then((token) => { // if no local token -> fetch new token and persist it
                 user.firebaseLogin(token).then(resolve).catch((err) => {
-                    reject({message: err.message});
+                    reject({
+                        message: err.message
+                    });
                 });
             }).catch((err) => {
-                reject({message: err.message}); // throw
+                reject({
+                    message: err.message
+                }); // throw
             });
         });
     });
-})
+});
+
+function handleInstalled(details) {
+    console.log(details.reason);
+    if (details.reason == 'install' || details.reason == 'update') {
+        browser.tabs.create({
+            url: browser.runtime.getURL('content/changelog/changelog.html')
+        });
+    }
+}
+
+browser.runtime.onInstalled.addListener(handleInstalled);
