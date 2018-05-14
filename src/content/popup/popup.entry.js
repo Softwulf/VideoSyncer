@@ -57,9 +57,7 @@ class App extends React.Component {
             this.setState({ loading: false });
             this.message('Logged in', 'success');
         }).catch((err) => {
-            if(err) {
-                console.error('Login ERROR: ', err);
-            }
+            console.error('Login ERROR: ', err);
             this.setState({ loading: false });
             this.message(err.message, 'error', 5000);
         });
