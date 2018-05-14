@@ -1,4 +1,3 @@
-/*global browser*/
 import browser from 'webextension-polyfill';
 
 var config = {
