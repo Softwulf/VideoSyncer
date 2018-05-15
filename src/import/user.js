@@ -20,6 +20,7 @@ user.login = function(interactive) {
             }).then((response) => {
                 resolve();
             }).catch((error) => {
+                console.error('ERROR in legacy login', error);
                 reject(error);
             });
         }
