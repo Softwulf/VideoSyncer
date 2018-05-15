@@ -31,6 +31,8 @@ export default class Observable {
                 }
             }
         }
-        return toReturn;
+        if(toReturn) {
+            return toReturn;
+        }
     }
 }

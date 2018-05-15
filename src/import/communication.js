@@ -18,18 +18,17 @@ function createListener(event, listener) {
 class BackgroundGateway {
     constructor() {
         browser.runtime.onMessage.addListener((message, sender) => {
-            return new Promise((resolve, reject) => {
-                if (sender.tab && sender.tab.id) {
+            
+            if (sender.tab && sender.tab.id) {
+                return new Promise((resolve, reject) => {
                     browser.tabs.sendMessage(
                         sender.tab.id,
                         message
                     ).then(resolve).catch(reject);
-                } else {
-                    reject({
-                        error: 'No tab was specified'
-                    });
-                }
-            });
+                });
+            } else {
+                console.error('No tab was specified');
+            }
         });
     }
 }

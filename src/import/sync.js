@@ -132,7 +132,7 @@ class Client extends Observable {
         }
         // handle new profile data
         else if(message.type == PROTOCOL.SERVER_CHANGED_PROFILES) {
-            return this.handleIncomingProfiles(message.profiles);
+            this.handleIncomingProfiles(message.profiles);
         }
         // handle click init
         else if(message.type == PROTOCOL.CLICK_INIT) {
