@@ -51,10 +51,14 @@ class App extends React.Component {
     login(interactive) {
         this.setState({ loading: true });
         user.login(true).then((resp) => {
+            this.setState({ loading: false });
             if(resp) {
                 console.debug('Login response: ', resp);
+                if(resp.pending) {
+                    this.message('Login pending...', 'info');
+                    return;
+                }
             }
-            this.setState({ loading: false });
             this.message('Logged in', 'success');
         }).catch((err) => {
             console.error('Login ERROR: ', err);

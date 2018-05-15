@@ -23,35 +23,35 @@ var config = {
         },
         
         validate(redirectURL) {
-            console.debug('validate');
-            const instance = config.google;
-            const accessToken = instance.extractAccessToken(redirectURL);
-            if (!accessToken) {
-                throw "No access token could be extracted";
-            }
+            return new Promise((resolve, reject) => {
+                console.debug('validate');
+                const instance = config.google;
+                const accessToken = instance.extractAccessToken(redirectURL);
+                if (!accessToken) {
+                    reject("No access token could be extracted");
+                }
 
-            const validationURL = `${instance.validationBaseURL}?access_token=${accessToken}`;
-            const validationRequest = new Request(validationURL, {
-                method: "GET"
-            });
-        
-            function checkResponse(response, instance) {
-                console.debug('checkResponse');
-                return new Promise((resolve, reject) => {
-                    if (response.status != 200) {
-                        reject("Token validation error");
-                    }
-                    response.json().then((json) => {
-                        if (json.aud && (json.aud === config.google.client_id)) {
-                            resolve(accessToken);
-                        } else {
+                const validationURL = `${instance.validationBaseURL}?access_token=${accessToken}`;
+                const validationRequest = new Request(validationURL, {
+                    method: "GET"
+                });
+            
+                function checkResponse(response) {
+                    console.debug('checkResponse');
+                    return new Promise((resolve, reject) => {
+                        if (response.status != 200) {
                             reject("Token validation error");
                         }
+                        response.json().then((json) => {
+                            if (json.aud && (json.aud === config.google.client_id)) {
+                                resolve(accessToken);
+                            } else {
+                                reject("Token validation error");
+                            }
+                        });
                     });
-                });
-            }
-        
-            return new Promise((resolve, reject) => {
+                }
+            
                 fetch(validationRequest).then(checkResponse).then(resolve).catch(reject);
             });
         },
@@ -66,7 +66,9 @@ var config = {
                     instance.fetchTokenLegacy({
                         authURL: instance.authURLFilled(),
                         redirectURL: instance.redirectURL
-                    }).then(instance.validate).then(resolve).catch(reject);
+                    }).then(() => {
+                        resolve({pending: true})
+                    }).catch(reject);
                 }
 
                 if(browser.identity && browser.identity.launchWebAuthFlow) {

@@ -106,32 +106,30 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
 // Handle legacy login requests in background, so closing popup wont cancel
 Server.on(Protocol.BACKGROUND_LOGIN, (message) => {
     return new Promise((resolve, reject) => {
-        oauthConfig.google.getLocalToken().then((token) => { // get local token
-            user.firebaseLogin(token).then(resolve).catch((err) => { // Login with local token, if this doesnt work get a new token
-                oauthConfig.google.fetchAndStoreToken().then((token) => {
+        function lookForPendingFetch() {
+            oauthConfig.google.fetchAndStoreToken().then((token) => { // if no local token -> fetch new token and persist it
+                if(token.pending) {
+                    resolve({pending: true});
+                } else {
                     user.firebaseLogin(token).then(resolve).catch((err) => {
                         reject({
                             message: err.message
                         });
                     });
-                }).catch((err) => {
-                    reject({
-                        message: err.message
-                    }); // throw
-                });
-            });
-        }).catch((err) => {
-            oauthConfig.google.fetchAndStoreToken().then((token) => { // if no local token -> fetch new token and persist it
-                user.firebaseLogin(token).then(resolve).catch((err) => {
-                    reject({
-                        message: err.message
-                    });
-                });
+                }
             }).catch((err) => {
                 reject({
                     message: err.message
                 }); // throw
             });
+        }
+
+        oauthConfig.google.getLocalToken().then((token) => { // get local token
+            user.firebaseLogin(token).then(resolve).catch((err) => { // Login with local token, if this doesnt work get a new token
+                lookForPendingFetch();
+            });
+        }).catch((err) => {
+            lookForPendingFetch();
         });
     });
 });

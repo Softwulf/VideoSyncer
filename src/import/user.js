@@ -6,7 +6,7 @@ import browser from 'webextension-polyfill';
 
 var user = {};
 
-user.firebaseLogin = function(token, resolve, reject) {
+user.firebaseLogin = function(token) {
     var credential = firebase.auth.GoogleAuthProvider.credential(null, token);
     return firebase.auth().signInWithCredential(credential);
 }
@@ -17,7 +17,7 @@ user.login = function(interactive) {
             browser.runtime.sendMessage({
                 type: Protocol.BACKGROUND_LOGIN
             }).then((response) => {
-                resolve();
+                resolve(response);
             }).catch((error) => {
                 console.error('ERROR in legacy login', error);
                 reject(error);
