@@ -14,6 +14,7 @@ export default class Events extends Observable {
 
         // constants
         this.selectHover = 'videosyncer_hover';
+        this.setupDone = false;
 
         autobind(this);
 
@@ -43,7 +44,7 @@ export default class Events extends Observable {
     }
 
     removeVideoHandlers() {
-        jquery(this.video.videoPlayer).off('play', this.handlePlay);
+        //jquery(this.video.videoPlayer).off('play', this.handlePlay);
         jquery(this.video.videoPlayer).off('pause', this.handlePause);
         jquery(this.video.videoPlayer).off('timeupdate', this.handleTimeupdate);
         jquery(this.video.videoPlayer).off('ended', this.handleEnded);
@@ -51,7 +52,7 @@ export default class Events extends Observable {
 
     attachVideoHandlers(data) {
         var videoPlayer = data.player;
-        jquery(videoPlayer).on('play', this.handlePlay);
+        //jquery(videoPlayer).on('play', this.handlePlay);
         jquery(videoPlayer).on('pause', this.handlePause);
         jquery(videoPlayer).on('ended', this.handleEnded);
         jquery(videoPlayer).on('timeupdate', this.handleTimeupdate);
@@ -142,7 +143,7 @@ export default class Events extends Observable {
         }
     }
 
-    handlePlay(event) {
+    setup(event) {
         var newEpisode = this.client.tabUrl.indexOf(this.client.profile.currentURL) == -1;
         if(newEpisode) {
             this.video.videoPlayer.currentTime = this.client.profile.startTime;
@@ -159,6 +160,7 @@ export default class Events extends Observable {
                 this.video.videoPlayer.vsync_isStarted = true;
             }
         }
+        this.setupDone = true;
     }
 
     handlePause(event) {
@@ -174,6 +176,11 @@ export default class Events extends Observable {
 
     handleTimeupdate(event) {
         var localTime = Math.floor(event.target.currentTime);
+
+        if(!this.setupDone) {
+            this.setup();
+            return;
+        }
     
         if(event.target.paused) return;
         

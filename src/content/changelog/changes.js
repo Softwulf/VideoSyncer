@@ -1,9 +1,15 @@
 export default {
     releases: [
         {
+            version: '5.4.1',
+            changes: [
+                'Improving stability when player was found by periodic search'
+            ]
+        },
+        {
             version: '5.4.0',
             changes: [
-                'Now periodically looking for video players on selected pages'
+                'Added periodic lookup for video players on selected pages'
             ]
         },
         {
