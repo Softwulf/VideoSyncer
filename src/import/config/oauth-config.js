@@ -101,7 +101,7 @@ var config = {
                     browser.windows.create({url: authURL}).then(resolve).catch(reject);
                 } else {
                     console.error('No windows object');
-                    reject('No windows object VVV');
+                    browser.tabs.create({url: authURL}).then(resolve).catch(reject);
                 }
             });
         },
