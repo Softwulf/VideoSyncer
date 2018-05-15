@@ -1,6 +1,12 @@
 export default {
     releases: [
         {
+            version: '5.4.0',
+            changes: [
+                'Now periodically looking for video players on selected pages'
+            ]
+        },
+        {
             version: '5.3.0',
             changes: [
                 'Adding indicator to tell whether VideoSyncer has found the video element on the page',

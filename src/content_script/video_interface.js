@@ -16,14 +16,35 @@ export default class VideoInterface extends Observable {
 
         this.frameCom = new FrameCom();
 
+        this.interval = null;
+
         autobind(this);
 
-        this.client.on('change_full', this.findVideo);
+        this.client.on('change_full', this.setupInterval);
         this.client.on('change_full', this.updateTime);
 
-        this.client.on('change_query', this.findVideo);
-        this.client.on('change_removed', this.removeVideo);
+        this.client.on('change_query', this.setupInterval);
+        this.client.on('change_removed', () => {
+            this.stopInterval();
+            this.removeVideo();
+        });
         this.client.on('change_timechange', this.updateTime);
+
+        this.frameCom.addAllFrameListener('VIDEO_FOUND', this.stopInterval);
+        this.frameCom.addAllFrameListener('VIDEO_GONE', this.setupInterval);
+
+    }
+
+    stopInterval() {
+        if(this.interval != null) {
+            clearInterval(this.interval);
+        }
+    }
+
+    setupInterval() {
+        if(this.interval == null) {
+            this.interval = setInterval(this.findVideo, 1000);
+        }
     }
 
     findVideo() {
@@ -42,10 +63,12 @@ export default class VideoInterface extends Observable {
                 this.videoPlayer.vsync_isStarted = false;
                 this.videoPlayer.vsync_ended = false;
                 this.call('found', {player: this.videoPlayer});
-                this.frameCom.callTopFrame('VIDEO_FOUND', {});
+                this.frameCom.callAllFrames('VIDEO_FOUND', {});
             } else {
-                this.call('remove');
-                this.frameCom.callTopFrame('VIDEO_GONE', {});
+                if(this.videoPlayer) {
+                    this.call('remove');
+                    this.frameCom.callAllFrames('VIDEO_GONE', {});
+                }
             }
         });
     }

@@ -26,9 +26,9 @@ export default class Renderer extends Observable {
         this.video.on('found', this.markVideo);
         this.video.on('remove', this.unmarkVideo);
 
-        this.frameCom.addTopFrameListener('VIDEO_FOUND', this.videoFound);
+        this.frameCom.addAllFrameListener('VIDEO_FOUND', this.videoFound);
 
-        this.frameCom.addTopFrameListener('VIDEO_GONE', this.videoGone);
+        this.frameCom.addAllFrameListener('VIDEO_GONE', this.videoGone);
 
         this.client.on('change_currenturl', this.insertShadow);
         this.client.on('change_full', this.insertShadow);
