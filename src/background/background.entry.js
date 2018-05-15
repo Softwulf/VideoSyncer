@@ -62,7 +62,7 @@ handleLoginStateChange(firebase.auth().currentUser); // init with current login 
 function handleLoginStateChange(user) {
     if (profilesRef) profilesRef.off();
     if (user) { // user is now logged in
-        console.log('User is now logged in, notifying all watch pages');
+        console.log('User is now logged in, notifying all watch pages (might result in some errors)');
 
         profilesRef = db.ref('vsync/profiles/' + user.uid);
 
