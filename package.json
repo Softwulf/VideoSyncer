@@ -3,6 +3,7 @@
     "version": "5.0.0",
     "description": "",
     "author": "ElectronicManuel",
+    "license": "GPL-3.0",
     "dependencies": {
         "auto-bind": "^1.2.0",
         "firebase": "^4.9.0",
