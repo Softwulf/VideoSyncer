@@ -1,4 +1,3 @@
-/*global browser*/
 import oauthConfig from './config/oauth-config';
 import { firebase } from './config/firebase-config';
 import { Protocol } from './sync';
