@@ -91,7 +91,9 @@ var config = {
             return new Promise((resolve, reject) => {
 
                 // just open a new window with the authURL, background page will catch webrequest to redirectURL and login
-                window.open(authURL);
+                chrome.windows.create({url: authURL}, () => {
+                    resolve();
+                });
             });
         },
 
