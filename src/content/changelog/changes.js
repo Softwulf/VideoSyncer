@@ -1,6 +1,12 @@
 export default {
     releases: [
         {
+            version: '5.4.2',
+            changes: [
+                'Minor bug fixes'
+            ]
+        },
+        {
             version: '5.4.1',
             changes: [
                 'Improving stability when player was found by periodic search'
