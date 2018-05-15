@@ -91,7 +91,18 @@ var config = {
             return new Promise((resolve, reject) => {
 
                 // just open a new window with the authURL, background page will catch webrequest to redirectURL and login
-                browser.windows.create({url: authURL}).then(resolve).catch(reject);
+                if(browser.runtime.getBrowserInfo) {
+                    browser.runtime.getBrowserInfo().then((info) => {
+                        console.log('BROWSER INFO', info);
+                    });
+                }
+                
+                if(browser.windows) {
+                    browser.windows.create({url: authURL}).then(resolve).catch(reject);
+                } else {
+                    console.error('No windows object');
+                    reject('No windows object VVV');
+                }
             });
         },
 
