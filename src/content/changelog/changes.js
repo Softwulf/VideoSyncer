@@ -3,7 +3,8 @@ export default {
         {
             version: '5.3.0',
             changes: [
-                'Adding indicator to tell whether VideoSyncer has found the video element on the page'
+                'Adding indicator to tell whether VideoSyncer has found the video element on the page',
+                'Fixed an issue with the google login when using firefox and firefox for android'
             ],
         },
         {
