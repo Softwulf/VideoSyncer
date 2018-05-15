@@ -167,11 +167,11 @@ createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
     };
 
     if (argv.production) {
-        /*webpackConfig.plugins = [
+        webpackConfig.plugins = [
             new UglifyJsPlugin({
                 parallel: true
             })
-        ];*/
+        ];
     } else {
         webpackConfig.devtool = 'source-map'
     }
