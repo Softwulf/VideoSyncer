@@ -23,89 +23,100 @@ exports.askForProfileRemoval = function(profile) {
 }
 
 exports.editProfile = function(profile) {
-    if(profile == undefined || profile == null) {
-        profile = {
-            name: '',
-            urlPattern: ''
-        };
-    }
     return new Promise((resolve, reject) => {
-        swal.setDefaults({
-            input: 'text',
-            confirmButtonText: browser.i18n.getMessage('next') + ' &rarr;',
-            showCancelButton: true,
-            progressSteps: ['1', '2', '3', '4']
-        })
+        browser.tabs.query({
+            currentWindow: true,
+            active: true
+        }).then((tabs) => {
+            var url = tabs[0].url;
 
-        var steps = [
-            {
-                title: browser.i18n.getMessage('name'),
-                text: browser.i18n.getMessage('name_desc'),
+            if(profile == undefined || profile == null) {
+                profile = {
+                    name: '',
+                    urlPattern: url
+                };
+            }
+
+            swal.setDefaults({
                 input: 'text',
-                inputValue: profile.name,
-                inputAttributes: {
-                    'maxlength': 25
+                confirmButtonText: browser.i18n.getMessage('next') + ' &rarr;',
+                showCancelButton: true,
+                progressSteps: ['1', '2', '3', '4']
+            })
+    
+            var steps = [
+                {
+                    title: browser.i18n.getMessage('name'),
+                    text: browser.i18n.getMessage('name_desc'),
+                    input: 'text',
+                    inputValue: profile.name,
+                    inputAttributes: {
+                        'maxlength': 25
+                    },
+                    inputValidator: (value) => {
+                        return new Promise((resolve) => {
+                            if (value && value.length > 0) {
+                                resolve();
+                            } else {
+                                resolve(browser.i18n.getMessage('error_profile_name_empty'));
+                            }
+                        });
+                    }
                 },
-                inputValidator: (value) => {
-                    return new Promise((resolve) => {
-                        if(value && value.length > 0) {
-                            resolve();
-                        } else {
-                            resolve(browser.i18n.getMessage('error_profile_name_empty'));
-                        }
-                    });
+                {
+                    title: browser.i18n.getMessage('url'),
+                    text: browser.i18n.getMessage('url_desc'),
+                    input: 'text',
+                    inputValue: profile.urlPattern,
+                    inputValidator: (value) => {
+                        return new Promise((resolve) => {
+                            if (value && value.length > 0) {
+                                resolve();
+                            } else {
+                                resolve(browser.i18n.getMessage('error_profile_url_empty'));
+                            }
+                        });
+                    }
+                },
+                {
+                    title: browser.i18n.getMessage('starttime'),
+                    text: browser.i18n.getMessage('starttime_desc'),
+                    input: 'number',
+                    inputValue: profile.startTime
+                },
+                {
+                    title: browser.i18n.getMessage('endtime'),
+                    text: browser.i18n.getMessage('endtime_desc'),
+                    input: 'number',
+                    inputValue: profile.endTime
                 }
-            },
-            {
-                title: browser.i18n.getMessage('url'),
-                text: browser.i18n.getMessage('url_desc'),
-                input: 'text',
-                inputValue: profile.urlPattern,
-                inputValidator: (value) => {
-                    return new Promise((resolve) => {
-                        if(value && value.length > 0) {
-                            resolve();
-                        } else {
-                            resolve(browser.i18n.getMessage('error_profile_url_empty'));
-                        }
-                    });
+            ]
+    
+            swal.queue(steps).then((result) => {
+                swal.resetDefaults()
+    
+                if (result.value) {
+                    profile.name = result.value[0];
+                    profile.urlPattern = result.value[1];
+                    profile.startTime = result.value[2];
+                    profile.endTime = result.value[3];
+    
+                    if (!profile.endTime || profile.endTime == '') {
+                        profile.endTime = 0;
+                    }
+                    if (!profile.startTime || profile.startTime == '') {
+                        profile.startTime = 0;
+                    }
+    
+                    resolve(profile);
+                } else {
+                    reject();
                 }
-            },
-            {
-                title: browser.i18n.getMessage('starttime'),
-                text: browser.i18n.getMessage('starttime_desc'),
-                input: 'number',
-                inputValue: profile.startTime
-            },
-            {
-                title: browser.i18n.getMessage('endtime'),
-                text: browser.i18n.getMessage('endtime_desc'),
-                input: 'number',
-                inputValue: profile.endTime
-            }
-        ]
-
-        swal.queue(steps).then((result) => {
-            swal.resetDefaults()
-
-            if (result.value) {
-                profile.name = result.value[0];
-                profile.urlPattern = result.value[1];
-                profile.startTime = result.value[2];
-                profile.endTime = result.value[3];
-
-                if(!profile.endTime || profile.endTime == '') {
-                    profile.endTime = 0;
-                }
-                if(!profile.startTime || profile.startTime == '') {
-                    profile.startTime = 0;
-                }
-
-                resolve(profile);
-            } else {
-                reject();
-            }
+            });
+        }, (err) => {
+            reject();
         });
+        
     });
 }
 

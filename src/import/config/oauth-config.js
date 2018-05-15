@@ -23,52 +23,67 @@ var config = {
         },
         
         validate(redirectURL) {
-            console.debug('validate');
-            const instance = config.google;
-            const accessToken = instance.extractAccessToken(redirectURL);
-            if (!accessToken) {
-                throw "No access token could be extracted";
-            }
+            return new Promise((resolve, reject) => {
+                console.debug('validate');
+                const instance = config.google;
+                const accessToken = instance.extractAccessToken(redirectURL);
+                if (!accessToken) {
+                    reject("No access token could be extracted");
+                }
 
-            const validationURL = `${instance.validationBaseURL}?access_token=${accessToken}`;
-            const validationRequest = new Request(validationURL, {
-                method: "GET"
-            });
-        
-            function checkResponse(response, instance) {
-                console.debug('checkResponse');
-                return new Promise((resolve, reject) => {
-                    if (response.status != 200) {
-                        reject("Token validation error");
-                    }
-                    response.json().then((json) => {
-                        if (json.aud && (json.aud === config.google.client_id)) {
-                            resolve(accessToken);
-                        } else {
+                const validationURL = `${instance.validationBaseURL}?access_token=${accessToken}`;
+                const validationRequest = new Request(validationURL, {
+                    method: "GET"
+                });
+            
+                function checkResponse(response) {
+                    console.debug('checkResponse');
+                    return new Promise((resolve, reject) => {
+                        if (response.status != 200) {
                             reject("Token validation error");
                         }
+                        response.json().then((json) => {
+                            if (json.aud && (json.aud === config.google.client_id)) {
+                                resolve(accessToken);
+                            } else {
+                                reject("Token validation error");
+                            }
+                        });
                     });
-                });
-            }
-        
-            return fetch(validationRequest).then(checkResponse);
+                }
+            
+                fetch(validationRequest).then(checkResponse).then(resolve).catch(reject);
+            });
         },
 
         fetchToken() {
-            console.debug('fetchToken');
+            return new Promise((resolve, reject) => {
+                console.debug('fetchToken');
 
-            const instance = this;
-            if(browser.identity && browser.identity.launchWebAuthFlow) {
-                return browser.identity.launchWebAuthFlow({
-                    interactive: true,
-                    url: instance.authURLFilled()
-                }).then(instance.validate);
-            } else {
-                return instance.fetchTokenLegacy({
-                    authURL: instance.authURLFilled(),
-                    redirectURL: instance.redirectURL
-                }).then(instance.validate);
-            }
+                const instance = this;
+
+                function innerLegacyFetch() {
+                    instance.fetchTokenLegacy({
+                        authURL: instance.authURLFilled(),
+                        redirectURL: instance.redirectURL
+                    }).then(() => {
+                        resolve({pending: true})
+                    }).catch(reject);
+                }
+
+                if(browser.identity && browser.identity.launchWebAuthFlow) {
+                    try {
+                        browser.identity.launchWebAuthFlow({
+                            interactive: true,
+                            url: instance.authURLFilled()
+                        }).then(instance.validate).then(resolve).catch(reject);
+                    } catch(err) {
+                        innerLegacyFetch();
+                    }
+                } else {
+                    innerLegacyFetch();
+                }
+            });
         },
 
         fetchTokenLegacy(urls) {
@@ -78,9 +93,12 @@ var config = {
             return new Promise((resolve, reject) => {
 
                 // just open a new window with the authURL, background page will catch webrequest to redirectURL and login
-                browser.windows.create({
-                    url: authURL
-                });
+                
+                if(browser.windows) {
+                    browser.windows.create({url: authURL}).then(resolve).catch(reject);
+                } else {
+                    browser.tabs.create({url: authURL}).then(resolve).catch(reject);
+                }
             });
         },
 
@@ -126,7 +144,7 @@ var config = {
                     if(result[instance.storageKey]) {
                         resolve(result[instance.storageKey]);
                     } else {
-                        resolve();
+                        reject({message: 'No OAuth key found'})
                     }
                 }).catch((err) => {
                     reject(err);
