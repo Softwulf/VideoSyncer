@@ -66,7 +66,7 @@ export default class Renderer extends Observable {
                         this.shadowRoot = jquery('#vsync_container').prepend('<div id="shadow-unsupported" />');
                     }
                     
-                    jquery(this.shadowRoot).prepend(`<style>@import url('${browser.extension.getURL('content_script/tracker.css')}')</style>`);
+                    jquery(this.shadowRoot).prepend(`<style>@import url('${browser.extension.getURL('content_script/shadow.css')}')</style>`);
                     $(this.shadowRoot).append('<div id="vsync_status"></div>');
                 }
             } else {

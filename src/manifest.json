@@ -17,7 +17,8 @@
         "default_popup": "content/popup/index.html?panel=main"
     },
     "web_accessible_resources": [
-        "content_script/tracker.css"
+        "content_script/tracker.css",
+        "content_script/shadow.css"
     ],
     "background": {
         "scripts": [
@@ -32,6 +33,9 @@
             ],
             "js": [
                 "content_script/main.js"
+            ],
+            "css": [
+                "content_script/tracker.css"
             ],
             "all_frames": true
         }

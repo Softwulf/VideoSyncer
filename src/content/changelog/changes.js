@@ -1,6 +1,12 @@
 export default {
     releases: [
         {
+            version: '5.4.3',
+            changes: [
+                'Fixing minor css-related bug'
+            ]
+        },
+        {
             version: '5.4.2',
             changes: [
                 'Minor bug fixes'
