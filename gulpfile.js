@@ -13,7 +13,7 @@ var argv = require('yargs')
         alias: 't',
         describe: 'Choose build target',
         type: 'array',
-        choices: ['chrome', 'firefox'],
+        choices: ['chrome', 'firefox', 'opera'],
         default: 'chrome'
     })
     .option('release', {

@@ -17,8 +17,10 @@
         "webextension-polyfill": "^0.2.1"
     },
     "scripts": {
-        "start": "gulp --t chrome --t firefox --w",
-        "build": "gulp --t chrome --t firefox --prod",
+        "start": "gulp --t chrome --w",
+        "build": "gulp --prod",
+        "start-all": "gulp --t chrome --t firefox --t opera --w",
+        "build-all": "gulp --t chrome --t firefox --t opera --prod",
         "gulp": "./node_modules/.bin/gulp"
     },
     "devDependencies": {
