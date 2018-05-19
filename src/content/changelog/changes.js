@@ -1,6 +1,12 @@
 export default {
     releases: [
         {
+            version: '5.5.0',
+            changes: [
+                'Adding support for Opera browser'
+            ]
+        },
+        {
             version: '5.4.3',
             changes: [
                 'Fixing minor css-related bug'
