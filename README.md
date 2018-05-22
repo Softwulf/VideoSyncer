@@ -8,7 +8,7 @@ Documentation can be found [here](https://doc.vsync.ch)
 #Set version here
 VERSION="X.X.X"
 npm i
-npm run build -- -r $VERSION
+npm run build-all -- -r $VERSION
 mkdir artefact
 cd dist/firefox
 zip -rq "../../artefact/VideoSyncer_"$VERSION"_firefox.xpi" *
@@ -22,7 +22,7 @@ cd VideoSyncer
 VERSION="X.X.X"
 git checkout "tags/v$VERSION"
 npm i
-npm run build -- -r $VERSION
+npm run build-all -- -r $VERSION
 mkdir artefact
 cd dist/firefox
 zip -rq "../../artefact/VideoSyncer_"$VERSION"_firefox.xpi" *
