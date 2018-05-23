@@ -70,7 +70,6 @@
         "storage",
         "webRequest"
     ],
-    "content_security_policy":"script-src 'self' https://cdn.firebase.com https://*.firebaseio.com; object-src 'self'",
     "oauth2": {
         "client_id": "<%=config.google.oauth.chromeExtensionClientId%>",
         "scopes": [
