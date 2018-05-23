@@ -4,7 +4,7 @@ import Rebase from 're-base';
 var config = {
     apiKey: "AIzaSyBLKHfIWkEW7fsAGwe0zXol9n8k0p6vDDs",
     authDomain: "softwulf.firebaseapp.com",
-    databaseURL: "https://softwulf.firebaseio.com",
+    databaseURL: "wss://softwulf.firebaseio.com",
     projectId: "softwulf",
     storageBucket: "softwulf.appspot.com",
     messagingSenderId: "436445289686"
