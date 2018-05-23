@@ -2,10 +2,10 @@ import browser from 'webextension-polyfill';
 
 var config = {
     google: {
-        client_id: "722597016924-1e17rascr0ru5usmlolufui11u9vobqb.apps.googleusercontent.com",
+        client_id: "<%=config.google.oauth.clientId%>",
         authURL: 'https://accounts.google.com/o/oauth2/auth',
         revokeURL: 'https://accounts.google.com/o/oauth2/revoke',
-        redirectURL: 'https://vsync.ch/_oauth',
+        redirectURL: '<%=config.google.oauth.redirectUrl%>',
         validationBaseURL: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
         scopes: browser.runtime.getManifest().oauth2.scopes,
         storageKey: 'google_token',

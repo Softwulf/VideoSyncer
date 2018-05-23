@@ -72,7 +72,7 @@
     ],
     "content_security_policy":"script-src 'self' https://cdn.firebase.com https://*.firebaseio.com; object-src 'self'",
     "oauth2": {
-        "client_id": "722597016924-imd1nm72qqcoi8mmi4qnsj0pmqgii68k.apps.googleusercontent.com",
+        "client_id": "<%=config.google.oauth.chromeExtensionClientId%>",
         "scopes": [
             "profile",
             "email",

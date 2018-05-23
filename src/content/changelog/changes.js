@@ -1,6 +1,12 @@
 export default {
     releases: [
         {
+            version: '5.6.0',
+            changes: [
+                'Migrating to another database once again'
+            ]
+        },
+        {
             version: '5.5.0',
             changes: [
                 'Adding support for Opera browser'

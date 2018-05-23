@@ -7,6 +7,7 @@ var webpack = require('webpack-stream');
 var glob = require('glob');
 var path = require('path');
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+var config = require('./config');
 
 var argv = require('yargs')
     .option('target', {
@@ -89,7 +90,8 @@ createTask('ejs', ['raw'], (target, tempDir, distDir) => {
         .pipe(ejs({
             target: target,
             version: version,
-            production: production
+            production: production,
+            config: config
         }))
         .pipe(gulp.dest(tempDir + 'src'));
 });
