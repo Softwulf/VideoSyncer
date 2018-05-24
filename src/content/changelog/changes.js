@@ -1,6 +1,12 @@
 export default {
     releases: [
         {
+            version: '5.6.6',
+            changes: [
+                'Minor improvements'
+            ]
+        },
+        {
             version: '5.6.5',
             changes: [
                 'Fixing a critical issue regarding the database'

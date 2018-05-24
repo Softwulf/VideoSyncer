@@ -6,7 +6,9 @@ import { SyncServer, Protocol } from '../import/sync';
 import user from '../import/user';
 
 import { BackgroundGateway } from '../import/communication';
+import LoginStatus from './login-status';
 
+const loginStatus = new LoginStatus();
 const gateway = new BackgroundGateway();
 
 const Server = new SyncServer(true);
@@ -60,6 +62,7 @@ firebase.auth().onAuthStateChanged(handleLoginStateChange); // listen to user lo
 handleLoginStateChange(firebase.auth().currentUser); // init with current login state NOW
 
 function handleLoginStateChange(user) {
+
     if (profilesRef) profilesRef.off();
     if (user) { // user is now logged in
         console.log('User is now logged in, notifying all watch pages (might result in some errors)');
@@ -72,12 +75,17 @@ function handleLoginStateChange(user) {
         }, function(error) {
             console.error('Failed to read profiles: ', err);
         });
+
+        // Setup loginStatus
+        loginStatus.on(user);
     } else { // user is now logged out
         console.log('User is now logged out, notifying all watch pages');
 
         profilesRef = null;
         // remove profiles from all content scripts
         Server.pushProfiles(null);
+
+        loginStatus.off(user);
     }
 }
 
