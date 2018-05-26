@@ -81,7 +81,7 @@ class Server extends Observable {
         browser.tabs.query({}).then(function(tabs){
             for(let i = 0; i < tabs.length;i++) {
                 browser.tabs.sendMessage(tabs[i].id, message).then(callback).catch((error) => {
-                    console.error('Error notying tab ', tabs[i].url);
+                    //console.error('Error notying tab ', tabs[i].url);
                 });
             }
         });

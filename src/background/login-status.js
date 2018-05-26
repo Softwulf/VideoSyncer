@@ -1,24 +1,24 @@
 import { firebase } from '../import/config/firebase-config';
 
 class LoginStatus {
-    constructor() {
-        this.uid = null;
+    constructor(appName, appVersion) {
+        this.appName = appName;
+        this.appVersion = appVersion;
+        this.user = null;
         this.statusRef = null;
         this.infoRef = null;
+
+        firebase.auth().onAuthStateChanged(user => {
+            if(user) {
+                this.on(user);
+            } else {
+                this.off();
+            }
+        });
     }
 
     on(user) {
-        this.isOfflineForDatabase = {
-            state: 'offline',
-            last_changed: firebase.database.ServerValue.TIMESTAMP,
-            displayName: user.displayName
-        };
-        
-        this.isOnlineForDatabase = {
-            state: 'online',
-            last_changed: firebase.database.ServerValue.TIMESTAMP,
-            displayName: user.displayName
-        };
+        this.user = user;
         this.uid = user.uid;
         this.statusRef = firebase.database().ref('/status/' + this.uid);
         this.infoRef = firebase.database().ref('.info/connected');
@@ -33,7 +33,7 @@ class LoginStatus {
             // method to add a set which will only trigger once this 
             // client has disconnected by closing the app, 
             // losing internet, or any other means.
-            this.statusRef.onDisconnect().set(this.isOfflineForDatabase).then(() => {
+            this.statusRef.onDisconnect().update(this.getPresence('offline')).then(() => {
                 // The promise returned from .onDisconnect().set() will
                 // resolve as soon as the server acknowledges the onDisconnect() 
                 // request, NOT once we've actually disconnected:
@@ -41,7 +41,7 @@ class LoginStatus {
         
                 // We can now safely set ourselves as 'online' knowing that the
                 // server will mark us as offline once we lose connection.
-                this.statusRef.set(this.isOnlineForDatabase);
+                this.statusRef.update(this.getPresence('online'));
             });
         });
 
@@ -51,7 +51,7 @@ class LoginStatus {
     off() {
         if(this.uid) this.uid = null;
         if(this.statusRef) {
-            this.statusRef.set(this.isOfflineForDatabase);
+            this.statusRef.update(this.getPresence('offline'));
             this.statusRef.off();
             this.statusRef = null;
         }
@@ -59,8 +59,22 @@ class LoginStatus {
             this.infoRef.off();
             this.infoRef = null;
         }
+        this.user = null;
 
         console.debug('Status managent unregistered!');
+    }
+
+    getPresence(state) {
+        let presence = {
+            last_changed: firebase.database.ServerValue.TIMESTAMP,
+            displayName: this.user.displayName,
+            photoURL: this.user.photoURL,
+            state,
+        };
+
+        presence[`apps/${this.appName}/version`] = this.appVersion;
+
+        return presence;
     }
 }
 

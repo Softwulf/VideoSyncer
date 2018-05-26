@@ -8,7 +8,7 @@ import user from '../import/user';
 import { BackgroundGateway } from '../import/communication';
 import LoginStatus from './login-status';
 
-const loginStatus = new LoginStatus();
+new LoginStatus('vsync', browser.runtime.getManifest().version);
 const gateway = new BackgroundGateway();
 
 const Server = new SyncServer(true);
@@ -76,16 +76,12 @@ function handleLoginStateChange(user) {
             console.error('Failed to read profiles: ', err);
         });
 
-        // Setup loginStatus
-        loginStatus.on(user);
     } else { // user is now logged out
         console.log('User is now logged out, notifying all watch pages');
 
         profilesRef = null;
         // remove profiles from all content scripts
         Server.pushProfiles(null);
-
-        loginStatus.off(user);
     }
 }
 
