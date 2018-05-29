@@ -128,13 +128,25 @@ createTask('final-locales', ['tmp'], (target, tempDir, distDir) => {
 });
 
 createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
+    const fileEndings = [
+        '.entry.jsx',
+        '.entry.tsx',
+        '.entry.js',
+        '.entry.ts'
+    ]
+
     // map files
-    var entryArray = glob.sync(tempDir + '/**/*.entry.js');
+    var entryArray = glob.sync(tempDir + '/**/*.entry.*');
     var entryObject = entryArray.reduce((acc, item) => {
-        const name = item.replace(tempDir + 'src/', '').replace('.entry.js', '.js');
+        let name = item.replace(tempDir + 'src/', '');
+        fileEndings.forEach(ending => {
+            name = name.replace(ending, '.js');
+        })
         acc[name] = item;
         return acc;
     }, {});
+
+    console.log('files: ', entryObject);
 
     var webpackConfig = {
         entry: entryObject,
@@ -144,12 +156,9 @@ createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
         module: {
             loaders: [
                 {
-                    test: /\.js?$/,
+                    test: /\.(ts|tsx|js|jsx)$/,
                     exclude: /node_modules/,
-                    loader: 'babel-loader',
-                    query: {
-                        presets: ['es2015', 'react', 'stage-0'],
-                    },
+                    loader: 'ts-loader'
                 },
                 {
                     test: /\.css$/,
@@ -179,7 +188,7 @@ createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
     }
 
     return gulp.src(tempDir + '/src/**/*.js')
-        .pipe(webpack(webpackConfig))
+        .pipe(webpack(webpackConfig, require('webpack')))
         .pipe(gulp.dest(distDir))
 });
 
