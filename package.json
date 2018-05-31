@@ -21,7 +21,8 @@
         "build": "gulp --prod",
         "start-all": "gulp --t chrome --t firefox --t opera --w",
         "build-all": "gulp --t chrome --t firefox --t opera --prod",
-        "gulp": "./node_modules/.bin/gulp"
+        "gulp": "./node_modules/.bin/gulp",
+        "tsc": "./node_modules/.bin/tsc"
     },
     "devDependencies": {
         "babel": "^6.23.0",

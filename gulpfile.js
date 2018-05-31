@@ -146,32 +146,29 @@ createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
         return acc;
     }, {});
 
-    console.log('files: ', entryObject);
-
     var webpackConfig = {
         entry: entryObject,
+        mode: argv.production ? 'production' : 'development',
         output: {
             filename: '[name]',
         },
+        resolve: {
+            extensions: ['.ts', '.tsx', '.js', '.jsx']
+        },
         module: {
-            loaders: [
+            rules: [
                 {
                     test: /\.(ts|tsx|js|jsx)$/,
                     exclude: /node_modules/,
-                    loader: 'ts-loader'
+                    use: 'ts-loader'
                 },
                 {
                     test: /\.css$/,
-                    loader: ['style-loader', 'css-loader']
+                    use: ['style-loader', 'css-loader']
                 },
                 {
                     test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                    use: {
-                        loader: 'url-loader',
-                        options: {
-                            limit: 0
-                        }
-                    }
+                    use: 'url-loader'
                 }
             ]
         }

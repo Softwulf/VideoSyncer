@@ -11,7 +11,7 @@
         "sourceMap": true,
         "target": "es5",
         "allowJs": true,
-        "checkJs": true,
+        "checkJs": false,
         "jsx": "react"
     },
     "include": [
