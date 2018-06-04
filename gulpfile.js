@@ -81,12 +81,12 @@ createTask('clean', null, (target, tempDir, distDir) => {
 });
 
 createTask('raw', ['clean'], (target, tempDir, distDir) => {
-    return gulp.src('src/**/*.!(js|entry.js|json|css|html)')
+    return gulp.src('src/**/*.!(tsx|entry.tsx|ts|entry.ts|jsx|entry.jsx|js|entry.js|json|css|html)')
         .pipe(gulp.dest(tempDir + 'src'));
 });
 
 createTask('ejs', ['raw'], (target, tempDir, distDir) => {
-    return gulp.src('src/**/*.@(js|entry.js|json|css|html)')
+    return gulp.src('src/**/*.@(tsx|entry.tsx|ts|entry.ts|jsx|entry.jsx|js|entry.js|json|css|html)')
         .pipe(ejs({
             target: target,
             version: version,
