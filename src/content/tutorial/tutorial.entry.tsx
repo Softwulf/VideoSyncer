@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 
 import 'semantic-ui-css/semantic.min.css';
 import { Container, Header } from 'semantic-ui-react';

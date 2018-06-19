@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import {browser} from 'webextension-polyfill-ts';
 import oauthConfig from '../import/config/oauth-config';
 import { firebase, db } from '../import/config/firebase-config';
 
@@ -7,7 +7,6 @@ import user from '../import/user';
 
 import { BackgroundGateway } from '../import/communication';
 import LoginStatus from './login-status';
-import { DH_CHECK_P_NOT_PRIME } from 'constants';
 
 new LoginStatus('vsync', browser.runtime.getManifest().version);
 const gateway = new BackgroundGateway();
