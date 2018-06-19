@@ -1,6 +1,5 @@
 declare namespace vsync {
-    interface Profile {
-        key: string,
+    interface UninitializedProfile {
         name: string,
         startTime: number,
         endTime: number,
@@ -14,7 +13,8 @@ declare namespace vsync {
         latestFrame?: string
     }
 
-    class Profile implements Profile {
+    interface Profile extends UninitializedProfile {
+        key: string
     }
 }
 

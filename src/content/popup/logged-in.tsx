@@ -143,7 +143,7 @@ class LoggedIn extends React.Component<LoggedInProps, any> {
     addProfile() {
         const instance = this;
 
-        swalc.editProfile(null).then((profile) => {
+        swalc.editProfile(null).then((profile: any) => {
             var profileRef = base.push('vsync/profiles/' + firebase.auth().currentUser.uid, {
                 data: {
                     name: profile.name,
@@ -169,7 +169,7 @@ class LoggedIn extends React.Component<LoggedInProps, any> {
     editProfile(profileIn) {
         const instance = this;
 
-        swalc.editProfile(profileIn).then((profile) => {
+        swalc.editProfile(profileIn).then((profile: any) => {
             var profileRef = base.update('vsync/profiles/' + firebase.auth().currentUser.uid + '/' + profile.key, {
                 data: {
                     name: profile.name,
