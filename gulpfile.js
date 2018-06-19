@@ -184,13 +184,13 @@ createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
         webpackConfig.devtool = 'source-map'
     }
 
-    return gulp.src(tempDir + '/src/**/*.js')
+    return gulp.src(tempDir + '/src/**/*.(js?|ts?)')
         .pipe(webpack(webpackConfig, require('webpack')))
         .pipe(gulp.dest(distDir))
 });
 
 createTask('files', ['webpack'], (target, tempDir, distDir) => {
-    return gulp.src(tempDir + '/src/**/*.!(js|entry.js)')
+    return gulp.src(tempDir + '/src/**/*.!(js?|ts?)')
         .pipe(gulp.dest(distDir));
 });
 

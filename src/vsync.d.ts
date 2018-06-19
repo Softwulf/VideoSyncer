@@ -17,3 +17,5 @@ declare namespace vsync {
     class Profile implements Profile {
     }
 }
+
+declare module 'semantic-ui-react';

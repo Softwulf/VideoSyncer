@@ -106,6 +106,7 @@ class App extends React.Component {
                 </div>
                 <InfoMessage message={this.state.message} />
                 <Segment compact attached className='page-footer' color='grey'>
+                    <a href={browser.runtime.getURL('content/tutorial/tutorial.html')} target='_blank'>Tutorial</a>
                     <Header as='h4' color='black'>
                         <Image src='/content/images/logo.svg' verticalAlign='middle' />
                         {' '+browser.i18n.getMessage('app_name')}

@@ -7,6 +7,7 @@ import user from '../import/user';
 
 import { BackgroundGateway } from '../import/communication';
 import LoginStatus from './login-status';
+import { DH_CHECK_P_NOT_PRIME } from 'constants';
 
 new LoginStatus('vsync', browser.runtime.getManifest().version);
 const gateway = new BackgroundGateway();
@@ -73,7 +74,7 @@ function handleLoginStateChange(user) {
             console.log('Profiles changed, notifying all watch pages', profiles.val());
             Server.pushProfiles(profiles.val());
         }, function(error) {
-            console.error('Failed to read profiles: ', err);
+            console.error('Failed to read profiles: ', error);
         });
 
     } else { // user is now logged out
@@ -143,6 +144,12 @@ function handleInstalled(details) {
     if (details.reason == 'install' || details.reason == 'update') {
         browser.tabs.create({
             url: browser.runtime.getURL('content/changelog/changelog.html')
+        });
+    }
+
+    if(details.reason === 'install') {
+        browser.tabs.create({
+            url: browser.runtime.getURL('content/tutorial/tutorial.html')
         });
     }
 }
