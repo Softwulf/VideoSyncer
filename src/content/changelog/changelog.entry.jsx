@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import browser from 'webextension-polyfill';
-import changes from './changes.js';
+import changes from './changes';
 
 import 'semantic-ui-css/semantic.min.css';
 import { Container, Header, Item, List} from 'semantic-ui-react';

@@ -13,23 +13,21 @@
         "react-firebaseui": "^1.1.8",
         "semantic-ui-css": "^2.2.14",
         "semantic-ui-react": "^0.77.2",
-        "sweetalert2": "^7.8.2",
-        "webextension-polyfill": "^0.2.1"
+        "sweetalert2": "^7.22.2",
+        "sweetalert2-react-content": "^1.0.1",
+        "webextension-polyfill-ts": "^0.8.4"
     },
     "scripts": {
         "start": "gulp --t chrome --w",
         "build": "gulp --prod",
         "start-all": "gulp --t chrome --t firefox --t opera --w",
         "build-all": "gulp --t chrome --t firefox --t opera --prod",
-        "gulp": "./node_modules/.bin/gulp"
+        "gulp": "./node_modules/.bin/gulp",
+        "tsc": "./node_modules/.bin/tsc"
     },
     "devDependencies": {
-        "babel": "^6.23.0",
-        "babel-core": "^6.26.0",
-        "babel-loader": "^7.1.4",
-        "babel-preset-es2015": "^6.24.1",
-        "babel-preset-react": "^6.24.1",
-        "babel-preset-stage-0": "^6.24.1",
+        "@types/react": "^16.3.16",
+        "@types/react-dom": "^16.0.6",
         "css-loader": "^0.28.11",
         "file-loader": "^1.1.11",
         "glob": "^7.1.2",
@@ -40,6 +38,9 @@
         "gulp-ejs": "^3.1.3",
         "gulp-json-format": "^2.0.0",
         "style-loader": "^0.21.0",
+        "ts-loader": "^4.3.0",
+        "tslint": "^5.10.0",
+        "typescript": "^2.8.3",
         "uglifyjs-webpack-plugin": "^1.2.5",
         "url-loader": "^1.0.1",
         "webpack": "^4.6.0",

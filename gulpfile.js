@@ -81,12 +81,12 @@ createTask('clean', null, (target, tempDir, distDir) => {
 });
 
 createTask('raw', ['clean'], (target, tempDir, distDir) => {
-    return gulp.src('src/**/*.!(js|entry.js|json|css|html)')
+    return gulp.src('src/**/*.!(tsx|entry.tsx|ts|entry.ts|jsx|entry.jsx|js|entry.js|json|css|html)')
         .pipe(gulp.dest(tempDir + 'src'));
 });
 
 createTask('ejs', ['raw'], (target, tempDir, distDir) => {
-    return gulp.src('src/**/*.@(js|entry.js|json|css|html)')
+    return gulp.src('src/**/*.@(tsx|entry.tsx|ts|entry.ts|jsx|entry.jsx|js|entry.js|json|css|html)')
         .pipe(ejs({
             target: target,
             version: version,
@@ -128,41 +128,47 @@ createTask('final-locales', ['tmp'], (target, tempDir, distDir) => {
 });
 
 createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
+    const fileEndings = [
+        '.entry.jsx',
+        '.entry.tsx',
+        '.entry.js',
+        '.entry.ts'
+    ]
+
     // map files
-    var entryArray = glob.sync(tempDir + '/**/*.entry.js');
+    var entryArray = glob.sync(tempDir + '/**/*.entry.*');
     var entryObject = entryArray.reduce((acc, item) => {
-        const name = item.replace(tempDir + 'src/', '').replace('.entry.js', '.js');
+        let name = item.replace(tempDir + 'src/', '');
+        fileEndings.forEach(ending => {
+            name = name.replace(ending, '.js');
+        })
         acc[name] = item;
         return acc;
     }, {});
 
     var webpackConfig = {
         entry: entryObject,
+        mode: argv.production ? 'production' : 'development',
         output: {
             filename: '[name]',
         },
+        resolve: {
+            extensions: ['.ts', '.tsx', '.js', '.jsx']
+        },
         module: {
-            loaders: [
+            rules: [
                 {
-                    test: /\.js?$/,
+                    test: /\.(ts|tsx|js|jsx)$/,
                     exclude: /node_modules/,
-                    loader: 'babel-loader',
-                    query: {
-                        presets: ['es2015', 'react', 'stage-0'],
-                    },
+                    use: 'ts-loader'
                 },
                 {
                     test: /\.css$/,
-                    loader: ['style-loader', 'css-loader']
+                    use: ['style-loader', 'css-loader']
                 },
                 {
                     test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                    use: {
-                        loader: 'url-loader',
-                        options: {
-                            limit: 0
-                        }
-                    }
+                    use: 'url-loader'
                 }
             ]
         }
@@ -178,13 +184,13 @@ createTask('webpack', ['tmp'], (target, tempDir, distDir) => {
         webpackConfig.devtool = 'source-map'
     }
 
-    return gulp.src(tempDir + '/src/**/*.js')
-        .pipe(webpack(webpackConfig))
+    return gulp.src(tempDir + '/src/**/*.(js?|ts?)')
+        .pipe(webpack(webpackConfig, require('webpack')))
         .pipe(gulp.dest(distDir))
 });
 
 createTask('files', ['webpack'], (target, tempDir, distDir) => {
-    return gulp.src(tempDir + '/src/**/*.!(js|entry.js)')
+    return gulp.src(tempDir + '/src/**/*.!(js?|ts?)')
         .pipe(gulp.dest(distDir));
 });
 

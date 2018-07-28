@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import {browser} from 'webextension-polyfill-ts';
 import oauthConfig from '../import/config/oauth-config';
 import { firebase, db } from '../import/config/firebase-config';
 
@@ -73,7 +73,7 @@ function handleLoginStateChange(user) {
             console.log('Profiles changed, notifying all watch pages', profiles.val());
             Server.pushProfiles(profiles.val());
         }, function(error) {
-            console.error('Failed to read profiles: ', err);
+            console.error('Failed to read profiles: ', error);
         });
 
     } else { // user is now logged out
@@ -143,6 +143,12 @@ function handleInstalled(details) {
     if (details.reason == 'install' || details.reason == 'update') {
         browser.tabs.create({
             url: browser.runtime.getURL('content/changelog/changelog.html')
+        });
+    }
+
+    if(details.reason === 'install') {
+        browser.tabs.create({
+            url: browser.runtime.getURL('content/tutorial/tutorial.html')
         });
     }
 }

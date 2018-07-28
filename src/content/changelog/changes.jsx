@@ -1,6 +1,12 @@
 export default {
     releases: [
         {
+            version: '5.7.0',
+            changes: [
+                'Introduced room for significant improvments in the future.'
+            ]
+        },
+        {
             version: '5.6.7',
             changes: [
                 'Minor improvements to background processes'
