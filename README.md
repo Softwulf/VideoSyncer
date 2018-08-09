@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/ElectronicManuel/VideoSyncer.svg?branch=master)](https://travis-ci.org/ElectronicManuel/VideoSyncer)
+[![Dependency Status](https://david-dm.org/ElectronicManuel/VideoSyncer/status.svg)](https://david-dm.org/ElectronicManuel/VideoSyncer)
+[![Dev Dependency Status](https://david-dm.org/ElectronicManuel/VideoSyncer/dev-status.svg)](https://david-dm.org/ElectronicManuel/VideoSyncer?type=dev)
 
 # Documentation
 Documentation can be found [here](https://doc.vsync.ch)
