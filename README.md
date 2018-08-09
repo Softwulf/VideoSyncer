@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ElectronicManuel/VideoSyncer.svg?branch=master)](https://travis-ci.org/ElectronicManuel/VideoSyncer)
+
 # Documentation
 Documentation can be found [here](https://doc.vsync.ch)
 
