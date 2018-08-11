@@ -6,7 +6,7 @@
             "es7",
             "es2017"
         ],
-        "module": "es2015",
+        "module": "commonjs",
         "moduleResolution": "node",
         "noImplicitReturns": true,
         "sourceMap": true,
@@ -14,9 +14,7 @@
         "allowJs": true,
         "checkJs": false,
         "jsx": "react",
-        "allowSyntheticDefaultImports": false
-    },
-    "include": [
-        "distTmp/**/*"
-    ]
+        "allowSyntheticDefaultImports": false,
+        "experimentalDecorators": true
+    }
 }

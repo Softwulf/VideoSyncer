@@ -2,19 +2,14 @@
     "manifest_version": 2,
     "name": "VideoSyncer",
     "default_locale": "en",
-    "version": "<%=version%>",
+    "version": "@@VS_version",
     "author": "ElectronicManuel",
     "description": "__MSG_app_description__",
     "short_name": "VSync",
     "browser_action": {
-        <% if (target=='chrome' || target=='opera') { %>
-            "default_icon": "content/images/logo512.png",
-        <% } %>
-        <% if (target=='firefox') { %>
-            "default_icon": "content/images/logo.svg",
-        <% } %>
+        "default_icon": "content/images/logo512.png",
         "default_title": "VideoSyncer",
-        "default_popup": "content/popup/index.html?panel=main"
+        "default_popup": "content/popup/index.html"
     },
     "web_accessible_resources": [
         "content_script/tracker.css",
@@ -43,7 +38,6 @@
         }
     ],
     "icons": {
-        <% if (target=='chrome' || target=='opera') { %>
             "16": "content/images/logo16.png",
             "24": "content/images/logo24.png",
             "32": "content/images/logo32.png",
@@ -52,17 +46,6 @@
             "128": "content/images/logo128.png",
             "256": "content/images/logo256.png",
             "512": "content/images/logo512.png"
-        <% } %>
-        <% if (target=='firefox') { %>
-            "16": "content/images/logo16.png",
-            "24": "content/images/logo24.png",
-            "32": "content/images/logo32.png",
-            "48": "content/images/logo48.png",
-            "64": "content/images/logo64.png",
-            "128": "content/images/logo128.png",
-            "256": "content/images/logo256.png",
-            "512": "content/images/logo512.png"
-        <% } %>
     },
     "permissions": [
         "<all_urls>",
@@ -73,14 +56,4 @@
         "webRequestBlocking",
         "notifications"
     ]
-    <% if (target=='chrome') { %>
-        ,"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgTrw9RTstP1dZMzdBPOPcovwvR67lC0MPfV1lbYpTYRqcorAgK/wSsa1Ejo2xqbwqzVNagU2Wuc0VpjfBSaOsRBCbhYgSL7ZNcAal9cr6wVAfXP86bXPDHIyowzc8c30LAoBW4AsN1mPAFHBFXMm5A7rT0McoH9JlCaD9vVA8wkPblNaPsQCQseWSu4oy9tFyAjOvgINgJd170Iv9NCoAMqJGipixK6GvKhdA2wknkV+LUydTQJkGHsmhC0X+x9+h4cNCFgCfQDGk3lgD3J/MYjoOzFkLGvWo/f1ZKrL1ubMeS9aHKLd9ScuTGjVymja5as+qhaE2zkZkGFQao7x7QIDAQAB"
-        <% } %>
-    <% if (target=='firefox') { %>
-    ,"applications": {
-        "gecko": {
-            "id": "{560ece31-4892-44b1-b1cc-331bad846f57}"
-        }
-    }
-    <% } %>
 }

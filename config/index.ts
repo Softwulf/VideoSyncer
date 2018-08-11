@@ -1,4 +1,4 @@
-module.exports = {
+export const config = {
     google: {
         oauth: {
             clientId: '436445289686-3u01jus4j5mngstl45795l7aa6etjpqg.apps.googleusercontent.com',
