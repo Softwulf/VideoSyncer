@@ -12,6 +12,7 @@ import LoggedIn from './logged-in';
 import { AuthComponent } from '../../import/config/firebaseui-config';
 
 import { Button, Loader, Container, Header, Icon, Segment, Message, Divider, Image } from 'semantic-ui-react';
+import { Protocol } from '../../import/sync';
 
 class App extends React.Component {
     constructor(props) {
@@ -87,6 +88,17 @@ class App extends React.Component {
                         </Header.Content>
                     </Header>
                     <center><a href="https://vsync.ch/migrate/" target="_blank"><Header as='h3' color='blue' content='Where did my account go?' /></a></center>
+                    <Button onClick={() => {
+                            browser.runtime.sendMessage({
+                                type: Protocol.AUTH0_LOGIN
+                            }).then((response) => {
+                                console.log('Response: ', response);
+                            }).catch((error) => {
+                                console.error('ERROR in auth0 login', error);
+                            });  
+                        }}
+                        content='Auth0'
+                        fluid />
                     <Segment padded>
                         <Button loading={this.state.loading} onClick={() => { this.login(true) }} content={browser.i18n.getMessage('login_google')} color='google plus' icon='google plus' labelPosition='left' fluid />
                         <Divider horizontal>Or</Divider>

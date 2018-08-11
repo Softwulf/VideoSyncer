@@ -9,7 +9,7 @@ import user from '../../import/user';
 import { Accordion, Icon, Button, Segment, Message, Grid, Popup } from 'semantic-ui-react'
 
 import swalc from '../../import/config/swal-config';
-import { SyncServer } from '../../import/sync';
+import { SyncServer, Protocol } from '../../import/sync';
 
 const Server = new SyncServer();
 
@@ -234,7 +234,15 @@ class LoggedIn extends React.Component<LoggedInProps, any> {
                             <Button icon='plus' labelPosition='left' content={browser.i18n.getMessage('create')} basic onClick={this.addProfile} />
                         </Grid.Column>
                         <Grid.Column>
-                            <Popup hideOnScroll trigger={<Button basic onClick={user.logout} negative icon='shutdown' />} header={browser.i18n.getMessage('logout')} content={browser.i18n.getMessage('logout_detail')} />
+                            <Popup hideOnScroll trigger={<Button basic onClick={() => {
+                                    browser.runtime.sendMessage({
+                                        type: Protocol.AUTH0_LOGOUT
+                                    }).then((response) => {
+                                        console.log('Response: ', response);
+                                    }).catch((error) => {
+                                        console.error('ERROR in auth0 login', error);
+                                    });
+                            }} negative icon='shutdown' />} header={browser.i18n.getMessage('logout')} content={browser.i18n.getMessage('logout_detail')} />
                         </Grid.Column>
                     </Grid>
 

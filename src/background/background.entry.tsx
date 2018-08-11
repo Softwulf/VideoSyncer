@@ -7,12 +7,29 @@ import user from '../import/user';
 
 import { BackgroundGateway } from '../import/communication';
 import LoginStatus from './login-status';
+import { WulfAuth } from './auth/auth-core';
+
+const AuthCore = new WulfAuth({
+    domain: 'wulf.eu.auth0.com',
+    clientID: 'N05T621mqmuVSXzYWq2uptIdJEkKcG4J',
+    redirectUri: 'http://vsync.ch/_oauth',
+    audience: 'https://wulf.eu.auth0.com/userinfo'
+}, firebase.auth());
+
 
 new LoginStatus('vsync', browser.runtime.getManifest().version);
 const gateway = new BackgroundGateway();
 
 const Server = new SyncServer(true);
 var profilesRef = null;
+
+Server.on(Protocol.AUTH0_LOGIN, message => {
+    AuthCore.login();
+});
+
+Server.on(Protocol.AUTH0_LOGOUT, message => {
+    AuthCore.logout();
+});
 
 /*
  * Profile Sync with content scripts
@@ -89,6 +106,12 @@ function handleLoginStateChange(user) {
  * Check for oauth2 logins in legacy browsers
  */
 browser.webRequest.onBeforeRequest.addListener((details) => {
+    AuthCore.validate(details.url).then(result => {
+        console.log('Auth Result: ', result);
+    }).catch(err => {
+        console.error('Auth Failed: ', err);
+    });
+    /*
     oauthConfig.google.validate(details.url).then((token) => {
         oauthConfig.google.storeLocalToken(token).then(() => {
             var credential = firebase.auth.GoogleAuthProvider.credential(null, token);
@@ -102,9 +125,9 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
         });
     }).catch((err) => {
         console.error('Could not validate redirect URL: ', err);
-    });
+    });*/
 }, {
-    urls: [oauthConfig.google.redirectURL + '*']
+    urls: ['https://vsync.ch/_oauth' + '*']
 });
 
 // Handle legacy login requests in background, so closing popup wont cancel
