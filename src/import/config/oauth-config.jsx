@@ -7,7 +7,7 @@ var config = {
         revokeURL: 'https://accounts.google.com/o/oauth2/revoke',
         redirectURL: '<%=config.google.oauth.redirectUrl%>',
         validationBaseURL: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
-        scopes: browser.runtime.getManifest().oauth2.scopes,
+        scopes: ['openid', 'email', 'profile'],
         storageKey: 'google_token',
         authURLFilled() {
             return `${this.authURL}?client_id=${this.client_id}&response_type=token&redirect_uri=${encodeURIComponent(this.redirectURL)}&scope=${encodeURIComponent(this.scopes.join(' '))}`

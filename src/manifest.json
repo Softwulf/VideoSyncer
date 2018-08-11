@@ -65,22 +65,14 @@
     "permissions": [
         "<all_urls>",
         "tabs",
-        "contextMenus",
         "identity",
         "storage",
-        "webRequest"
-    ],
-    "oauth2": {
-        "client_id": "<%=config.google.oauth.chromeExtensionClientId%>",
-        "scopes": [
-            "profile",
-            "email",
-            "openid"
-        ]
-    }
+        "webRequest",
+        "notifications"
+    ]
     <% if (target=='chrome') { %>
-    ,"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgTrw9RTstP1dZMzdBPOPcovwvR67lC0MPfV1lbYpTYRqcorAgK/wSsa1Ejo2xqbwqzVNagU2Wuc0VpjfBSaOsRBCbhYgSL7ZNcAal9cr6wVAfXP86bXPDHIyowzc8c30LAoBW4AsN1mPAFHBFXMm5A7rT0McoH9JlCaD9vVA8wkPblNaPsQCQseWSu4oy9tFyAjOvgINgJd170Iv9NCoAMqJGipixK6GvKhdA2wknkV+LUydTQJkGHsmhC0X+x9+h4cNCFgCfQDGk3lgD3J/MYjoOzFkLGvWo/f1ZKrL1ubMeS9aHKLd9ScuTGjVymja5as+qhaE2zkZkGFQao7x7QIDAQAB"
-    <% } %>
+        ,"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgTrw9RTstP1dZMzdBPOPcovwvR67lC0MPfV1lbYpTYRqcorAgK/wSsa1Ejo2xqbwqzVNagU2Wuc0VpjfBSaOsRBCbhYgSL7ZNcAal9cr6wVAfXP86bXPDHIyowzc8c30LAoBW4AsN1mPAFHBFXMm5A7rT0McoH9JlCaD9vVA8wkPblNaPsQCQseWSu4oy9tFyAjOvgINgJd170Iv9NCoAMqJGipixK6GvKhdA2wknkV+LUydTQJkGHsmhC0X+x9+h4cNCFgCfQDGk3lgD3J/MYjoOzFkLGvWo/f1ZKrL1ubMeS9aHKLd9ScuTGjVymja5as+qhaE2zkZkGFQao7x7QIDAQAB"
+        <% } %>
     <% if (target=='firefox') { %>
     ,"applications": {
         "gecko": {

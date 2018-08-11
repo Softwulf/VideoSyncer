@@ -8,14 +8,7 @@ import user from '../import/user';
 import { BackgroundGateway } from '../import/communication';
 import LoginStatus from './login-status';
 import { WulfAuth } from './auth/auth-core';
-
-const AuthCore = new WulfAuth({
-    domain: 'wulf.eu.auth0.com',
-    clientID: 'N05T621mqmuVSXzYWq2uptIdJEkKcG4J',
-    redirectUri: 'http://vsync.ch/_oauth',
-    audience: 'https://wulf.eu.auth0.com/userinfo'
-}, firebase.auth());
-
+import { AuthCore } from './auth/auth-setup';
 
 new LoginStatus('vsync', browser.runtime.getManifest().version);
 const gateway = new BackgroundGateway();
@@ -29,6 +22,16 @@ Server.on(Protocol.AUTH0_LOGIN, message => {
 
 Server.on(Protocol.AUTH0_LOGOUT, message => {
     AuthCore.logout();
+});
+
+Server.on(Protocol.Auth0_VALIDATE, async message => {
+    try {
+        await AuthCore.validate(message.url);
+        console.log('Signed in!');
+        return;
+    } catch(err) {
+        throw err;
+    }
 });
 
 /*
@@ -101,34 +104,6 @@ function handleLoginStateChange(user) {
         Server.pushProfiles(null);
     }
 }
-
-/*
- * Check for oauth2 logins in legacy browsers
- */
-browser.webRequest.onBeforeRequest.addListener((details) => {
-    AuthCore.validate(details.url).then(result => {
-        console.log('Auth Result: ', result);
-    }).catch(err => {
-        console.error('Auth Failed: ', err);
-    });
-    /*
-    oauthConfig.google.validate(details.url).then((token) => {
-        oauthConfig.google.storeLocalToken(token).then(() => {
-            var credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-            firebase.auth().signInWithCredential(credential).then((user) => {
-                console.log('User logged into firebase: ', user);
-            }).catch((error) => {
-                console.error('Could not login user to firebase: ', error);
-            });
-        }).catch((err) => {
-            console.error('Could not store google token: ', err);
-        });
-    }).catch((err) => {
-        console.error('Could not validate redirect URL: ', err);
-    });*/
-}, {
-    urls: ['https://vsync.ch/_oauth' + '*']
-});
 
 // Handle legacy login requests in background, so closing popup wont cancel
 Server.on(Protocol.BACKGROUND_LOGIN, (message) => {

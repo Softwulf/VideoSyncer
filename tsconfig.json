@@ -3,7 +3,8 @@
         "lib": [
             "es6",
             "dom",
-            "es7"
+            "es7",
+            "es2017"
         ],
         "module": "es2015",
         "moduleResolution": "node",
@@ -12,7 +13,8 @@
         "target": "es5",
         "allowJs": true,
         "checkJs": false,
-        "jsx": "react"
+        "jsx": "react",
+        "allowSyntheticDefaultImports": false
     },
     "include": [
         "distTmp/**/*"
