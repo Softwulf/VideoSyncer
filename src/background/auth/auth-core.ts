@@ -1,6 +1,7 @@
 import * as auth0 from 'auth0-js';
 import * as UrlParser from 'url-parse';
-import * as browser from 'webextension-polyfill-ts';
+import { browser } from 'webextension-polyfill-ts';
+import { randomBytes } from 'crypto';
 
 type WulfAuthOptions = {
     domain: string
@@ -23,6 +24,14 @@ function toQueryString(params: {
       .join('&');
 }
 
+function randomString() {
+    const random = randomBytes(48);
+
+    return random.toString('hex');
+}
+
+const nonceStorageKey = 'auth0_nonce';
+const stateStorageKey = 'auth0_state';
 
 export class WulfAuth {
     options: WulfAuthOptions
@@ -46,58 +55,74 @@ export class WulfAuth {
     }
 
     async login() {
-        console.log(this.options.loginUrl);
-        browser.browser.windows.create({
+        for(let i = 0; i < 50; i++) {
+            console.log(randomString());
+        }
+
+        const nonce = randomString();
+        const state = randomString();
+
+        const storageObj = {};
+        storageObj[nonceStorageKey] = nonce;
+        storageObj[stateStorageKey] = state;
+
+        await browser.storage.local.set(storageObj);
+
+        browser.windows.create({
             url: `https://${this.options.domain}/authorize` + toQueryString({
                 response_type: responseType,
                 client_id: this.options.clientID,
                 redirect_uri: this.options.loginUrl,
                 display: 'popup',
-                nonce: '1234'
+                nonce,
+                state
             }),
             type: 'panel',
             width: 500,
             height: 600
         });
-        /*this.auth0.popup.authorize({
-            domain: this.options.domain,
-            clientId: this.options.clientID,
-            redirectUri: this.options.loginUrl,
-            audience: this.options.audience,
-            responseType: 'token id_token',
-            scope: 'openid profile'
-        }, (err, response) => {
-            // this callback will never be called due to web extension limitations
-        });*/
     }
 
     validate(url: string) {
         return new Promise((resolve, reject) => {
-            const hash = new UrlParser(url).hash;
-            (this.auth0 as any).parseHash({ hash }, (err, authResult) => {
-                if(err) {
-                    reject(err);
-                } else {
-                    if(!authResult.idTokenPayload[firebaseTokenClaimName]) {
-                        reject({
-                            message: 'No firebase token received!'
-                        })
+            browser.storage.local.get([nonceStorageKey, stateStorageKey]).then(fromStorage => {
+                const hash = new UrlParser(url).hash;
+                const nonce = fromStorage[nonceStorageKey];
+                const state = fromStorage[stateStorageKey];
+
+                (this.auth0 as any).parseHash({
+                    hash,
+                    state,
+                    nonce
+                }, (err, authResult) => {
+                    if(err) {
+                        reject(err);
                     } else {
-                        const firebaseToken = authResult.idTokenPayload[firebaseTokenClaimName];
-                        this.firebaseAuth.signInWithCustomToken(firebaseToken).then(resolve).catch(reject);
+                        if(!authResult.idTokenPayload[firebaseTokenClaimName]) {
+                            reject({
+                                message: 'No firebase token received!'
+                            })
+                        } else {
+                            const firebaseToken = authResult.idTokenPayload[firebaseTokenClaimName];
+                            this.firebaseAuth.signInWithCustomToken(firebaseToken).then(resolve).catch(reject);
+                        }
                     }
-                }
+                });
+            }).catch(err => {
+                reject(err);
             });
         })
     }
 
     logout() {
-        browser.browser.windows.create({
+        browser.windows.create({
             url: `https://${this.options.domain}/v2/logout` + toQueryString({
                 returnTo: this.options.logoutUrl,
                 client_id: this.options.clientID
             }),
-            type: 'panel'
+            type: 'panel',
+            width: 500,
+            height: 600
         });
         this.firebaseAuth.signOut();
     }

@@ -24,12 +24,6 @@ class LoginHandler extends React.Component<{}, LoginHandlerState> {
     }
 
     async componentDidMount() {
-        browser.browser.notifications.create({
-            type: 'basic',
-            iconUrl: browser.browser.runtime.getURL('content/images/logo256.png'),
-            title: 'Login Successful',
-            message: 'You can use the app now'
-        });
         try {
             await AuthCore.validate(window.location.href);
             this.setState({

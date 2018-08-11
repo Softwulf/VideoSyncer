@@ -18,7 +18,9 @@
     },
     "web_accessible_resources": [
         "content_script/tracker.css",
-        "content_script/shadow.css"
+        "content_script/shadow.css",
+        "content/oauth/login.html",
+        "content/oauth/logout.html"
     ],
     "background": {
         "scripts": [
@@ -68,6 +70,7 @@
         "identity",
         "storage",
         "webRequest",
+        "webRequestBlocking",
         "notifications"
     ]
     <% if (target=='chrome') { %>

@@ -10,6 +10,8 @@ import LoginStatus from './login-status';
 import { WulfAuth } from './auth/auth-core';
 import { AuthCore } from './auth/auth-setup';
 
+import * as UrlParser from 'url-parse';
+
 new LoginStatus('vsync', browser.runtime.getManifest().version);
 const gateway = new BackgroundGateway();
 
@@ -23,6 +25,29 @@ Server.on(Protocol.AUTH0_LOGIN, message => {
 Server.on(Protocol.AUTH0_LOGOUT, message => {
     AuthCore.logout();
 });
+
+/*
+ * Redirect requests to the videosyncer oauth redirect url to internal extension pages
+ */
+browser.webRequest.onBeforeRequest.addListener((details) => {
+    const requestUrl = new UrlParser(details.url);
+    if(requestUrl.pathname.endsWith('/login')) {
+        return {
+            redirectUrl: browser.runtime.getURL('content/oauth/login.html')+requestUrl.hash
+        }
+    } else if(requestUrl.pathname.endsWith('/logout')) {
+        return {
+            redirectUrl: browser.runtime.getURL('content/oauth/logout.html')+requestUrl.hash
+        }
+    }
+    return {
+        cancel: false
+    };
+}, {
+    urls: ['https://vsync.ch/_oauth*'],
+}, [
+    'blocking'
+]);
 
 Server.on(Protocol.Auth0_VALIDATE, async message => {
     try {
