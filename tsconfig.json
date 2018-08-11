@@ -6,7 +6,7 @@
             "es7",
             "es2017"
         ],
-        "module": "commonjs",
+        "module": "es2015",
         "moduleResolution": "node",
         "noImplicitReturns": true,
         "sourceMap": true,

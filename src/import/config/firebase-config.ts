@@ -1,7 +1,7 @@
-import firebase from 'firebase';
-import Rebase from 're-base';
+import * as firebase from 'firebase';
+import * as rebase from 're-base';
 
-var config = {
+const config = {
     apiKey: "AIzaSyBLKHfIWkEW7fsAGwe0zXol9n8k0p6vDDs",
     authDomain: "softwulf.firebaseapp.com",
     databaseURL: "wss://softwulf.firebaseio.com",
@@ -9,12 +9,14 @@ var config = {
     storageBucket: "softwulf.appspot.com",
     messagingSenderId: "436445289686"
 };
-var app = firebase.initializeApp(config);
+const app = firebase.initializeApp(config);
 
-var db = firebase.database(app);
+const db = firebase.database(app);
 
-var base = Rebase.createClass(db);
+const base = rebase.createClass(db);
 
 export {
-    firebase as firebase, db as db, base as base,
+    firebase,
+    db,
+    base
 }

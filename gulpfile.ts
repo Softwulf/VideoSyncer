@@ -1,5 +1,5 @@
-import * as gulp from 'gulp';
-import * as clean from 'gulp-clean';
+/*import * as gulp from 'gulp';
+import * as del from 'del';
 import * as jsonFormat from 'gulp-json-format';
 import * as webpackStream from 'webpack-stream';
 import * as glob from 'glob';
@@ -8,14 +8,25 @@ import * as UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import * as yargs from 'yargs';
 import * as merge from 'gulp-merge-json';
 import * as fs from 'fs';
-import * as replace from 'gulp-replace';
+import * as replace from 'gulp-replace';*/
+const gulp = require('gulp');
+const del = require('del');
+const jsonFormat = require('gulp-json-format');
+const webpackStream = require('webpack-stream');
+const glob = require('glob');
+const path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const yargs = require('yargs');
+const merge = require('gulp-merge-json');
+const fs = require('fs');
+const replace = require('gulp-replace');
 
 import { config } from './config';
 
 const argv = yargs.option('target', {
         alias: 't',
         describe: 'Choose build target',
-        type: 'array',
+        type: 'string',
         choices: ['chrome', 'firefox', 'opera'],
         default: 'chrome'
     })
@@ -41,50 +52,117 @@ const argv = yargs.option('target', {
 
 
 const version: string = argv.release;
-const production = argv.production;
-const target = argv.target;
+const production: boolean = argv.production;
+const target: string = argv.target;
+const watch: boolean = argv.watch;
 
-gulp.task('merge-manifests', () => {
+const baseDist = `dist/${target}/`;
+
+export const clean = () => {
+    return del([baseDist]);
+};
+
+export const merge_manifests = () => {
     return gulp.src(`src/manifest.${argv.target}.json`)
         .pipe(merge({
-            fileName: 'manifest-combined.json',
+            fileName: 'manifest.json',
             startObj: JSON.parse(fs.readFileSync('src/manifest.json').toString('utf-8'))
         }))
         .pipe(replace('@@VS_version', version))
-        .pipe(gulp.dest('./dist'));
-})
+        .pipe(gulp.dest(baseDist));
+}
+
+export const copy_files = () => {
+    return gulp.src([
+        'src/**/*.html',
+        'src/**/*.css',
+        'src/**/*.png',
+        'src/**/*.svg',
+    ])
+            .pipe(replace('@@VS_version', version))
+            .pipe(gulp.dest(baseDist));
+}
+
+export const copy_locales = () => {
+    return gulp.src('src/_locales/**/*.json')
+        .pipe(replace('@@VS_version', version))
+        .pipe(gulp.dest(baseDist+'_locales'));
+}
+
+export const webpack_task = () => {
+        const fileEndings = [
+            '.entry.jsx',
+            '.entry.tsx',
+            '.entry.js',
+            '.entry.ts'
+        ]
+    
+        // map files
+        const entryArray = glob.sync('./src/**/*.entry.*');
+        const entryObject = entryArray.reduce((acc, item) => {
+            let name = item.replace('./src/', '');
+            fileEndings.forEach(ending => {
+                name = name.replace(ending, '.js');
+            })
+            acc[name] = item;
+            return acc;
+        }, {});
+    
+        const webpackConfig: any = {
+            entry: entryObject,
+            mode: argv.production ? 'production' : 'development',
+            output: {
+                filename: '[name]',
+            },
+            resolve: {
+                extensions: ['.ts', '.tsx', '.js', '.jsx']
+            },
+            module: {
+                rules: [
+                    {
+                        test: /\.(ts|tsx|js|jsx)$/,
+                        exclude: /node_modules/,
+                        use: 'ts-loader'
+                    },
+                    {
+                        test: /\.css$/,
+                        use: ['style-loader', 'css-loader']
+                    },
+                    {
+                        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+                        use: 'url-loader'
+                    }
+                ]
+            }
+        };
+    
+        if (argv.production) {
+            webpackConfig.plugins = [
+                new UglifyJsPlugin({
+                    parallel: true
+                })
+            ];
+        } else {
+            webpackConfig.devtool = 'source-map'
+        }
+    
+        return gulp.src('./src/**/*.(js?|ts?)')
+            .pipe(webpackStream(webpackConfig, require('webpack')))
+            .pipe(gulp.dest(baseDist));
+}
+
+const defaultTask = gulp.series(clean, 
+                        gulp.parallel(
+                            merge_manifests,
+                            copy_files,
+                            copy_locales,
+                            webpack_task
+                        )
+                    );
+
+gulp.task('default', defaultTask);
 
 // init args
-
-// function createTask(name, depends, exec) {
-//     function build(target) {
-//         const tempDir = './distTmp/' + target + '/';
-//         const distDir = './dist/' + target + '/';
-
-//         const targetSuffix = '-' + target;
-
-//         const tmpDepends = [];
-
-//         if (depends) {
-//             for (const i = 0; i < depends.length; i++) {
-//                 tmpDepends.push(depends[i] + targetSuffix);
-//             }
-//         }
-
-//         gulp.task(name + targetSuffix, tmpDepends, () => {
-//             if (exec) return exec(target, tempDir, distDir);
-//         })
-//     }
-
-//     if (argv.target instanceof Array) {
-//         for (let target of argv.target) {
-//             build(target);
-//         }
-//     } else {
-//         const target = argv.target;
-//         build(target);
-//     }
-// }
 
 // // BEGIN TMP
 
