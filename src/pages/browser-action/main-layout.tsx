@@ -11,23 +11,31 @@ import {
 
 } from '@material-ui/icons'
 
-import { withTheme } from '@material-ui/core/styles';
+import { withTheme, Theme } from '@material-ui/core/styles';
+
+import { ProfileTab } from './profiles/profile-tab';
+import { TutorialTab } from './tutorials/tutorial-tab';
+import { SettingsTab } from './settings/settings-tab';
 
 import { browser } from 'webextension-polyfill-ts';
 
 export const TabContainer = withTheme()((props) => {
     return (
-        <div style={{display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'auto', backgroundColor: props.theme.palette.background.default}}>
+        <div style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: props.theme.palette.background.default}}>
             {props.children}
         </div>
     );
 });
 
+type MainLayoutProps = {
+    setTheme: (theme: Theme['palette']['type']) => any
+}
+
 type MainLayoutState = {
     bottomNavigation: number
 }
 
-export class MainLayout extends React.Component<{}, MainLayoutState> {
+export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState> {
     constructor(props) {
         super(props);
         console.log(props);
@@ -38,14 +46,14 @@ export class MainLayout extends React.Component<{}, MainLayoutState> {
     }
 
     render() {
+        const style: React.CSSProperties = {
+            display: 'flex'
+        }
         return (
             <Layout
                 header={
-                    <AppBar color='primary'>
-                        <Toolbar variant='dense' color='inherit'>
-                        <IconButton color='inherit' aria-label='Menu'>
-                                <MenuIcon />
-                            </IconButton>
+                    <AppBar position='sticky' color='primary' style={style}>
+                        <Toolbar variant='dense' color='inherit' style={style}>
                             <Typography variant='title' color='inherit' style={{flexGrow: 1}}>
                                 VSync
                             </Typography>
@@ -71,15 +79,15 @@ export class MainLayout extends React.Component<{}, MainLayoutState> {
             >
 
                     {
-                        this.state.bottomNavigation === 0 && <TabContainer>Profiles</TabContainer>
+                        this.state.bottomNavigation === 0 && <TabContainer><ProfileTab /></TabContainer>
                     }
 
                     {
-                        this.state.bottomNavigation === 1 && <TabContainer>Tutorial</TabContainer>
+                        this.state.bottomNavigation === 1 && <TabContainer><TutorialTab /></TabContainer>
                     }
 
                     {
-                        this.state.bottomNavigation === 2 && <TabContainer>Settings</TabContainer>
+                        this.state.bottomNavigation === 2 && <TabContainer><SettingsTab setTheme={this.props.setTheme} /></TabContainer>
                     }
             </Layout>
         )
