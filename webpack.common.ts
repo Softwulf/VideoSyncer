@@ -4,15 +4,10 @@ import * as glob from 'glob';
 import * as UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import * as CopyWebpackPlugin from 'copy-webpack-plugin';
 import * as CleanWebpackPlugin from 'clean-webpack-plugin';
-import { exec } from 'child_process';
+import {exec} from 'child_process';
 
 const calculateEntryObject = () => {
-    const fileEndings = [
-        '.entry.jsx',
-        '.entry.tsx',
-        '.entry.js',
-        '.entry.ts'
-    ]
+    const fileEndings = ['.entry.jsx', '.entry.tsx', '.entry.js', '.entry.ts']
 
     const entryArray = glob.sync('./src/**/*.entry.*');
     const entryMap = {};
@@ -31,7 +26,7 @@ const generateConfig = (env) : webpack.Configuration => {
     const prod = env
         ? env.prod
         : false;
-    const version = env
+    const version = (env && env.version)
         ? env.version
         : '0.0.0';
 
@@ -39,43 +34,40 @@ const generateConfig = (env) : webpack.Configuration => {
 
     const distDir = 'dist/base';
 
-    const plugins: webpack.Plugin[] = [
+    const plugins : webpack.Plugin[] = [
         // Running gulp after webpack is done
         {
             apply: compiler => {
-                compiler.hooks.done.tap('VSyncWebpackDone', compilation => {
-                    exec(`npm run gulp -- -r ${version}${prod ? ' -prod' : ''}`, (err, stdout, stderr) => {
-                        if (stdout) process.stdout.write('OUT');
-                        if (stderr) process.stderr.write(stderr);
+                compiler
+                    .hooks
+                    .done
+                    .tap('VSyncWebpackDone', compilation => {
+                        exec(`npm run gulp -- -r ${version} ${prod
+                            ? ' --prod'
+                            : ''}`, (err, stdout, stderr) => {
+                            if (stdout) 
+                                process.stdout.write(stdout);
+                            if (stderr) 
+                                process.stderr.write(stderr);
+                            }
+                        );
                     });
-                });
             }
         },
         new CopyWebpackPlugin([
             {
                 from: '**/*',
                 ignore: [
-                    '**/*.tsx',
-                    '**/*.ts',
-                    '**/*.jsx',
-                    '**/*.js'
+                    '**/*.tsx', '**/*.ts', '**/*.jsx', '**/*.js'
                 ],
                 context: `${__dirname}/src/`
             }
-        ], {
-            copyUnmodified: true
-        }),
-        new CleanWebpackPlugin([distDir], {
-            watch: true
-        })
+        ], {copyUnmodified: true}),
+        new CleanWebpackPlugin([distDir], {watch: true})
     ];
 
     if (prod) {
-        plugins.push(
-            new UglifyJsPlugin({
-                parallel: true
-            })
-        );
+        plugins.push(new UglifyJsPlugin({parallel: true}));
     }
 
     const config : webpack.Configuration = {
@@ -83,7 +75,6 @@ const generateConfig = (env) : webpack.Configuration => {
             ? 'production'
             : 'development',
         entry,
-        devtool: 'source-map',
         output: {
             path: path.resolve(__dirname, distDir),
             filename: '[name]'

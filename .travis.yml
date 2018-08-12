@@ -1,5 +1,5 @@
 language: node_js
-script: npm run build-all
+script: "npm run build"
 node_js: "9.5.0"
 cache:
   directories:

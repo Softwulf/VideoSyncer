@@ -20,9 +20,10 @@
         "webextension-polyfill-ts": "^0.8.7"
     },
     "scripts": {
-        "start": "build -- -w",
+        "start": "npm run compile -- -w",
         "gulp": "gulp",
-        "build": "webpack --config webpack.common.ts"
+        "compile": "webpack --config webpack.common.ts",
+        "build": "npm run compile -- --env.prod"
     },
     "devDependencies": {
         "@types/auth0-js": "^8.10",
@@ -40,6 +41,9 @@
         "@types/webpack": "^4.4.9",
         "@types/webpack-stream": "^3.2.10",
         "@types/yargs": "^11.1.1",
+        "awesome-typescript-loader": "^5.2.0",
+        "babel-core": "^6.26.3",
+        "babel-loader": "^7.1.5",
         "clean-webpack-plugin": "^0.1.19",
         "copy-webpack-plugin": "^4.5.2",
         "css-loader": "^1.0.0",

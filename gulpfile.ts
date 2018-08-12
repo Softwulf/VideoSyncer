@@ -33,8 +33,8 @@ const targetList = [
     'firefox',
     'opera'
 ]
+
 const version: string = argv.release;
-console.log('Version: ', version)
 
 const distBase = 'dist/base';
 
