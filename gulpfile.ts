@@ -99,7 +99,7 @@ export const zip = () => {
     return Promise.all(targetList.map(target => {
         return new Promise((resolve, reject) => {
             console.log(`[${target}] Zipping ...`)
-            gulp.src(`dist/${target}`)
+            gulp.src(`dist/${target}/**/*`)
                 .on('error', (err) => {
                     console.error(`[${target}] Zipping FAILED`);
                     reject(err);
