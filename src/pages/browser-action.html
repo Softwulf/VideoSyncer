@@ -6,8 +6,8 @@
         /* These styles make the body full-height */
         html,
         body {
-            height: 200px;
-            width: 200px;
+            height: 600px;
+            width: 400px;
             margin: 0;
             padding: 0;
         }
@@ -23,9 +23,13 @@
 </head>
 
 <body>
-    <div id="root" />
+    <div id="root">
+        <div style="display: flex;flex-grow: 1;justify-content: center;align-items: center">
+            <h1 style="text-align: center">Loading ...</h1>
+        </div>
+    </div>
 
-    <script src="browser-action.js"></script>
+    <script src="browser-action.js" async></script>
 </body>
 
 </html>

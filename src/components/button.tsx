@@ -1,10 +1,7 @@
 import * as React from 'react';
 
-export type ButtonProps = {
-    onClick: () => any
-    title: string
-}
+import MaterialButton, { ButtonProps } from '@material-ui/core/Button';
 
 export const Button: React.SFC<ButtonProps> = (props: ButtonProps) => (
-    <button onClick={props.onClick}>{props.title}</button>
+    <MaterialButton {...props} style={{textTransform: 'none', ...props.style}} />
 )

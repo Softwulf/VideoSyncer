@@ -5,7 +5,6 @@ import * as UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import * as CopyWebpackPlugin from 'copy-webpack-plugin';
 import * as CleanWebpackPlugin from 'clean-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
-import * as AwesomeTypescriptLoader from 'awesome-typescript-loader';
 import {exec} from 'child_process';
 
 const calculateEntryObject = () => {
