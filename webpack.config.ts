@@ -5,6 +5,7 @@ import * as UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import * as CopyWebpackPlugin from 'copy-webpack-plugin';
 import * as CleanWebpackPlugin from 'clean-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
+import * as AwesomeTypescriptLoader from 'awesome-typescript-loader';
 import {exec} from 'child_process';
 
 const calculateEntryObject = () => {
@@ -104,7 +105,12 @@ const generateConfig = (env) : webpack.Configuration => {
                 {
                     test: /\.(ts|tsx|js|jsx)$/,
                     exclude: /node_modules/,
-                    use: 'ts-loader'
+                    use: [{
+                        loader: require.resolve('awesome-typescript-loader'),
+                        options: {
+                            useBabel: true
+                        }
+                    }]
                 }, {
                     test: /\.css$/,
                     use: ['style-loader', 'css-loader']
