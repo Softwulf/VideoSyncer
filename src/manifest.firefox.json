@@ -1,6 +1,6 @@
 {
     "browser_action": {
-        "default_icon": "content/images/logo.svg"
+        "default_icon": "assets/img/logo.svg"
     },
     "applications": {
         "gecko": {

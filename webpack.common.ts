@@ -4,6 +4,7 @@ import * as glob from 'glob';
 import * as UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import * as CopyWebpackPlugin from 'copy-webpack-plugin';
 import * as CleanWebpackPlugin from 'clean-webpack-plugin';
+import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import {exec} from 'child_process';
 
 const calculateEntryObject = () => {
@@ -52,6 +53,15 @@ const generateConfig = (env) : webpack.Configuration => {
                             }
                         );
                     });
+                compiler.hooks.watchRun.tap('VSyncWebpackLogWatch', compilation => {
+                    exec(`echo Building ...`, (err, stdout, stderr) => {
+                        if (stdout) 
+                            process.stdout.write(stdout);
+                        if (stderr) 
+                            process.stderr.write(stderr);
+                        }
+                    );
+                });
             }
         },
         new CopyWebpackPlugin([
@@ -68,7 +78,7 @@ const generateConfig = (env) : webpack.Configuration => {
             'dist/chrome',
             'dist/firefox',
             'dist/opera'
-        ], {watch: true})
+        ])
     ];
 
     const config : webpack.Configuration = {
@@ -82,7 +92,12 @@ const generateConfig = (env) : webpack.Configuration => {
             filename: '[name]'
         },
         resolve: {
-            extensions: ['.ts', '.tsx', '.js', '.jsx']
+            extensions: ['.ts', '.tsx', '.js', '.jsx'],
+            plugins: [
+                new TsconfigPathsPlugin({
+                    extensions: ['.ts', '.tsx', '.js', '.jsx']
+                })
+            ]
         },
         module: {
             rules: [
