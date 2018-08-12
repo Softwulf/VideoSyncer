@@ -71,10 +71,6 @@ const generateConfig = (env) : webpack.Configuration => {
         ], {watch: true})
     ];
 
-    if (prod) {
-        plugins.push(new UglifyJsPlugin({parallel: true}));
-    }
-
     const config : webpack.Configuration = {
         mode: prod
             ? 'production'
@@ -104,6 +100,17 @@ const generateConfig = (env) : webpack.Configuration => {
             ]
         },
         plugins
+    }
+
+    if (prod) {
+        config.optimization = {
+            minimizer: [
+                new UglifyJsPlugin({
+                    parallel: true,
+                    sourceMap: true
+                })
+            ]
+        }
     }
 
     return config;
