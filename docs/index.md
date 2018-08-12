@@ -6,7 +6,6 @@
 
 # Other References
 - [Developer Guide](developer.html)
-- [My Account is gone, what now?](migration.html) 
 
 # Getting started
 ## Create account / Login
