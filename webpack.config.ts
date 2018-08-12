@@ -110,12 +110,18 @@ const generateConfig = (env) : webpack.Configuration => {
                             useBabel: true
                         }
                     }]
-                }, {
+                },
+                {
                     test: /\.css$/,
                     use: ['style-loader', 'css-loader']
-                }, {
+                },
+                {
                     test: /\.(png|woff|woff2|eot|ttf|svg)$/,
                     use: 'url-loader'
+                },
+                {
+                    test: /\.less$/,
+                    loader: ['style-loader', 'css-loader', 'less-loader']
                 }
             ]
         },

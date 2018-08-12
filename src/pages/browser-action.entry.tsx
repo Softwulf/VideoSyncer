@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import 'typeface-roboto';
+import './react.less';
 
 import { MainLayout } from './browser-action/main-layout';
 

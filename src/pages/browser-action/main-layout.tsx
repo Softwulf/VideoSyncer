@@ -17,11 +17,11 @@ import { ProfileTab } from './profiles/profile-tab';
 import { TutorialTab } from './tutorials/tutorial-tab';
 import { SettingsTab } from './settings/settings-tab';
 
-import { browser } from 'webextension-polyfill-ts';
+
 
 export const TabContainer = withTheme()((props) => {
     return (
-        <div style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: props.theme.palette.background.default}}>
+        <div className='has-scrollbars' style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: props.theme.palette.background.default}}>
             {props.children}
         </div>
     );
@@ -46,14 +46,11 @@ export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState
     }
 
     render() {
-        const style: React.CSSProperties = {
-            display: 'flex'
-        }
         return (
             <Layout
                 header={
-                    <AppBar position='sticky' color='primary' style={style}>
-                        <Toolbar variant='dense' color='inherit' style={style}>
+                    <AppBar position='sticky' color='primary'>
+                        <Toolbar variant='dense' color='inherit'>
                             <Typography variant='title' color='inherit' style={{flexGrow: 1}}>
                                 VSync
                             </Typography>
