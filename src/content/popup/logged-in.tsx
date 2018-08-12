@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 
 import { firebase, base } from '../../import/config/firebase-config';
 import user from '../../import/user';

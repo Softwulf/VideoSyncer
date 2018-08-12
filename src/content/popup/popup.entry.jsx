@@ -4,7 +4,7 @@ import './popup.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 
 import { firebase } from '../../import/config/firebase-config';
 import user from '../../import/user';

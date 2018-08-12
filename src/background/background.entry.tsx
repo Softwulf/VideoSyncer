@@ -12,6 +12,8 @@ import { AuthCore } from './auth/auth-setup';
 
 import * as UrlParser from 'url-parse';
 
+console.log('Browser polyfill: ', browser.runtime.getManifest());
+
 new LoginStatus('vsync', browser.runtime.getManifest().version);
 const gateway = new BackgroundGateway();
 

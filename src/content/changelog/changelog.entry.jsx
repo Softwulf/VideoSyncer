@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 import changes from './changes';
 
 import 'semantic-ui-css/semantic.min.css';

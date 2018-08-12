@@ -63,7 +63,12 @@ const generateConfig = (env) : webpack.Configuration => {
                 context: `${__dirname}/src/`
             }
         ], {copyUnmodified: true}),
-        new CleanWebpackPlugin([distDir], {watch: true})
+        new CleanWebpackPlugin([
+            distDir,
+            'dist/chrome',
+            'dist/firefox',
+            'dist/opera'
+        ], {watch: true})
     ];
 
     if (prod) {

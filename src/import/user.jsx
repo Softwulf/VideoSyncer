@@ -2,7 +2,7 @@ import oauthConfig from './config/oauth-config';
 import { firebase } from './config/firebase-config';
 import { Protocol } from './sync';
 
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 
 var user = {};
 

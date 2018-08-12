@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 
 const MESSAGE_TYPES = {
     TOP_FRAME: 'TOP_FRAME',

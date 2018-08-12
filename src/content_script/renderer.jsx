@@ -5,7 +5,7 @@ import jquery from 'jquery';
 var $ = jquery;
 import Observable from '../import/observable';
 import autobind from 'auto-bind';
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 
 import { FrameCom } from '../import/communication';
 

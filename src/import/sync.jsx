@@ -1,6 +1,6 @@
 import Observable from './observable';
 import autobind from 'auto-bind';
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 
 const PROTOCOL = {
     BROADCAST: 'BROADCAST',
