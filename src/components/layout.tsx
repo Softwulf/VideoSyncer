@@ -15,11 +15,9 @@ export const Layout: React.SFC<LayoutProps> = (props: LayoutProps) => (
             </div>
         }
         
-        <div style={{display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'auto'}}>
-            {
-                props.children
-            }
-        </div>
+        {
+            props.children
+        }
 
         {
             props.footer && 
