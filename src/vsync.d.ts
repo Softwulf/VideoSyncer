@@ -17,5 +17,3 @@ declare namespace vsync {
         key: string
     }
 }
-
-declare module 'semantic-ui-react';
