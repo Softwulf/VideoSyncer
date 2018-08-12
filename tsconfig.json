@@ -15,5 +15,14 @@
         "checkJs": false,
         "jsx": "react",
         "experimentalDecorators": true,
-    }
+    },
+    "files": [
+        "src/background/background.entry.tsx",
+        "src/content_script/main.entry.jsx",
+        "src/content/changelog/changelog.entry.jsx",
+        "src/content/oauth/oauth-login-handler.entry.tsx",
+        "src/content/popup/popup.entry.jsx",
+        "src/content/tutorial/tutorial.entry.tsx",
+        "src/vsync.d.ts"
+    ]
 }

@@ -100,6 +100,8 @@ const generateConfig = (env) : webpack.Configuration => {
         plugins
     }
 
+    console.log(entry);
+
     return config;
 };
 
