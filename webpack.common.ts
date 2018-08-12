@@ -1,10 +1,10 @@
 import * as path from 'path';
 import * as webpack from 'webpack';
 import * as glob from 'glob';
-import * as MergeJsonWebpackPlugin from 'merge-jsons-webpack-plugin';
 import * as UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import * as CopyWebpackPlugin from 'copy-webpack-plugin';
-import * as CleanWebpackPlugin from 'clean-webpack-plugin'
+import * as CleanWebpackPlugin from 'clean-webpack-plugin';
+import { exec } from 'child_process';
 
 const calculateEntryObject = () => {
     const fileEndings = [
@@ -39,7 +39,18 @@ const generateConfig = (env) : webpack.Configuration => {
 
     const distDir = 'dist/base';
 
-    const plugins = [
+    const plugins: webpack.Plugin[] = [
+        // Running gulp after webpack is done
+        {
+            apply: compiler => {
+                compiler.hooks.done.tap('VSyncWebpackDone', compilation => {
+                    exec(`npm run gulp -- -r ${version}${prod ? ' -prod' : ''}`, (err, stdout, stderr) => {
+                        if (stdout) process.stdout.write('OUT');
+                        if (stderr) process.stderr.write(stderr);
+                    });
+                });
+            }
+        },
         new CopyWebpackPlugin([
             {
                 from: '**/*',
