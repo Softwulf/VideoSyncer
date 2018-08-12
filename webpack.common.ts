@@ -75,6 +75,7 @@ const generateConfig = (env) : webpack.Configuration => {
             ? 'production'
             : 'development',
         entry,
+        devtool: 'source-map',
         output: {
             path: path.resolve(__dirname, distDir),
             filename: '[name]'
@@ -99,8 +100,6 @@ const generateConfig = (env) : webpack.Configuration => {
         },
         plugins
     }
-
-    console.log(entry);
 
     return config;
 };
