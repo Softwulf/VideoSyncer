@@ -100,7 +100,7 @@ export const zip = () => {
     }
     return Promise.all(targetList.map(target => {
         return Promise.all(zipFormats.map(format => {
-            return Promise.all([version, 'latest'].map(tag => {
+            return Promise.all([`v${version}`, 'latest'].map(tag => {
                 return new Promise((resolve, reject) => {
                     console.log(`[${target}] Zipping ${tag}.${format} ...`)
                     gulp.src(`dist/${target}/**/*`)
@@ -108,7 +108,7 @@ export const zip = () => {
                             console.error(`[${target}] Zipping ${tag}.${format} FAILED`);
                             reject(err);
                         })
-                        .pipe(gulpZip(`VideoSyncer_v${tag}_${target}.${format}`))
+                        .pipe(gulpZip(`VideoSyncer_${tag}_${target}.${format}`))
                         .pipe(gulp.dest(`dist/archives`))
                         .on('end', () => {
                             console.log(`[${target}] Zipping ${tag}.${format} DONE`);
