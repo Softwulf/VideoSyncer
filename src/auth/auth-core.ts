@@ -93,7 +93,8 @@ export class WulfAuth {
                 redirect_uri: this.options.loginUrl,
                 nonce,
                 state
-            })
+            }),
+            active: true
         });
     }
 
@@ -135,7 +136,8 @@ export class WulfAuth {
             url: `https://${this.options.domain}/v2/logout` + toQueryString({
                 returnTo: this.options.logoutUrl,
                 client_id: this.options.clientID
-            })
+            }),
+            active: false
         });
         this.firebaseAuth.signOut();
     }
