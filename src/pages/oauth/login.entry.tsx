@@ -8,7 +8,6 @@ import { browser } from 'webextension-polyfill-ts';
 import { ThemeProvider, ThemeConsumerProps } from 'components/theme-provider';
 import { AuthProvider, AuthConsumerProps } from 'components/auth-provider';
 
-import { User } from 'firebase/app';
 import { AuthCore } from 'auth/wulf-auth';
 
 import { Typography } from '@material-ui/core';
