@@ -100,20 +100,22 @@ export const zip = () => {
     }
     return Promise.all(targetList.map(target => {
         return Promise.all(zipFormats.map(format => {
-            return new Promise((resolve, reject) => {
-                console.log(`[${target}] Zipping ${format} ...`)
-                gulp.src(`dist/${target}/**/*`)
-                    .on('error', (err) => {
-                        console.error(`[${target}] Zipping ${format} FAILED`);
-                        reject(err);
-                    })
-                    .pipe(gulpZip(`VideoSyncer_v${version}_${target}.${format}`))
-                    .pipe(gulp.dest(`dist/archives`))
-                    .on('end', () => {
-                        console.log(`[${target}] Zipping ${format} DONE`);
-                        resolve();
-                    })
-            });
+            return Promise.all([version, 'latest'].map(tag => {
+                return new Promise((resolve, reject) => {
+                    console.log(`[${target}] Zipping ${tag}.${format} ...`)
+                    gulp.src(`dist/${target}/**/*`)
+                        .on('error', (err) => {
+                            console.error(`[${target}] Zipping ${tag}.${format} FAILED`);
+                            reject(err);
+                        })
+                        .pipe(gulpZip(`VideoSyncer_v${tag}_${target}.${format}`))
+                        .pipe(gulp.dest(`dist/archives`))
+                        .on('end', () => {
+                            console.log(`[${target}] Zipping ${tag}.${format} DONE`);
+                            resolve();
+                        })
+                });
+            }));
         }));
     }));
 }
