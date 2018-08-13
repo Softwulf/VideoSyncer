@@ -25,6 +25,25 @@ function toQueryString(params: {
       .join('&');
 }
 
+function createWindow(options: {
+    url: string
+    active: boolean
+}) {
+    if(browser.windows && browser.windows.create) {
+        browser.windows.create({
+            url: options.url,
+            type: 'panel',
+            width: 500,
+            height: 600
+        });
+    } else {
+        browser.tabs.create({
+            url: options.url,
+            active: options.active
+        });
+    }
+}
+
 function randomString() {
     const random = randomBytes(48);
 
@@ -67,17 +86,14 @@ export class WulfAuth {
 
         await browser.storage.local.set(storageObj);
 
-        browser.windows.create({
+        createWindow({
             url: `https://${this.options.domain}/authorize` + toQueryString({
                 response_type: responseType,
                 client_id: this.options.clientID,
                 redirect_uri: this.options.loginUrl,
                 nonce,
                 state
-            }),
-            type: 'panel',
-            width: 500,
-            height: 600
+            })
         });
     }
 
@@ -115,14 +131,11 @@ export class WulfAuth {
     }
 
     logout() {
-        browser.windows.create({
+        createWindow({
             url: `https://${this.options.domain}/v2/logout` + toQueryString({
                 returnTo: this.options.logoutUrl,
                 client_id: this.options.clientID
-            }),
-            type: 'panel',
-            width: 60,
-            height: 50
+            })
         });
         this.firebaseAuth.signOut();
     }
