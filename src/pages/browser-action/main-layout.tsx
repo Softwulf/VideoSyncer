@@ -19,12 +19,13 @@ import { SettingsTab } from './settings/settings-tab';
 import { ThemeConsumerProps } from 'components/theme-provider';
 import { AuthConsumerProps } from 'components/auth-provider';
 import { AuthCore } from 'auth/wulf-auth';
+import { SignIn } from './signin/sign-in';
 
 export const TabContainer = withTheme()((props) => {
     return (
-        <div className='has-scrollbars' style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: props.theme.palette.background.default}}>
+        <Typography variant='body1' component='div' className='has-scrollbars' style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: props.theme.palette.background.default}}>
             {props.children}
-        </div>
+        </Typography>
     );
 });
 
@@ -44,21 +45,21 @@ export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState
     }
 
     render() {
-        let currentTab: React.ReactNode;
-
         if(this.props.loading) {
             return <TabContainer><div style={{display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}><CircularProgress variant='indeterminate' color='primary' /></div></TabContainer>
-        } else {
-            switch(this.state.bottomNavigation) {
-                case 1:
-                    currentTab = <TabContainer><TutorialTab /></TabContainer>
-                    break;
-                case 2:
-                    currentTab = <TabContainer><SettingsTab setTheme={this.props.setTheme} /></TabContainer>
-                    break;
-                default:
-                    currentTab = <TabContainer><ProfileTab /></TabContainer>
-            }
+        }
+
+
+        let currentTab: React.ReactNode;
+        switch(this.state.bottomNavigation) {
+            case 1:
+                currentTab = <TabContainer><TutorialTab /></TabContainer>
+                break;
+            case 2:
+                currentTab = <TabContainer><SettingsTab setTheme={this.props.setTheme} theme={this.props.theme} /></TabContainer>
+                break;
+            default:
+                currentTab = <TabContainer>{this.props.user ? <ProfileTab user={this.props.user} /> : <SignIn />}</TabContainer>
         }
 
         return (
@@ -81,13 +82,9 @@ export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState
                             }
                             {
                                 this.props.user ?
-                                        <Button style={{backgroundColor: red[900], color: '#FFF'}} variant='contained' onClick={() => {
-                                            AuthCore.logout();
-                                        }}>Log out</Button>
+                                    <Button style={{backgroundColor: red[900], color: '#FFF'}} variant='contained' onClick={AuthCore.logout}>Sign out</Button>
                                 :
-                                    <Button style={{backgroundColor: deepPurple[500], color: '#FFF'}} variant='contained' onClick={() => {
-                                        AuthCore.login();
-                                    }}>Log in</Button>
+                                    <Button style={{backgroundColor: deepPurple[500], color: '#FFF'}} variant='contained' onClick={AuthCore.login}>Sign in</Button>
                             }
                         </Toolbar>
                     </AppBar>
