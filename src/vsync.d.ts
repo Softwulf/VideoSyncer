@@ -16,4 +16,9 @@ declare namespace vsync {
     interface Profile extends UninitializedProfile {
         key: string
     }
+
+    interface Settings {
+        locale: string
+        theme: string
+    }
 }

@@ -47,7 +47,7 @@ export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState
         let currentTab: React.ReactNode;
 
         if(this.props.loading) {
-            currentTab = <TabContainer><div style={{display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}><CircularProgress variant='indeterminate' color='primary' /></div></TabContainer>
+            return <TabContainer><div style={{display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}><CircularProgress variant='indeterminate' color='primary' /></div></TabContainer>
         } else {
             switch(this.state.bottomNavigation) {
                 case 1:

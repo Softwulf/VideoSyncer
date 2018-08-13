@@ -1,6 +1,7 @@
 import { browser } from 'webextension-polyfill-ts';
 import * as UrlParser from 'url-parse';
-import { AuthCore } from 'auth/wulf-auth';
+import { firebase } from '../firebase';
+import { SettingsListener } from './settings-listener';
 
 /*
  * Redirect requests to the videosyncer oauth redirect url to internal extension pages
@@ -25,3 +26,5 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
 }, [
     'blocking'
 ]);
+
+const settingsListener = new SettingsListener();

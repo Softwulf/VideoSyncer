@@ -4,11 +4,16 @@ import bind from 'bind-decorator';
 import { MuiThemeProvider, createMuiTheme, Theme } from '@material-ui/core/styles';
 import { deepOrange, amber } from '@material-ui/core/colors';
 
+import { firebase } from '../firebase';
+
+import { browser } from 'webextension-polyfill-ts';
+
 export type ThemeName = Theme['palette']['type'];
 
-const DEFAULT_THEME: ThemeName = 'light';
+const DEFAULT_THEME: ThemeName = 'dark';
 
 const getTheme = (theme: ThemeName): Theme => {
+    if (theme !== 'dark' && theme !== 'light') theme = DEFAULT_THEME;
     return createMuiTheme({
         overrides: {
             MuiButton: {
@@ -48,13 +53,33 @@ export class ThemeProvider extends React.Component<ThemeProviderProps, ThemeProv
         }
     }
 
+    async componentDidMount() {
+        const results = await browser.storage.local.get({theme: DEFAULT_THEME});
+        this.setState({
+            theme: getTheme(results.theme)
+        });
+
+        // setup listener
+        browser.storage.onChanged.addListener((change, area) => {
+            if(area === 'local') {
+                if(change.theme) {
+                    this.setState({
+                        theme: getTheme(change.theme.newValue)
+                    })
+                }
+            }
+        });
+    }
 
     @bind
     setTheme(theme: ThemeName) {
-        if(this.state.theme.palette.type !== theme) {
-            this.setState({
-                theme: getTheme(theme)
-            })
+        if(this.state.theme.palette.type !== theme && (theme === 'dark' || theme === 'light')) {
+            browser.storage.local.set({theme});
+            
+            // if user is signed in, also update db
+            if(firebase.auth().currentUser) {
+                firebase.database().ref(`settings/${firebase.auth().currentUser.uid}`).update({theme});
+            }
         }
     }
 
