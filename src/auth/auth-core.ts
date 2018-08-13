@@ -115,15 +115,17 @@ export class WulfAuth {
     }
 
     logout() {
-        browser.windows.create({
+        const options = {
             url: `https://${this.options.domain}/v2/logout` + toQueryString({
                 returnTo: this.options.logoutUrl,
                 client_id: this.options.clientID
             }),
             type: 'panel',
-            width: 500,
-            height: 600
-        });
+            width: 60,
+            height: 50,
+            focused: false
+        };
+        browser.windows.create(options as any);
         this.firebaseAuth.signOut();
     }
 
