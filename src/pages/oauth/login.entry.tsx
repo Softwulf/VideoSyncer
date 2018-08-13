@@ -71,8 +71,7 @@ class LoginHandlerBase extends React.Component<LoginHandlerProps, LoginHandlerSt
     }
 
     async closeCurrentTab() {
-        const tab = await browser.tabs.getCurrent();
-        browser.tabs.remove(tab.id);
+        browser.runtime.sendMessage({type: 'CLOSE_TAB'});
     }
 
     render() {

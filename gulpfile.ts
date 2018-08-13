@@ -91,26 +91,30 @@ export const copy_webpack_results = () => {
 }
 
 export const zip = () => {
+    const zipFormats = ['zip', 'xpi'];
+
     if(!argv.production) {
         return (async () => {
             console.log('Skipping zipping');
         })();
     }
     return Promise.all(targetList.map(target => {
-        return new Promise((resolve, reject) => {
-            console.log(`[${target}] Zipping ...`)
-            gulp.src(`dist/${target}/**/*`)
-                .on('error', (err) => {
-                    console.error(`[${target}] Zipping FAILED`);
-                    reject(err);
-                })
-                .pipe(gulpZip(`VideoSyncer_v${version}_${target}.zip`))
-                .pipe(gulp.dest(`dist/archives`))
-                .on('end', () => {
-                    console.log(`[${target}] Zipping DONE`);
-                    resolve();
-                })
-        });
+        return Promise.all(zipFormats.map(format => {
+            return new Promise((resolve, reject) => {
+                console.log(`[${target}] Zipping ${format} ...`)
+                gulp.src(`dist/${target}/**/*`)
+                    .on('error', (err) => {
+                        console.error(`[${target}] Zipping ${format} FAILED`);
+                        reject(err);
+                    })
+                    .pipe(gulpZip(`VideoSyncer_v${version}_${target}.${format}`))
+                    .pipe(gulp.dest(`dist/archives`))
+                    .on('end', () => {
+                        console.log(`[${target}] Zipping ${format} DONE`);
+                        resolve();
+                    })
+            });
+        }));
     }));
 }
 

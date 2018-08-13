@@ -27,4 +27,10 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
     'blocking'
 ]);
 
-const settingsListener = new SettingsListener();
+new SettingsListener();
+
+browser.runtime.onMessage.addListener(async (message, sender) => {
+    if(message.type === 'CLOSE_TAB') {
+        return browser.tabs.remove(sender.tab.id);
+    }
+});
