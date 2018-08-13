@@ -28,6 +28,7 @@ const getTheme = (theme: ThemeName): Theme => {
 
 export type ThemeConsumerProps = {
     setTheme: (theme: ThemeName) => any
+    theme: Theme
 }
 
 export type ThemeProviderProps = {
@@ -60,7 +61,7 @@ export class ThemeProvider extends React.Component<ThemeProviderProps, ThemeProv
     render() {
         return (
             <MuiThemeProvider theme={this.state.theme}>
-                <this.props.component {...this.props} setTheme={this.setTheme} />
+                <this.props.component {...this.props} setTheme={this.setTheme} theme={this.state.theme} />
             </MuiThemeProvider>
         )
     }

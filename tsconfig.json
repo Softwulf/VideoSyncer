@@ -16,7 +16,6 @@
         "baseUrl": "./src"
     },
     "files": [
-        "src/pages/browser-action.entry.tsx",
-        "src/vsync.d.ts"
+        "src/**/*"
     ]
 }

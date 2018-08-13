@@ -1,13 +1,14 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import './resource-loader'
+import '../resource-loader'
+import './browser-action.less';
 
 import { ThemeProvider, ThemeConsumerProps } from 'components/theme-provider';
 import { AuthProvider } from 'components/auth-provider';
-import { MainLayout } from './browser-action/main-layout';
+import { MainLayout } from './main-layout';
 
-const MailLayoutWrapper: React.SFC<ThemeConsumerProps> = (props) => (
+const MainLayoutWrapper: React.SFC<ThemeConsumerProps> = (props) => (
     <AuthProvider {...props} component={MainLayout} />
 )
 
@@ -18,7 +19,7 @@ class BrowserAction extends React.Component<{}, {}> {
 
     render() {
         return (
-            <ThemeProvider component={MailLayoutWrapper} />
+            <ThemeProvider component={MainLayoutWrapper} />
         )
     }
 }

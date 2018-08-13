@@ -8,10 +8,16 @@
     "browser_action": {
         "default_icon": "assets/img/logo512.png",
         "default_title": "VideoSyncer",
-        "default_popup": "pages/browser-action.html"
+        "default_popup": "pages/browser-action/browser-action.html"
     },
     "web_accessible_resources": [
+        "pages/oauth/login.html"
     ],
+    "background": {
+        "scripts": [
+            "background/background.js"
+        ]
+    },
     "icons": {
             "16": "assets/img/logo16.png",
             "24": "assets/img/logo24.png",
@@ -23,12 +29,10 @@
             "512": "assets/img/logo512.png"
     },
     "permissions": [
-        "<all_urls>",
+        "https://vsync.ch/oauth/*",
         "tabs",
-        "identity",
         "storage",
         "webRequest",
-        "webRequestBlocking",
-        "notifications"
+        "webRequestBlocking"
     ]
 }
