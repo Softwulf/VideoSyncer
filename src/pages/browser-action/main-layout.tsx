@@ -1,10 +1,9 @@
 import * as React from 'react';
 
 import { Layout } from 'components/layout';
-import { AppBar, Toolbar, Typography, IconButton, BottomNavigation, BottomNavigationAction, Button } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, BottomNavigation, BottomNavigationAction, Button, CircularProgress } from '@material-ui/core';
 
 import {
-    Menu as MenuIcon,
     SettingsApplications as SettingsApplicationsIcon,
     HomeRounded as HomeIcon,
     Info as InfoIcon
@@ -16,8 +15,8 @@ import { withTheme, Theme } from '@material-ui/core/styles';
 import { ProfileTab } from './profiles/profile-tab';
 import { TutorialTab } from './tutorials/tutorial-tab';
 import { SettingsTab } from './settings/settings-tab';
-
-
+import { ThemeConsumerProps } from 'components/theme-provider';
+import { AuthConsumerProps } from 'components/auth-provider';
 
 export const TabContainer = withTheme()((props) => {
     return (
@@ -27,9 +26,7 @@ export const TabContainer = withTheme()((props) => {
     );
 });
 
-type MainLayoutProps = {
-    setTheme: (theme: Theme['palette']['type']) => any
-}
+type MainLayoutProps = ThemeConsumerProps & AuthConsumerProps
 
 type MainLayoutState = {
     bottomNavigation: number
@@ -38,7 +35,6 @@ type MainLayoutState = {
 export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState> {
     constructor(props) {
         super(props);
-        console.log(props);
     }
 
     state = {
@@ -46,6 +42,23 @@ export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState
     }
 
     render() {
+        let currentTab: React.ReactNode;
+
+        if(this.props.loading) {
+            currentTab = <TabContainer><div style={{display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}><CircularProgress variant='indeterminate' color='primary' /></div></TabContainer>
+        } else {
+            switch(this.state.bottomNavigation) {
+                case 1:
+                    currentTab = <TabContainer><TutorialTab /></TabContainer>
+                    break;
+                case 2:
+                    currentTab = <TabContainer><SettingsTab setTheme={this.props.setTheme} /></TabContainer>
+                    break;
+                default:
+                    currentTab = <TabContainer><ProfileTab /></TabContainer>
+            }
+        }
+
         return (
             <Layout
                 header={
@@ -54,7 +67,7 @@ export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState
                             <Typography variant='title' color='inherit' style={{flexGrow: 1}}>
                                 VSync
                             </Typography>
-                            <Button color='secondary' variant='contained'>Log out</Button>
+                            <Button color='primary' variant='contained'>Log out</Button>
                         </Toolbar>
                     </AppBar>
                 }
@@ -68,24 +81,13 @@ export class MainLayout extends React.Component<MainLayoutProps, MainLayoutState
                             })
                         }}
                     >
-                        <BottomNavigationAction label='Profiles' icon={<HomeIcon />} />
+                        <BottomNavigationAction label='Profiles' icon={<HomeIcon />}  />
                         <BottomNavigationAction label='Tutorial' icon={<InfoIcon />} />
                         <BottomNavigationAction label='Settings' icon={<SettingsApplicationsIcon />} />
                     </BottomNavigation>
                 }
             >
-
-                    {
-                        this.state.bottomNavigation === 0 && <TabContainer><ProfileTab /></TabContainer>
-                    }
-
-                    {
-                        this.state.bottomNavigation === 1 && <TabContainer><TutorialTab /></TabContainer>
-                    }
-
-                    {
-                        this.state.bottomNavigation === 2 && <TabContainer><SettingsTab setTheme={this.props.setTheme} /></TabContainer>
-                    }
+                {currentTab}
             </Layout>
         )
     }
