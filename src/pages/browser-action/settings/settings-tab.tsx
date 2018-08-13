@@ -1,15 +1,20 @@
 import * as React from 'react';
 import { Typography, Theme, Button, Select, List, ListSubheader, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction, Switch, FormControl, InputLabel, MenuItem } from '@material-ui/core';
 import { Palette as PaletteIcon, Bluetooth } from '@material-ui/icons';
-import { ThemeConsumerProps } from 'components/theme-provider';
+import { changeTheme } from 'components/theme-provider';
+import { ThemeState } from '../../_redux/themes/types';
+import { connect } from 'react-redux';
+import { ApplicationState } from '../../_redux';
 
-export type SettingsTabProps = ThemeConsumerProps
+export type SettingsTabProps = {
+    theme: ThemeState
+}
 
 export type SettingsTabState = {
     pickerOpen: {[name: string]: boolean}
 }
 
-export class SettingsTab extends React.Component<SettingsTabProps, SettingsTabState> {
+class SettingsTabBase extends React.Component<SettingsTabProps, SettingsTabState> {
 
     state = {
         pickerOpen: {}
@@ -46,8 +51,8 @@ export class SettingsTab extends React.Component<SettingsTabProps, SettingsTabSt
                             open={this.state.pickerOpen['theme']}
                             onClose={() => this.handleClose('theme')}
                             onOpen={() => this.handleOpen('theme')}
-                            value={this.props.theme.palette.type}
-                            onChange={(event) => this.props.setTheme(event.target.value as any)}
+                            value={this.props.theme.name}
+                            onChange={(event) => changeTheme(event.target.value as any)}
                         >
                             <MenuItem value={'light'}>Light</MenuItem>
                             <MenuItem value={'dark'}>Dark</MenuItem>
@@ -58,3 +63,9 @@ export class SettingsTab extends React.Component<SettingsTabProps, SettingsTabSt
         )
     }
 }
+
+export const SettingsTab = connect<SettingsTabProps>((state: ApplicationState): SettingsTabProps => {
+    return {
+        theme: state.theme
+    }
+}, null)(SettingsTabBase);

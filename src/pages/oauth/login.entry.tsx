@@ -5,15 +5,21 @@ import '../resource-loader'
 
 import { browser } from 'webextension-polyfill-ts';
 
-import { ThemeProvider, ThemeConsumerProps } from 'components/theme-provider';
-import { AuthProvider, AuthConsumerProps } from 'components/auth-provider';
+import { ThemeProvider } from 'components/theme-provider';
 
 import { AuthCore } from 'auth/wulf-auth';
 
 import { Typography } from '@material-ui/core';
 import { red, green } from '@material-ui/core/colors';
+import { ThemeState } from '../_redux/themes/types';
+import { ReduxProvider } from '../_redux/redux-provider';
+import { AuthProvider } from 'components/auth-provider';
+import { connect } from 'react-redux';
+import { ApplicationState } from '../_redux';
 
-type LoginHandlerProps = AuthConsumerProps & ThemeConsumerProps
+type LoginHandlerProps = {
+    theme: ThemeState
+}
 
 type LoginHandlerState = {
     type: 'success' | 'error' | 'pending'
@@ -21,7 +27,7 @@ type LoginHandlerState = {
     countdown: number
 }
 
-class LoginHandler extends React.Component<LoginHandlerProps, LoginHandlerState> {
+class LoginHandlerBase extends React.Component<LoginHandlerProps, LoginHandlerState> {
     timer?: any
 
     constructor(props) {
@@ -72,8 +78,8 @@ class LoginHandler extends React.Component<LoginHandlerProps, LoginHandlerState>
     render() {
         let title = 'Calculating...';
 
-        let bgColor = this.props.theme.palette.background.default;
-        let color = this.props.theme.palette.text.primary;
+        let bgColor = this.props.theme.theme.palette.background.default;
+        let color = this.props.theme.theme.palette.text.primary;
         if(this.state.type === 'error') {
             title = 'Error!';
             bgColor = red['500'];
@@ -97,11 +103,19 @@ class LoginHandler extends React.Component<LoginHandlerProps, LoginHandlerState>
     }
 }
 
-const Wrapper: React.SFC<ThemeConsumerProps> = (props) => (
-    <AuthProvider {...props} component={LoginHandler} />
-)
+export const LoginHandler = connect((state: ApplicationState): LoginHandlerProps => {
+    return {
+        theme: state.theme
+    }
+}, null)(LoginHandlerBase);
 
 ReactDOM.render(
-    <ThemeProvider component={Wrapper} />,
+    <ReduxProvider>
+        <ThemeProvider>
+            <AuthProvider>
+                <LoginHandler />
+            </AuthProvider>
+        </ThemeProvider>
+    </ReduxProvider>,
     document.getElementById('root')
 )

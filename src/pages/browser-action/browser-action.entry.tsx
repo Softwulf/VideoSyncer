@@ -4,13 +4,12 @@ import * as ReactDOM from 'react-dom';
 import '../resource-loader'
 import './browser-action.less';
 
-import { ThemeProvider, ThemeConsumerProps } from 'components/theme-provider';
+import { ThemeProvider } from 'components/theme-provider';
 import { AuthProvider } from 'components/auth-provider';
 import { MainLayout } from './main-layout';
+import { ReduxProvider } from '../_redux/redux-provider';
 
-const MainLayoutWrapper: React.SFC<ThemeConsumerProps> = (props) => (
-    <AuthProvider {...props} component={MainLayout} />
-)
+
 
 class BrowserAction extends React.Component<{}, {}> {
     constructor(props) {
@@ -19,7 +18,13 @@ class BrowserAction extends React.Component<{}, {}> {
 
     render() {
         return (
-            <ThemeProvider component={MainLayoutWrapper} />
+            <ReduxProvider>
+                <ThemeProvider>
+                    <AuthProvider>
+                        <MainLayout />
+                    </AuthProvider>
+                </ThemeProvider>
+            </ReduxProvider>
         )
     }
 }

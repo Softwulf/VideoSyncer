@@ -1,36 +1,43 @@
 import * as React from 'react';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { HasDispatch, mapDispatch } from 'pages/_redux';
+import { setUser } from 'pages/_redux/users/actions';
+import { connect } from 'react-redux';
+import { setProfiles, setProfilesLoading } from 'pages/_redux/profiles/actions';
 
-export type AuthConsumerProps = AuthProviderState;
-
-export type AuthProviderProps = {
-    component: React.ComponentClass<AuthConsumerProps> | React.SFC<AuthConsumerProps>
-}
-
-export type AuthProviderState = {
-    loading: boolean
-    user?: firebase.User
-}
-
-export class AuthProvider extends React.Component<AuthProviderProps, AuthProviderState> {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            loading: true
-        }
-    }
+class AuthProviderBase extends React.Component<HasDispatch, {}> {
+    dbRef?: firebase.database.Reference
 
     componentDidMount() {
         auth.onAuthStateChanged(user => {
-            this.setState({
-                loading: false,
-                user
-            })
+            this.props.dispatch(setUser(user));
+            if(user) {
+                this.props.dispatch(setProfilesLoading(true));
+                this.dbRef = db.ref(`vsync/profiles/${user.uid}`);
+                this.dbRef.on('value', snap => {
+                    const profileArray: vsync.Profile[] = [];
+                    if(snap && snap.exists() && snap.hasChildren()) {
+                        snap.forEach(childSnap => {
+                            const childVal = childSnap.val();
+                            profileArray.push({
+                                key: childSnap.key,
+                                ...childVal
+                            })
+                        })
+                    }
+                    this.props.dispatch(setProfiles(profileArray));
+                    this.props.dispatch(setProfilesLoading(false));
+                });
+            } else {
+                if(this.dbRef) this.dbRef.off();
+                this.props.dispatch(setProfiles([]));
+            }
         });
     }
 
     render() {
-        return <this.props.component {...this.props} loading={this.state.loading} user={this.state.user} />
+        return this.props.children;
     }
 }
+
+export const AuthProvider = connect(null, mapDispatch)(AuthProviderBase);

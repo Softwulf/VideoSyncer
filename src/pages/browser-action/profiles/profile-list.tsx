@@ -8,7 +8,7 @@ export type ProfileListProps = {
 export const ProfileList: (props: ProfileListProps) => JSX.Element[] = (props) => {
     return props.profiles.map(profile => {
         return (
-            <ListItem divider>
+            <ListItem divider key={profile.key}>
                 <ListItemText primary={profile.name} secondary={profile.currentTime} />
             </ListItem>
         )   

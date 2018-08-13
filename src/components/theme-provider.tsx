@@ -2,93 +2,63 @@ import * as React from 'react';
 
 import bind from 'bind-decorator';
 import { MuiThemeProvider, createMuiTheme, Theme } from '@material-ui/core/styles';
-import { deepOrange, amber } from '@material-ui/core/colors';
+
 
 import { firebase } from '../firebase';
 
 import { browser } from 'webextension-polyfill-ts';
-
-export type ThemeName = Theme['palette']['type'];
-
-const DEFAULT_THEME: ThemeName = 'dark';
-
-const getTheme = (theme: ThemeName): Theme => {
-    if (theme !== 'dark' && theme !== 'light') theme = DEFAULT_THEME;
-    return createMuiTheme({
-        overrides: {
-            MuiButton: {
-                root: {
-                    textTransform: 'none'
-                }
-            }
-        },
-        palette: {
-            type: theme,
-            contrastThreshold: 3,
-            primary: deepOrange,
-            secondary: amber
-        }
-    });
-}
-
-export type ThemeConsumerProps = {
-    setTheme: (theme: ThemeName) => any
-    theme: Theme
-}
+import { defaultState } from 'pages/_redux/themes/reducers';
+import { ThemeState, ThemeName } from 'pages/_redux/themes/types';
+import { HasDispatch, ApplicationState, mapDispatch } from 'pages/_redux';
+import { connect } from 'react-redux';
+import { setTheme } from 'pages/_redux/themes/actions';
 
 export type ThemeProviderProps = {
-    component: React.ComponentClass<ThemeConsumerProps> | React.SFC<ThemeConsumerProps>
+    theme: ThemeState
 }
 
-export type ThemeProviderState = {
-    theme: Theme
-}
-
-export class ThemeProvider extends React.Component<ThemeProviderProps, ThemeProviderState> {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            theme: getTheme(DEFAULT_THEME)
-        }
-    }
-
+class ThemeProviderBase extends React.Component<ThemeProviderProps & HasDispatch, {}> {
     async componentDidMount() {
-        const results = await browser.storage.local.get({theme: DEFAULT_THEME});
-        this.setState({
-            theme: getTheme(results.theme)
-        });
+        const results = await browser.storage.local.get({theme: defaultState.name});
+
+        this.props.dispatch(setTheme(results.theme));
 
         // setup listener
         browser.storage.onChanged.addListener((change, area) => {
             if(area === 'local') {
                 if(change.theme) {
-                    this.setState({
-                        theme: getTheme(change.theme.newValue)
-                    })
+                    this.props.dispatch(setTheme(change.theme.newValue));
                 }
             }
         });
     }
 
-    @bind
-    setTheme(theme: ThemeName) {
-        if(this.state.theme.palette.type !== theme && (theme === 'dark' || theme === 'light')) {
-            browser.storage.local.set({theme});
-            
-            // if user is signed in, also update db
-            if(firebase.auth().currentUser) {
-                firebase.database().ref(`settings/${firebase.auth().currentUser.uid}`).update({theme});
-            }
-        }
-    }
-
     render() {
         return (
-            <MuiThemeProvider theme={this.state.theme}>
-                <this.props.component {...this.props} setTheme={this.setTheme} theme={this.state.theme} />
+            <MuiThemeProvider theme={this.props.theme.theme}>
+                {this.props.children}
             </MuiThemeProvider>
         )
     }
+}
 
+export const ThemeProvider = connect(
+    (state: ApplicationState): ThemeProviderProps => {
+        return {
+            theme: state.theme
+        }
+    }, mapDispatch)(ThemeProviderBase)
+
+
+export const changeTheme = (theme: ThemeName): boolean => {
+    if(theme === 'dark' || theme === 'light') {
+        browser.storage.local.set({theme});
+
+        // if user is signed in, also update db
+        if(firebase.auth().currentUser) {
+            firebase.database().ref(`settings/${firebase.auth().currentUser.uid}`).update({theme});
+        }
+        return true;
+    }
+    return false;
 }
