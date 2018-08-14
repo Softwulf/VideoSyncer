@@ -29,7 +29,9 @@ const generateConfig = (env) : webpack.Configuration => {
         : false;
     const version = (env && env.version)
         ? env.version
-        : '0.0.0';
+        : require('./package.json').version;
+
+    console.log(`Preparing v${version} ...`);
 
     const entry = calculateEntryObject();
 
