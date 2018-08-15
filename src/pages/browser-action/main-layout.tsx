@@ -19,41 +19,25 @@ import { AuthCore } from 'auth/wulf-auth';
 import { SignIn } from './signin/sign-in';
 import { UserState } from '../_redux/users/types';
 import { connect } from 'react-redux';
-import { ApplicationState } from '../_redux';
+import { ApplicationState, HasRouter, HasDispatch, mapDispatch } from '../_redux';
+import { Switch, Route } from 'react-router';
+import { ThemeState } from '../_redux/themes/types';
+import { replace } from 'connected-react-router';
 
 export type MainLayoutProps = {
     user: UserState
-}
+    theme: ThemeState
+} & HasRouter
 
-export type MainLayoutState = {
-    bottomNavigation: number
-}
-
-class MainLayoutBase extends React.Component<MainLayoutProps, MainLayoutState> {
+class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> {
     constructor(props) {
         super(props);
     }
 
-    state = {
-        bottomNavigation: 0
-    }
 
     render() {
         if(this.props.user.loading) {
-            return <TabContainer><div style={{display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}><CircularProgress variant='indeterminate' color='primary' /></div></TabContainer>
-        }
-
-
-        let currentTab: React.ReactNode;
-        switch(this.state.bottomNavigation) {
-            case 1:
-                currentTab = <TabContainer><TutorialTab /></TabContainer>
-                break;
-            case 2:
-                currentTab = <TabContainer><SettingsTab /></TabContainer>
-                break;
-            default:
-                currentTab = <TabContainer>{this.props.user.user ? <ProfileTab /> : <SignIn />}</TabContainer>
+            return <div style={{display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: this.props.theme.theme.palette.background.default}}><CircularProgress variant='indeterminate' color='primary' /></div>
         }
 
         return (
@@ -64,7 +48,7 @@ class MainLayoutBase extends React.Component<MainLayoutProps, MainLayoutState> {
                     <AppBar position='sticky' color='primary'>
                         <Toolbar variant='dense' color='inherit'>
                             <Typography variant='title' color='inherit' style={{flexGrow: 1}}>
-                                VSync
+                                VSync - {this.props.router.location.pathname}
                             </Typography>
                             {
                                 this.props.user.user && 
@@ -87,22 +71,26 @@ class MainLayoutBase extends React.Component<MainLayoutProps, MainLayoutState> {
                 </div>
 
                 {/* Content */}
-                {currentTab}
+                <Typography variant='body1' component='div' className='has-scrollbars' style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: this.props.theme.theme.palette.background.default}}>
+                    <Switch>
+                        <Route path='/info' component={TutorialTab} />
+                        <Route path='/settings' component={SettingsTab} />
+                        <Route path='/' render={() => {return this.props.user.user ? <ProfileTab /> : <SignIn />}} />
+                    </Switch>
+                </Typography>
 
                 {/* Footer */}
                 <div style={{flexBasis: 'content'}}>
                     <BottomNavigation
                         showLabels
-                        value={this.state.bottomNavigation}
+                        value={this.props.router.location.pathname.split('/')[1]}
                         onChange={(event, value) => {
-                            this.setState({
-                                bottomNavigation: value
-                            })
+                            this.props.dispatch(replace(`/${value}`));
                         }}
                     >
-                        <BottomNavigationAction label='Profiles' icon={<HomeIcon />}  />
-                        <BottomNavigationAction label='Tutorial' icon={<InfoIcon />} />
-                        <BottomNavigationAction label='Settings' icon={<SettingsApplicationsIcon />} />
+                        <BottomNavigationAction label='Profiles' icon={<HomeIcon />} value='' />
+                        <BottomNavigationAction label='Tutorial' icon={<InfoIcon />} value='info' />
+                        <BottomNavigationAction label='Settings' icon={<SettingsApplicationsIcon />} value='settings' />
                     </BottomNavigation>
                 </div>
 
@@ -113,14 +101,8 @@ class MainLayoutBase extends React.Component<MainLayoutProps, MainLayoutState> {
 
 export const MainLayout = connect((state: ApplicationState): MainLayoutProps => {
     return {
-        user: state.user
+        user: state.user,
+        router: state.router,
+        theme: state.theme
     }
-}, null)(MainLayoutBase)
-
-export const TabContainer = withTheme()((props) => {
-    return (
-        <Typography variant='body1' component='div' className='has-scrollbars' style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: props.theme.palette.background.default}}>
-            {props.children}
-        </Typography>
-    );
-});
+}, mapDispatch)(MainLayoutBase)

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
-import { createBrowserHistory } from 'history';
+import { createMemoryHistory } from 'history';
 import configureStore from './store';
 
-const history = createBrowserHistory();
+const history = createMemoryHistory();
 const store = configureStore(history);
 
 export class ReduxProvider extends React.Component {

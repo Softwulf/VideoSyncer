@@ -9,6 +9,8 @@ import { AuthProvider } from 'components/auth-provider';
 import { MainLayout } from './main-layout';
 import { ReduxProvider } from '../_redux/redux-provider';
 import { browser } from 'webextension-polyfill-ts';
+import { Switch, Route } from 'react-router';
+import { Link } from 'react-router-dom';
 
 
 

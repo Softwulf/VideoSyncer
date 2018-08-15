@@ -33,3 +33,13 @@ export const mapDispatch = (dispatch: Dispatch): HasDispatch => {
         dispatch
     }
 }
+
+export interface HasRouter {
+    router: RouterState
+}
+
+export const mapRouter = (state: ApplicationState): HasRouter => {
+    return {
+        router: state.router
+    }
+}

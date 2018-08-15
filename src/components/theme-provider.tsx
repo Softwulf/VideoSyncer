@@ -9,13 +9,13 @@ import { firebase } from '../firebase';
 import { browser } from 'webextension-polyfill-ts';
 import { defaultState } from 'pages/_redux/themes/reducers';
 import { ThemeState, ThemeName } from 'pages/_redux/themes/types';
-import { HasDispatch, ApplicationState, mapDispatch } from 'pages/_redux';
+import { HasDispatch, ApplicationState, mapDispatch, HasRouter } from 'pages/_redux';
 import { connect } from 'react-redux';
 import { setTheme } from 'pages/_redux/themes/actions';
 
 export type ThemeProviderProps = {
     theme: ThemeState
-}
+} & HasRouter
 
 class ThemeProviderBase extends React.Component<ThemeProviderProps & HasDispatch, {}> {
     async componentDidMount() {
@@ -45,7 +45,8 @@ class ThemeProviderBase extends React.Component<ThemeProviderProps & HasDispatch
 export const ThemeProvider = connect(
     (state: ApplicationState): ThemeProviderProps => {
         return {
-            theme: state.theme
+            theme: state.theme,
+            router: state.router
         }
     }, mapDispatch)(ThemeProviderBase)
 

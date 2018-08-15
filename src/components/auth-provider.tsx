@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { auth, db } from '../firebase';
-import { HasDispatch, mapDispatch } from 'pages/_redux';
+import { HasDispatch, mapDispatch, HasRouter, mapRouter } from 'pages/_redux';
 import { setUser } from 'pages/_redux/users/actions';
 import { connect } from 'react-redux';
 import { setProfiles, setProfilesLoading } from 'pages/_redux/profiles/actions';
 
-class AuthProviderBase extends React.Component<HasDispatch, {}> {
+class AuthProviderBase extends React.Component<HasDispatch & HasRouter, {}> {
     dbRef?: firebase.database.Reference
 
     componentDidMount() {
@@ -40,4 +40,4 @@ class AuthProviderBase extends React.Component<HasDispatch, {}> {
     }
 }
 
-export const AuthProvider = connect(null, mapDispatch)(AuthProviderBase);
+export const AuthProvider = connect(mapRouter, mapDispatch)(AuthProviderBase);
