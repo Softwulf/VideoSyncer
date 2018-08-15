@@ -8,17 +8,17 @@ import { replace } from 'connected-react-router';
 import { browser } from 'webextension-polyfill-ts';
 import { UrlPicker } from './inputs/url';
 
-type ProfileCreateReduxProps = {
+type SeriesCreateReduxProps = {
     theme: ThemeState
 }
 
-type ProfileCreateState = {
+type SeriesCreateState = {
     activeStep: number
 }
 
 const STEP_COUNT = 6;
 
-class ProfileCreateBase extends React.Component<ProfileCreateReduxProps & HasDispatch, ProfileCreateState> {
+class SeriesCreateBase extends React.Component<SeriesCreateReduxProps & HasDispatch, SeriesCreateState> {
 
     state = {
         activeStep: 0
@@ -88,9 +88,9 @@ class ProfileCreateBase extends React.Component<ProfileCreateReduxProps & HasDis
     }
 }
 
-const mapStateToProps = (state: ApplicationState): ProfileCreateReduxProps => {
+const mapStateToProps = (state: ApplicationState): SeriesCreateReduxProps => {
     return {
         theme: state.theme
     }
 }
-export const ProfileCreate = connect(mapStateToProps, mapDispatch)(ProfileCreateBase);
+export const SeriesCreate = connect(mapStateToProps, mapDispatch)(SeriesCreateBase);

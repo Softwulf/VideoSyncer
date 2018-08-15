@@ -46,7 +46,7 @@ export class SettingsListener {
             const locale = this.filterLocales(locales);
             const theme = await this.findTheme();
 
-            const defaultSettings: Partial<vsync.Settings> = {
+            const defaultSettings: Partial<VSync.Settings> = {
                 locale,
                 theme
             }

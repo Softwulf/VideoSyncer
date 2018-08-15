@@ -5,21 +5,21 @@ import { History } from "history";
 import { UserReducer } from "./users/reducers";
 import { ThemeState } from "./themes/types";
 import { ThemeReducer } from "./themes/reducers";
-import { ProfileReducer } from "./profiles/reducers";
-import { ProfileState } from "./profiles/types";
+import { SeriesState } from "./series/types";
+import { SeriesReducer } from "./series/reducers";
 
 export interface ApplicationState {
     theme: ThemeState
     router: RouterState
     user: UserState
-    profiles: ProfileState
+    series: SeriesState
 }
 
 export const rootReducer: (history: History) => Reducer<ApplicationState> = (history) => {
     let combinedReducers = combineReducers({
         user: UserReducer,
         theme: ThemeReducer,
-        profiles: ProfileReducer
+        series: SeriesReducer
     });
     return (connectRouter(history)(combinedReducers) as Reducer<ApplicationState>);
 };

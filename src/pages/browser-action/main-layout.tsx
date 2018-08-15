@@ -5,14 +5,14 @@ import { red, deepPurple } from '@material-ui/core/colors';
 
 import {
     SettingsApplications as SettingsApplicationsIcon,
-    HomeRounded as HomeIcon,
+    LiveTv,
     Info as InfoIcon
 
 } from '@material-ui/icons'
 
 import { withTheme, Theme } from '@material-ui/core/styles';
 
-import { ProfileTab } from './profiles/profile-tab';
+import { SeriesTab } from './series/series-tab';
 import { TutorialTab } from './tutorials/tutorial-tab';
 import { SettingsTab } from './settings/settings-tab';
 import { AuthCore } from 'auth/wulf-auth';
@@ -85,7 +85,7 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
                     <Switch>
                         <Route path='/info' component={TutorialTab} />
                         <Route path='/settings' component={SettingsTab} />
-                        <Route path='/' render={() => {return this.props.user.user ? <ProfileTab /> : <SignIn />}} />
+                        <Route path='/' render={() => {return this.props.user.user ? <SeriesTab /> : <SignIn />}} />
                     </Switch>
                 </Typography>
 
@@ -98,7 +98,7 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
                             this.props.dispatch(replace(`/${value}`));
                         }}
                     >
-                        <BottomNavigationAction label='Profiles' icon={<HomeIcon />} value='' />
+                        <BottomNavigationAction label='Series' icon={<LiveTv />} value='' />
                         {/* <BottomNavigationAction label='Tutorial' icon={<InfoIcon />} value='info' /> */}
                         <BottomNavigationAction label='Settings' icon={<SettingsApplicationsIcon />} value='settings' />
                     </BottomNavigation>

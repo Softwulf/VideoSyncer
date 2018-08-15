@@ -3,7 +3,7 @@ import { auth, db } from '../firebase';
 import { HasDispatch, mapDispatch, HasRouter, mapRouter } from 'pages/_redux';
 import { setUser } from 'pages/_redux/users/actions';
 import { connect } from 'react-redux';
-import { setProfiles, setProfilesLoading } from 'pages/_redux/profiles/actions';
+import { setSeriesList, setSeriesLoading } from 'pages/_redux/series/actions';
 
 class AuthProviderBase extends React.Component<HasDispatch & HasRouter, {}> {
     dbRef?: firebase.database.Reference
@@ -12,25 +12,29 @@ class AuthProviderBase extends React.Component<HasDispatch & HasRouter, {}> {
         auth.onAuthStateChanged(user => {
             this.props.dispatch(setUser(user));
             if(user) {
-                this.props.dispatch(setProfilesLoading(true));
-                this.dbRef = db.ref(`vsync/profiles/${user.uid}`);
+                this.props.dispatch(setSeriesLoading(true));
+                this.dbRef = db.ref(`vsync/series/${user.uid}`);
                 this.dbRef.on('value', snap => {
-                    const profileArray: vsync.Profile[] = [];
+                    const seriesArray: VSync.Series[] = [];
                     if(snap && snap.exists() && snap.hasChildren()) {
                         snap.forEach(childSnap => {
                             const childVal = childSnap.val();
-                            profileArray.push({
+                            seriesArray.push({
                                 key: childSnap.key,
                                 ...childVal
                             })
                         })
                     }
-                    this.props.dispatch(setProfiles(profileArray));
-                    this.props.dispatch(setProfilesLoading(false));
+                    this.props.dispatch(setSeriesList(seriesArray));
+                    this.props.dispatch(setSeriesLoading(false));
+                }, err => {
+                    console.error('Error subscribing to database', err);
+                    this.props.dispatch(setSeriesList([]));
+                    this.props.dispatch(setSeriesLoading(false));
                 });
             } else {
                 if(this.dbRef) this.dbRef.off();
-                this.props.dispatch(setProfiles([]));
+                this.props.dispatch(setSeriesList([]));
             }
         });
     }
