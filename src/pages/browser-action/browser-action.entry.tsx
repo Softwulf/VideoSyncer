@@ -35,6 +35,12 @@ class BrowserAction extends React.Component<{}, {}> {
             window.document.getElementsByTagName('body').item(0).style.width = '100%';
             window.document.getElementsByTagName('body').item(0).style.height = '100%';
         }
+
+        // add additional borders on the sides on chrome because chrome has tiny hardcoded borders around the popup by default
+        if(navigator.vendor.toLowerCase().indexOf('google') !== -1) {
+            window.document.getElementById('root').style.borderLeft = '2px solid #FFF';
+            window.document.getElementById('root').style.borderRight = '2px solid #FFF';
+        }
     }
 
     render() {

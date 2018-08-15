@@ -34,6 +34,16 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
         super(props);
     }
 
+    getBottomNavigationValue() {
+        const initialPathname = this.props.router.location.pathname.split('/')[1];
+        if(initialPathname === 'info') {
+            return 'info';
+        } else if(initialPathname === 'settings') {
+            return 'settings';
+        } else {
+            return '';
+        }
+    }
 
     render() {
         if(this.props.user.loading) {
@@ -83,13 +93,13 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
                 <div style={{flexBasis: 'content'}}>
                     <BottomNavigation
                         showLabels
-                        value={this.props.router.location.pathname.split('/')[1]}
+                        value={this.getBottomNavigationValue()}
                         onChange={(event, value) => {
                             this.props.dispatch(replace(`/${value}`));
                         }}
                     >
                         <BottomNavigationAction label='Profiles' icon={<HomeIcon />} value='' />
-                        <BottomNavigationAction label='Tutorial' icon={<InfoIcon />} value='info' />
+                        {/* <BottomNavigationAction label='Tutorial' icon={<InfoIcon />} value='info' /> */}
                         <BottomNavigationAction label='Settings' icon={<SettingsApplicationsIcon />} value='settings' />
                     </BottomNavigation>
                 </div>
