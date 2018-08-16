@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { List, ListSubheader, ListItem, ListItemText, CircularProgress, Typography, Button } from '@material-ui/core';
+import { List, ListSubheader, ListItem, ListItemText, CircularProgress, Typography, Button, colors } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import { firebase } from '../../../firebase';
 import { UserState } from '../../_redux/users/types';
@@ -33,9 +33,11 @@ class SeriesTabBase extends React.Component<SeriesTabProps, {}> {
                         return (
                             <div style={{display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'space-around', alignItems: 'stretch'}}>
                                 <SeriesList series={this.props.series.series_list} />
-                                <Button variant='fab' color='primary' style={{alignSelf: 'flex-end', justifySelf: 'flex-end', margin: '10px', flexBasis: 'content'}} component={this.newSeriesLink}>
-                                    <AddCircle />
-                                </Button>
+                                <div style={{alignSelf: 'flex-end', justifySelf: 'flex-end', margin: '10px', flexBasis: 'content'}}>
+                                    <Button variant='fab' color='primary' component={this.newSeriesLink}>
+                                        <AddCircle />
+                                    </Button>
+                                </div>
                             </div>
                         )
                     }} />

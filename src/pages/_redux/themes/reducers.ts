@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { ThemeState, ThemeActions, ThemeName } from './types';
-import { Theme, createMuiTheme } from '@material-ui/core';
+import { Theme, createMuiTheme, colors } from '@material-ui/core';
 
 import { deepOrange, amber } from '@material-ui/core/colors';
 
@@ -12,13 +12,25 @@ const getTheme = (theme: ThemeName): Theme => {
                 root: {
                     textTransform: 'none'
                 }
+            },
+            MuiInput: {
+                underline: {
+                    '&:after': {
+                        borderBottom: `2px solid ${colors.indigo['A200']}`
+                    }
+                }
+            },
+            MuiFormLabel: {
+                focused: {
+                    color: `${colors.indigo['A200']} !important`
+                }
             }
         },
         palette: {
             type: theme,
             contrastThreshold: 3,
-            primary: deepOrange,
-            secondary: amber
+            primary: colors.deepOrange,
+            secondary: colors.indigo
         }
     });
 }

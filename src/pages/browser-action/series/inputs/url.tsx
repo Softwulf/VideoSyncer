@@ -1,7 +1,13 @@
 import * as React from 'react';
-import { Button, Select, MenuItem, Menu, Typography, Dialog, DialogTitle, List, ListItem, ListItemText, DialogContent, TextField } from '@material-ui/core';
+import { Button, Select, MenuItem, Menu, Typography, Dialog, DialogTitle, List, ListItem, ListItemText, DialogContent, TextField, FormControl, InputLabel, Input, FormHelperText, InputAdornment, colors, withTheme, WithTheme } from '@material-ui/core';
 import { browser } from 'webextension-polyfill-ts';
 import * as UrlParse from 'url-parse';
+
+export type UrlPickerProps = {
+    updateSeries: (series: Partial<VSync.SeriesBase>) => any
+    series: VSync.SeriesBase
+    setStepValid: (valid: boolean) => any
+}
 
 export type UrlInfo = {
     host: string
@@ -10,17 +16,17 @@ export type UrlInfo = {
 
 type UrlPickerState = {
     hostDialogOpen: boolean
-    host: string
     possibleUrls: {
         [host: string]: string[]
     }
+    error: string
 }
 
-export class UrlPicker extends React.Component<{}, UrlPickerState> {
+class UrlPickerBase extends React.Component<UrlPickerProps & WithTheme, UrlPickerState> {
     state = {
-        host: '',
         hostDialogOpen: false,
-        possibleUrls: {}
+        possibleUrls: {},
+        error: ''
     }
 
     async componentDidMount() {
@@ -53,8 +59,28 @@ export class UrlPicker extends React.Component<{}, UrlPickerState> {
     }
 
     setHost = (host: string) => {
-        console.log(host);
-        this.setState({ host, hostDialogOpen: false });
+        const hostRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]))\.*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/
+
+        let error = '';
+        if(!host || host.length === 0) {
+            error = 'Please enter a website';
+        } else if(host.length > 253) {
+            error = 'Websites must at max have 253 characters';
+        } else if(!host.match(hostRegex)) {
+            error = 'Websites must have the correct format (eg. video.example.com)';
+        }
+
+        console.log(error);
+
+        this.setState({hostDialogOpen: false, error})
+        if(error.length === 0) {
+            this.props.setStepValid(true);
+        } else {
+            this.props.setStepValid(false);
+        }
+        this.props.updateSeries({
+            host
+        });
     };
 
     handleOpen = event => {
@@ -83,13 +109,23 @@ export class UrlPicker extends React.Component<{}, UrlPickerState> {
                     Select Website
                 </Button>
                 Or enter manually
-                <TextField
-                    label='Website Domain'
-                    placeholder='example.com'
-                    fullWidth
-                    value={this.state.host}
-                    onChange={event => this.setHost(event.target.value)}
-                />
+
+                <FormControl error={this.state.error.length > 0} fullWidth>
+                    <InputLabel>Website</InputLabel>
+                    <Input 
+                        value={this.props.series.host}
+                        onChange={event => this.setHost(event.target.value)}
+                        placeholder='or enter manually'
+                        startAdornment={
+                            <InputAdornment position='start'>
+                                <Button style={{color: colors.lightBlue['A200']}} onClick={this.handleOpen}>
+                                    Pick a website
+                                </Button>
+                            </InputAdornment>
+                        }
+                    />
+                    <FormHelperText>{this.state.error}</FormHelperText>
+                </FormControl>
 
                 <Dialog onClose={this.handleClose} open={this.state.hostDialogOpen}>
                     <DialogTitle>Choose Website</DialogTitle>
@@ -103,3 +139,5 @@ export class UrlPicker extends React.Component<{}, UrlPickerState> {
         )
     }
 }
+
+export const UrlPicker = withTheme()(UrlPickerBase);
