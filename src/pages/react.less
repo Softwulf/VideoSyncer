@@ -32,3 +32,28 @@ body {
     border-radius: 10px;
 	background-color: @colorSecondary;
 }
+
+.swal2-container {
+    z-index: 1101 !important;
+}
+
+
+// Dark Theme Swal
+
+body.theme-dark {
+    .swal2-modal, .swal2-toast, .swal2-success-ring, .swal2-success-fix, .swal2-success-circular-line-right, .swal2-success-circular-line-left {
+        background-color: #303030 !important;
+    }
+    
+    [class^='swal2-success-line'] {
+        z-index: 3 !important;
+    }
+    
+    .swal2-content {
+        color: #FFF !important;
+    }
+    
+    .swal2-title {
+        color: #FFF !important;
+    }
+}

@@ -43,6 +43,9 @@ export const defaultState: ThemeState = {
 export const ThemeReducer: Reducer<ThemeState, ThemeActions> = (state = defaultState, action): ThemeState => {
     switch(action.type) {
         case '@@theme/SET_THEME':
+            document.body.classList.remove('theme-light');
+            document.body.classList.remove('theme-dark');
+            document.body.classList.add(`theme-${action.payload.name}`)
             return {
                 ...state,
                 name: action.payload.name,

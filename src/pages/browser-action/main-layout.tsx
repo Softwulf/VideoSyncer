@@ -58,7 +58,7 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
                     <AppBar position='sticky' color='primary'>
                         <Toolbar variant='dense' color='inherit'>
                             <Typography variant='title' color='inherit' style={{flexGrow: 1}}>
-                                VSync - {this.props.router.location.pathname}
+                                VSync
                             </Typography>
                             {
                                 this.props.user.user && 
@@ -81,6 +81,9 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
                 </div>
 
                 {/* Content */}
+                <Typography variant='caption' color='inherit'>
+                                {this.props.router.location.pathname}
+                            </Typography>
                 <Typography variant='body1' component='div' className='has-scrollbars' style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: this.props.theme.theme.palette.background.default}}>
                     <Switch>
                         <Route path='/info' component={TutorialTab} />

@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import '../resource-loader'
-import './browser-action.less';
 
 import { ThemeProvider } from 'components/theme-provider';
 import { AuthProvider } from 'components/auth-provider';
@@ -11,7 +10,7 @@ import { ReduxProvider } from '../_redux/redux-provider';
 import { browser } from 'webextension-polyfill-ts';
 import { Switch, Route } from 'react-router';
 import { Link } from 'react-router-dom';
-
+import swal from 'sweetalert2';
 
 
 class BrowserAction extends React.Component<{}, {}> {
@@ -60,3 +59,5 @@ ReactDOM.render(
     <BrowserAction />,
     document.getElementById('root')
 )
+
+import './browser-action.less';

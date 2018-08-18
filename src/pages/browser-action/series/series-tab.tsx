@@ -10,6 +10,7 @@ import { RouterState } from 'connected-react-router';
 import { SeriesState } from '../../_redux/series/types';
 import { SeriesCreate } from './series-create';
 import { SeriesList } from './series-list';
+import { SeriesEdit } from './series-edit';
 
 export type SeriesTabProps = {
     user: UserState
@@ -28,6 +29,7 @@ class SeriesTabBase extends React.Component<SeriesTabProps, {}> {
         return (
             <div style={{display: 'flex', flexGrow: 1}}>
                 <Switch>
+                    <Route path='/edit/:seriesid' component={SeriesEdit} />
                     <Route path='/new' component={SeriesCreate} />
                     <Route render={() => {
                         return (

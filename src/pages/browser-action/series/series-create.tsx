@@ -10,6 +10,8 @@ import { UrlPicker } from './inputs/url';
 import { bind } from 'bind-decorator';
 import { firebase } from '../../../firebase';
 import { UserState } from '../../_redux/users/types';
+import swal from 'sweetalert2';
+import { vswal, toast } from 'vsync-swal';
 
 type SeriesCreateReduxProps = {
     theme: ThemeState
@@ -75,11 +77,19 @@ class SeriesCreateBase extends React.Component<SeriesCreateReduxProps & HasDispa
     @bind
     handleFinish() {
         firebase.database().ref(`vsync/series/${this.props.user.user.uid}`).push(this.state.series, err => {
-            if(!err) {
-                this.props.dispatch(replace('/'));
+            if(err) {
+                vswal(
+                    'Error',
+                    `The following error occurred: <b>${JSON.stringify(err)}</b>`,
+                    'error'
+                )
             } else {
-                console.error('Failed to insert series!', err);
                 this.props.dispatch(replace('/'));
+                toast(
+                    'Success!',
+                    `You just created <b>${this.state.series.name}</b>`,
+                    'success'
+                )
             }
         });
     }
