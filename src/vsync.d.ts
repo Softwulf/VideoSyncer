@@ -31,4 +31,10 @@ declare namespace VSync {
         host: string
         query: string
     }
+
+    interface User {
+        displayName: string
+        photoURL: string
+        uid: string
+    }
 }

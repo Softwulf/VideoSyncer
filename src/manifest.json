@@ -18,6 +18,25 @@
             "background/background.js"
         ]
     },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "video-tracker/frame.js"
+            ],
+            "all_frames": true
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "video-tracker/index.js"
+            ]
+        }
+    ],
     "icons": {
             "16": "assets/img/logo16.png",
             "24": "assets/img/logo24.png",

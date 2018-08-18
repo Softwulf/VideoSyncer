@@ -16,6 +16,7 @@ import { ReduxProvider } from '../_redux/redux-provider';
 import { AuthProvider } from 'components/auth-provider';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../_redux';
+import { RequestCloseTab } from 'background/messages/requests';
 
 type LoginHandlerProps = {
     theme: ThemeState
@@ -71,7 +72,10 @@ class LoginHandlerBase extends React.Component<LoginHandlerProps, LoginHandlerSt
     }
 
     async closeCurrentTab() {
-        browser.runtime.sendMessage({type: 'CLOSE_TAB'});
+        const msg: RequestCloseTab = {
+            type: '@@request/CLOSE_TAB'
+        }
+        browser.runtime.sendMessage(msg);
     }
 
     render() {

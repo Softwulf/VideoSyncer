@@ -1,41 +1,27 @@
 import * as React from 'react';
-import { auth, db } from '../firebase';
 import { HasDispatch, mapDispatch, HasRouter, mapRouter } from 'pages/_redux';
 import { setUser } from 'pages/_redux/users/actions';
 import { connect } from 'react-redux';
-import { setSeriesList, setSeriesLoading } from 'pages/_redux/series/actions';
+import { setSeriesList } from 'pages/_redux/series/actions';
+import { VSyncStorage } from 'background/storage';
 
 class AuthProviderBase extends React.Component<HasDispatch & HasRouter, {}> {
-    dbRef?: firebase.database.Reference
+    vStorage = new VSyncStorage()
 
-    componentDidMount() {
-        auth.onAuthStateChanged(user => {
-            this.props.dispatch(setUser(user));
-            if(user) {
-                this.props.dispatch(setSeriesLoading(true));
-                this.dbRef = db.ref(`vsync/series/${user.uid}`);
-                this.dbRef.on('value', snap => {
-                    const seriesArray: VSync.Series[] = [];
-                    if(snap && snap.exists() && snap.hasChildren()) {
-                        snap.forEach(childSnap => {
-                            const childVal = childSnap.val();
-                            seriesArray.push({
-                                key: childSnap.key,
-                                ...childVal
-                            })
-                        })
-                    }
-                    this.props.dispatch(setSeriesList(seriesArray));
-                    this.props.dispatch(setSeriesLoading(false));
-                }, err => {
-                    console.error('Error subscribing to database', err);
-                    this.props.dispatch(setSeriesList([]));
-                    this.props.dispatch(setSeriesLoading(false));
-                });
+    async componentDidMount() {
+        // subscribe to user changes
+        this.vStorage.subscribe<'user'>('user', changes => {
+            const newUser = changes.newValue;
+            if(newUser) {
+                this.props.dispatch(setUser(newUser));
             } else {
-                if(this.dbRef) this.dbRef.off();
-                this.props.dispatch(setSeriesList([]));
+                this.props.dispatch(setUser());
             }
+        })
+
+        // subscribe to series changes
+        this.vStorage.subscribe<'series_list'>('series_list', changes => {
+            this.props.dispatch(setSeriesList(changes.newValue));
         });
     }
 

@@ -2,13 +2,13 @@ import { Action } from 'redux';
 
 export type UserState = {
     loading: boolean
-    user?: firebase.User
+    user?: VSync.User
 }
 
 export interface SetUserAction extends Action {
     type: '@@user/SET_USER';
     payload: {
-        user?: firebase.User
+        user?: VSync.User
     };
 }
 

@@ -12,24 +12,19 @@ import { ThemeState, ThemeName } from 'pages/_redux/themes/types';
 import { HasDispatch, ApplicationState, mapDispatch, HasRouter } from 'pages/_redux';
 import { connect } from 'react-redux';
 import { setTheme } from 'pages/_redux/themes/actions';
+import { VSyncStorage } from 'background/storage';
 
 export type ThemeProviderProps = {
     theme: ThemeState
 } & HasRouter
 
 class ThemeProviderBase extends React.Component<ThemeProviderProps & HasDispatch, {}> {
+    vStorage = new VSyncStorage();
+
     async componentDidMount() {
-        const results = await browser.storage.local.get({theme: defaultState.name});
-
-        this.props.dispatch(setTheme(results.theme));
-
         // setup listener
-        browser.storage.onChanged.addListener((change, area) => {
-            if(area === 'local') {
-                if(change.theme) {
-                    this.props.dispatch(setTheme(change.theme.newValue));
-                }
-            }
+        this.vStorage.subscribe<'settings'>('settings', (changes) => {
+            this.props.dispatch(setTheme(changes.newValue.theme as ThemeName));
         });
     }
 

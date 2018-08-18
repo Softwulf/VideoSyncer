@@ -5,6 +5,7 @@ import { ThemeProvider } from 'components/theme-provider';
 import { ReduxProvider } from 'pages/_redux/redux-provider';
 import { ContentScriptRootView } from './views/main-view';
 import { AuthProvider } from 'components/auth-provider';
+import { VSyncStorage } from 'background/storage';
 
 const rootId = 'vsync-content-react-root';
 
@@ -28,8 +29,6 @@ const setup = () => {
     }
 }
 
-setup();
-
 const remove = () => {
     const react_root = document.getElementById(rootId);
     if(react_root) {
@@ -37,3 +36,15 @@ const remove = () => {
         react_root.remove();
     }
 }
+
+const VStorage = new VSyncStorage();
+
+// VStorage.get<'series_list'>('series_list').then(series => {
+//     window.alert('Series: ' + JSON.stringify(series));
+// });
+
+// VStorage.subscribe<'series_list'>('series_list', (changes) => {
+//     if(changes.newValue) {
+//         window.alert('Series CHAANGED' + JSON.stringify(changes.newValue));
+//     }
+// });
