@@ -30,6 +30,7 @@
     },
     "permissions": [
         "https://vsync.ch/oauth/*",
+        "<all_urls>",
         "tabs",
         "storage",
         "webRequest",

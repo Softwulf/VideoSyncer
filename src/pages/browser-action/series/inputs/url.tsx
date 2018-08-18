@@ -105,10 +105,6 @@ class UrlPickerBase extends React.Component<UrlPickerProps & WithTheme, UrlPicke
             <div style={{ wordBreak: 'break-word', textAlign: 'center', padding: '10px', display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center' }}>
                 <Typography variant='display2'>Select Website</Typography>
                 <Typography variant='body2'>VideoSyncer needs to know on which website you watch the series.</Typography>
-                <Button variant='contained' color='secondary' onClick={this.handleOpen}>
-                    Select Website
-                </Button>
-                Or enter manually
 
                 <FormControl error={this.state.error.length > 0} fullWidth>
                     <InputLabel>Website</InputLabel>

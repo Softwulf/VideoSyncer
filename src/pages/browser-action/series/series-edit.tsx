@@ -4,7 +4,7 @@ import { SeriesState } from '../../_redux/series/types';
 import { connect } from 'react-redux';
 import { ApplicationState, mapDispatch, HasDispatch } from '../../_redux';
 import { bind } from 'bind-decorator';
-import { Typography, Button, colors, Divider } from '@material-ui/core';
+import { Typography, Button, colors, Divider, TextField, InputAdornment } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { firebase } from '../../../firebase';
 import { KeyboardArrowLeft } from '@material-ui/icons';
@@ -12,6 +12,7 @@ import { UserState } from '../../_redux/users/types';
 import { replace } from 'connected-react-router';
 import swal from 'sweetalert2';
 import { vswal, toast } from 'vsync-swal';
+import { UrlPicker } from './inputs/url';
 
 type SeriesEditOwnProps = {
 
@@ -63,9 +64,55 @@ class SeriesEditBase extends React.Component<SeriesEditOwnProps & SeriesEditRedu
 
         if(this.state.currentSeries) {
             content =   <div style={{flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'stretch', flexDirection: 'column'}}>
-                            <div style={{flexGrow: 1}}>
-                                {this.state.currentSeries.name}
+                            <div style={{display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'stretch'}}>
+                                <TextField
+                                    label='Name'
+                                    id='name'
+                                    fullWidth
+                                    value={this.state.currentSeries.name}
+                                    onChange={(event) => this.setState({currentSeries: {
+                                        ...this.state.currentSeries,
+                                        name: event.target.value
+                                    }})}
+                                />
+                                {/* <UrlPicker
+                                    series={this.state.currentSeries}
+                                    updateSeries={(toUpdate: Partial<VSync.Series>) => {
+                                        this.setState({
+                                            currentSeries: {
+                                                ...this.state.currentSeries,
+                                                ...toUpdate
+                                            }
+                                        })
+                                    }}
+                                    setStepValid={() => {}}
+                                /> */}
+                                <TextField
+                                    label='Website'
+                                    id='website'
+                                    fullWidth
+                                    value={this.state.currentSeries.host}
+                                    onChange={(event) => this.setState({currentSeries: {
+                                        ...this.state.currentSeries,
+                                        host: event.target.value
+                                    }})}
+                                />
+                                <TextField
+                                    label='Path'
+                                    id='path'
+                                    fullWidth
+                                    value={this.state.currentSeries.pathbase}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position='start'><Typography variant='caption'>{this.state.currentSeries.host}/</Typography></InputAdornment>,
+                                    }}
+                                    onChange={(event) => this.setState({currentSeries: {
+                                        ...this.state.currentSeries,
+                                        pathbase: event.target.value
+                                    }})}
+                                />
                             </div>
+
+
                             <div style={{display: 'flex', alignItems: 'stretch', flexDirection: 'column', flexBasis: 'content'}}>
                                 <Button 
                                     onClick={() => {
