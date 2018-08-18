@@ -1,7 +1,6 @@
 import { Action } from 'redux';
 
 export type UserState = {
-    loading: boolean
     user?: VSync.User
 }
 

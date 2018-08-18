@@ -1,10 +1,11 @@
-import { browser, Storage } from "webextension-polyfill-ts";
+import { browser, Storage } from 'webextension-polyfill-ts';
 
 export interface VSyncStorageDefinition {
     auth0_nonce?: string
     auth0_state?: string
     user: VSync.User | false
-    series_list: VSync.Series[],
+    series_list: VSync.Series[]
+    series_loading: boolean
     settings: VSync.Settings
 }
 

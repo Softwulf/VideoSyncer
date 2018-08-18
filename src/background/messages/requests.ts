@@ -1,4 +1,4 @@
-import { Action } from "redux";
+import { Action } from 'redux';
 
 export interface RequestCloseTab extends Action {
     type: '@@request/CLOSE_TAB';

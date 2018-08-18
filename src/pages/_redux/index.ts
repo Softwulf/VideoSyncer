@@ -1,12 +1,12 @@
-import { RouterState, connectRouter } from "connected-react-router";
-import { UserState } from "./users/types";
-import { combineReducers, Reducer, Dispatch, Action } from "redux";
-import { History } from "history";
-import { UserReducer } from "./users/reducers";
-import { ThemeState } from "./themes/types";
-import { ThemeReducer } from "./themes/reducers";
-import { SeriesState } from "./series/types";
-import { SeriesReducer } from "./series/reducers";
+import { RouterState, connectRouter } from 'connected-react-router';
+import { UserState } from './users/types';
+import { combineReducers, Reducer, Dispatch, Action } from 'redux';
+import { History } from 'history';
+import { UserReducer } from './users/reducers';
+import { ThemeState } from './themes/types';
+import { ThemeReducer } from './themes/reducers';
+import { SeriesState } from './series/types';
+import { SeriesReducer } from './series/reducers';
 
 export interface ApplicationState {
     theme: ThemeState

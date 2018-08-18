@@ -21,7 +21,8 @@
     "content_scripts": [
         {
             "matches": [
-                "<all_urls>"
+                "https://*/*",
+                "http://*/*"
             ],
             "js": [
                 "video-tracker/frame.js"
@@ -30,7 +31,8 @@
         },
         {
             "matches": [
-                "<all_urls>"
+                "https://*/*",
+                "http://*/*"
             ],
             "js": [
                 "video-tracker/index.js"
@@ -49,7 +51,8 @@
     },
     "permissions": [
         "https://vsync.ch/oauth/*",
-        "<all_urls>",
+        "http://*/*",
+        "https://*/*",
         "tabs",
         "storage",
         "webRequest",

@@ -46,10 +46,6 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
     }
 
     render() {
-        if(this.props.user.loading) {
-            return <div style={{display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: this.props.theme.theme.palette.background.default}}><CircularProgress variant='indeterminate' color='primary' /></div>
-        }
-
         return (
             <div style={{display: 'flex', flex: 1, flexDirection: 'column', flexWrap: 'nowrap', alignItems: 'stretch', justifyContent: 'center'}}>
 

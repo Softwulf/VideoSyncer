@@ -1,5 +1,5 @@
-import { browser } from "webextension-polyfill-ts";
-import { RequestUserSignOut, RequestUserSignIn, RequestCloseTab, RequestSeriesCreate, RequestSeriesDelete, RequestSeriesEdit, RequestSettingsUpdate } from "./requests";
+import { browser } from 'webextension-polyfill-ts';
+import { RequestUserSignOut, RequestUserSignIn, RequestCloseTab, RequestSeriesCreate, RequestSeriesDelete, RequestSeriesEdit, RequestSettingsUpdate } from './requests';
 
 
 export const MessageSender = {

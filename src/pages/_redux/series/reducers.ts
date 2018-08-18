@@ -3,7 +3,7 @@ import { SeriesState, SeriesAction } from './types';
 
 const defaultState: SeriesState = {
     series_list: [],
-    loading: false
+    loading: true
 }
 
 export const SeriesReducer: Reducer<SeriesState, SeriesAction> = (state = defaultState, action): SeriesState => {

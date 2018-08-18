@@ -2,7 +2,7 @@ import * as React from 'react';
 import { HasDispatch, mapDispatch, HasRouter, mapRouter } from 'pages/_redux';
 import { setUser } from 'pages/_redux/users/actions';
 import { connect } from 'react-redux';
-import { setSeriesList } from 'pages/_redux/series/actions';
+import { setSeriesList, setSeriesLoading } from 'pages/_redux/series/actions';
 import { VSyncStorage } from 'background/storage';
 
 class AuthProviderBase extends React.Component<HasDispatch & HasRouter, {}> {
@@ -18,6 +18,11 @@ class AuthProviderBase extends React.Component<HasDispatch & HasRouter, {}> {
                 this.props.dispatch(setUser());
             }
         })
+
+        // subscribe to series changes
+        this.vStorage.subscribe<'series_loading'>('series_loading', changes => {
+            this.props.dispatch(setSeriesLoading(changes.newValue));
+        });
 
         // subscribe to series changes
         this.vStorage.subscribe<'series_list'>('series_list', changes => {

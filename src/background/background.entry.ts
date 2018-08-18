@@ -14,8 +14,8 @@ new SettingsListener();
 new MessageListener();
 
 /*
-* Redirect requests to the videosyncer oauth redirect url to internal extension pages
-*/
+ * Redirect requests to the videosyncer oauth redirect url to internal extension pages
+ */
 browser.webRequest.onBeforeRequest.addListener((details) => {
     const requestUrl = new UrlParser(details.url);
     if(requestUrl.pathname.endsWith('/login')) {
@@ -36,3 +36,18 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
 }, [
     'blocking'
 ]);
+
+/*
+ * Inject content scripts into existing tabs
+ */
+browser.windows.getAll({
+    populate: true
+}).then(windows => {
+    windows.forEach(window => {
+        window.tabs.forEach(tab => {
+            browser.tabs.executeScript(tab.id, {
+                file: '/video-tracker/index.js'
+            });
+        });
+    })
+})

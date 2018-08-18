@@ -1,4 +1,4 @@
-import { AuthCore } from "./auth-core";
+import { AuthCore } from './auth-core';
 import { vyrebase } from '../vyrebase';
 
 export const WulfAuth = new AuthCore({

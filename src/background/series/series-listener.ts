@@ -19,6 +19,10 @@ export class SeriesListener {
     }
 
     subscribeToSeries(user?: VSync.User) {
+        this.vStorage.set({
+            series_loading: true
+        });
+
         this.seriesRef = vyrebase.database().ref(`vsync/series/${user.uid}`);
         this.seriesRef.on('value', snap => {
             const seriesList = [];
@@ -33,7 +37,8 @@ export class SeriesListener {
             }
 
             this.vStorage.set({
-                series_list: seriesList
+                series_list: seriesList,
+                series_loading: false
             });
 
             console.debug('FETCHED Series: ', seriesList);
@@ -43,7 +48,8 @@ export class SeriesListener {
     clean() {
         if(this.seriesRef) this.seriesRef.off();
         this.vStorage.set({
-            series_list: []
+            series_list: [],
+            series_loading: false
         });
         
         console.debug('CLEANED Series');

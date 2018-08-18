@@ -1,7 +1,7 @@
-import { RequestActions } from "./requests";
-import { WulfAuth } from "auth/wulf-auth";
-import { vyrebase } from "vyrebase";
-import { VSyncStorage } from "../storage";
+import { RequestActions } from './requests';
+import { WulfAuth } from 'auth/wulf-auth';
+import { vyrebase } from 'vyrebase';
+import { VSyncStorage } from '../storage';
 import { browser } from 'webextension-polyfill-ts';
 import { getDefaultSettings } from '../settings/settings-listener';
 

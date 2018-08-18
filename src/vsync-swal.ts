@@ -1,4 +1,4 @@
-import swal from "sweetalert2";
+import swal from 'sweetalert2';
 
 export const vswal = swal.mixin({
     heightAuto: false
