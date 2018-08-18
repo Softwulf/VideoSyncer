@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Typography, Theme, Button, Select, List, ListSubheader, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction, Switch, FormControl, InputLabel, MenuItem } from '@material-ui/core';
 import { Palette as PaletteIcon, Bluetooth } from '@material-ui/icons';
-import { changeTheme } from 'components/theme-provider';
 import { ThemeState } from '../../_redux/themes/types';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../_redux';
+import { MessageSender } from 'background/messages/message-sender';
 
 export type SettingsTabProps = {
     theme: ThemeState
@@ -52,7 +52,9 @@ class SettingsTabBase extends React.Component<SettingsTabProps, SettingsTabState
                             onClose={() => this.handleClose('theme')}
                             onOpen={() => this.handleOpen('theme')}
                             value={this.props.theme.name}
-                            onChange={(event) => changeTheme(event.target.value as any)}
+                            onChange={(event) => MessageSender.requestSettingsUpdate({
+                                theme: event.target.value
+                            })}
                         >
                             <MenuItem value={'light'}>Light</MenuItem>
                             <MenuItem value={'dark'}>Dark</MenuItem>

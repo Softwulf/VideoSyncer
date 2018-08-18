@@ -7,8 +7,6 @@ import { browser } from 'webextension-polyfill-ts';
 
 import { ThemeProvider } from 'components/theme-provider';
 
-import { AuthCore } from 'auth/wulf-auth';
-
 import { Typography } from '@material-ui/core';
 import { red, green } from '@material-ui/core/colors';
 import { ThemeState } from '../_redux/themes/types';
@@ -17,6 +15,7 @@ import { AuthProvider } from 'components/auth-provider';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../_redux';
 import { RequestCloseTab } from 'background/messages/requests';
+import { WulfAuth } from 'auth/wulf-auth';
 
 type LoginHandlerProps = {
     theme: ThemeState
@@ -57,7 +56,7 @@ class LoginHandlerBase extends React.Component<LoginHandlerProps, LoginHandlerSt
 
     async componentDidMount() {
         try {
-            await AuthCore.validate(window.location.href);
+            await WulfAuth.validate(window.location.href);
             this.setState({
                 type: 'success',
                 message: ''

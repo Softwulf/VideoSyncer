@@ -1,4 +1,4 @@
-import { firebase } from '../../firebase';
+import { vyrebase } from 'vyrebase';
 import { VSyncStorage } from '../storage';
 
 
@@ -19,7 +19,7 @@ export class SeriesListener {
     }
 
     subscribeToSeries(user?: VSync.User) {
-        this.seriesRef = firebase.database().ref(`vsync/series/${user.uid}`);
+        this.seriesRef = vyrebase.database().ref(`vsync/series/${user.uid}`);
         this.seriesRef.on('value', snap => {
             const seriesList = [];
             if(snap && snap.exists() && snap.hasChildren()) {

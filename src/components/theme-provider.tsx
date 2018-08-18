@@ -1,13 +1,9 @@
 import * as React from 'react';
 
 import bind from 'bind-decorator';
-import { MuiThemeProvider, createMuiTheme, Theme } from '@material-ui/core/styles';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 
 
-import { firebase } from '../firebase';
-
-import { browser } from 'webextension-polyfill-ts';
-import { defaultState } from 'pages/_redux/themes/reducers';
 import { ThemeState, ThemeName } from 'pages/_redux/themes/types';
 import { HasDispatch, ApplicationState, mapDispatch, HasRouter } from 'pages/_redux';
 import { connect } from 'react-redux';
@@ -44,17 +40,3 @@ export const ThemeProvider = connect(
             router: state.router
         }
     }, mapDispatch)(ThemeProviderBase)
-
-
-export const changeTheme = (theme: ThemeName): boolean => {
-    if(theme === 'dark' || theme === 'light') {
-        browser.storage.local.set({theme});
-
-        // if user is signed in, also update db
-        if(firebase.auth().currentUser) {
-            firebase.database().ref(`settings/${firebase.auth().currentUser.uid}`).update({theme});
-        }
-        return true;
-    }
-    return false;
-}

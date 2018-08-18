@@ -22,7 +22,8 @@ export interface RequestSeriesCreate extends Action {
 export interface RequestSeriesEdit extends Action {
     type: '@@request/SERIES_EDIT';
     payload: {
-        series: VSync.Series
+        series: Partial<VSync.Series>
+        key: VSync.Series['key']
     }
 }
 
@@ -33,9 +34,17 @@ export interface RequestSeriesDelete extends Action {
     }
 }
 
+export interface RequestSettingsUpdate extends Action {
+    type: '@@request/SETTINGS_UPDATE';
+    payload: {
+        settings: Partial<VSync.Settings>
+    }
+}
+
 export type RequestActions =        RequestCloseTab
                                 |   RequestUserSignOut
                                 |   RequestUserSignIn
                                 |   RequestSeriesCreate
                                 |   RequestSeriesEdit
                                 |   RequestSeriesDelete
+                                |   RequestSettingsUpdate

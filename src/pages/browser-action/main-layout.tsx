@@ -15,7 +15,6 @@ import { withTheme, Theme } from '@material-ui/core/styles';
 import { SeriesTab } from './series/series-tab';
 import { TutorialTab } from './tutorials/tutorial-tab';
 import { SettingsTab } from './settings/settings-tab';
-import { AuthCore } from 'auth/wulf-auth';
 import { SignIn } from './signin/sign-in';
 import { UserState } from '../_redux/users/types';
 import { connect } from 'react-redux';
@@ -23,6 +22,7 @@ import { ApplicationState, HasRouter, HasDispatch, mapDispatch } from '../_redux
 import { Switch, Route } from 'react-router';
 import { ThemeState } from '../_redux/themes/types';
 import { replace } from 'connected-react-router';
+import { MessageSender } from 'background/messages/message-sender';
 
 export type MainLayoutProps = {
     user: UserState
@@ -72,9 +72,9 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
                             }
                             {
                                 this.props.user.user ?
-                                    <Button style={{backgroundColor: red[900], color: '#FFF'}} variant='contained' onClick={AuthCore.logout}>Sign out</Button>
+                                    <Button style={{backgroundColor: red[900], color: '#FFF'}} variant='contained' onClick={MessageSender.requestUserSignOut}>Sign out</Button>
                                 :
-                                    <Button style={{backgroundColor: deepPurple[500], color: '#FFF'}} variant='contained' onClick={AuthCore.login}>Sign in</Button>
+                                    <Button style={{backgroundColor: deepPurple[500], color: '#FFF'}} variant='contained' onClick={MessageSender.requestUserSignIn}>Sign in</Button>
                             }
                         </Toolbar>
                     </AppBar>

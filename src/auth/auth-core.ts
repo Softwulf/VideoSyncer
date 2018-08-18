@@ -2,7 +2,8 @@ import * as auth0 from 'auth0-js';
 import * as UrlParser from 'url-parse';
 import { browser } from 'webextension-polyfill-ts';
 import { randomBytes } from 'crypto';
-import * as auth from 'firebase/auth';
+import { auth } from 'firebase';
+import { VSyncStorage } from 'background/storage';
 
 type WulfAuthOptions = {
     domain: string
@@ -34,7 +35,7 @@ function createWindow(options: {
             url: options.url,
             type: 'panel',
             width: 500,
-            height: 600
+            height: 750
         });
     } else {
         browser.tabs.create({
@@ -50,13 +51,12 @@ function randomString() {
     return random.toString('hex');
 }
 
-const nonceStorageKey = 'auth0_nonce';
-const stateStorageKey = 'auth0_state';
-
-export class WulfAuth {
+export class AuthCore {
     options: WulfAuthOptions
     firebaseAuth: auth.Auth
     auth0: auth0.WebAuth
+
+    vStorage = new VSyncStorage()
 
     constructor(options: WulfAuthOptions, firebaseAuth: auth.Auth) {
         this.options = options;
@@ -80,11 +80,10 @@ export class WulfAuth {
         const nonce = randomString();
         const state = randomString();
 
-        const storageObj = {};
-        storageObj[nonceStorageKey] = nonce;
-        storageObj[stateStorageKey] = state;
-
-        await browser.storage.local.set(storageObj);
+        await this.vStorage.set({
+            auth0_nonce: nonce,
+            auth0_state: state
+        })
 
         createWindow({
             url: `https://${this.options.domain}/authorize` + toQueryString({
@@ -100,33 +99,32 @@ export class WulfAuth {
 
     validate(url: string) {
         return new Promise((resolve, reject) => {
-            browser.storage.local.get([nonceStorageKey, stateStorageKey]).then(fromStorage => {
-                const hash = new UrlParser(url).hash;
-                const nonce = fromStorage[nonceStorageKey];
-                const state = fromStorage[stateStorageKey];
+            this.vStorage.get<'auth0_nonce'>('auth0_nonce').then(nonce => {
+                this.vStorage.get<'auth0_state'>('auth0_state').then(state => {
+                    const hash = new UrlParser(url).hash;
 
-                (this.auth0 as any).parseHash({
-                    hash,
-                    state,
-                    nonce
-                }, (err, authResult) => {
-                    if(err) {
-                        reject(err);
-                    } else {
-                        // clear state / nonce from storage
-                        browser.storage.local.remove([nonceStorageKey, stateStorageKey]);
-                        if(!authResult.idTokenPayload[firebaseTokenClaimName]) {
-                            reject({
-                                message: 'No firebase token received!'
-                            })
+                    (this.auth0 as any).parseHash({
+                        hash,
+                        state,
+                        nonce
+                    }, (err, authResult) => {
+                        if(err) {
+                            reject(err);
                         } else {
-                            const firebaseToken = authResult.idTokenPayload[firebaseTokenClaimName];
-                            this.firebaseAuth.signInWithCustomToken(firebaseToken).then(resolve).catch(reject);
+                            // clear state / nonce from storage
+                            this.vStorage.remove('auth0_nonce');
+                            this.vStorage.remove('auth0_state');
+                            if(!authResult.idTokenPayload[firebaseTokenClaimName]) {
+                                reject({
+                                    message: 'No firebase token received!'
+                                })
+                            } else {
+                                const firebaseToken = authResult.idTokenPayload[firebaseTokenClaimName];
+                                this.firebaseAuth.signInWithCustomToken(firebaseToken).then(resolve).catch(reject);
+                            }
                         }
-                    }
+                    });
                 });
-            }).catch(err => {
-                reject(err);
             });
         })
     }
@@ -139,7 +137,8 @@ export class WulfAuth {
             }),
             active: false
         });
-        this.firebaseAuth.signOut();
+
+        return this.firebaseAuth.signOut();
     }
 
 }

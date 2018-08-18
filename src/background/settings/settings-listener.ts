@@ -1,4 +1,4 @@
-import { firebase } from '../../firebase';
+import { vyrebase } from 'vyrebase';
 import { browser } from 'webextension-polyfill-ts';
 import { VSyncStorage } from '../storage';
 
@@ -19,28 +19,10 @@ export class SettingsListener {
         });
     }
 
-    async getDefaultSettings(): Promise<VSync.Settings> {
-        const locales = await browser.i18n.getAcceptLanguages();
-        const locale = filterLocales(locales);
-
-        const localSettings = await this.vStorage.get<'settings'>('settings');
-
-        if(localSettings) {
-            return localSettings;
-        } else {
-            const defaultSettings: VSync.Settings = {
-                locale,
-                theme: 'dark'
-            }
-
-            return defaultSettings;
-        }
-    }
-
     subscribeToSettings(user: VSync.User) {
-        this.dbRef = firebase.database().ref(`settings/${user.uid}`);
+        this.dbRef = vyrebase.database().ref(`settings/${user.uid}`);
         this.dbRef.on('value', async snap => {
-            const defaultSettings = await this.getDefaultSettings();
+            const defaultSettings = await getDefaultSettings(this.vStorage);
 
             if(snap && snap.exists()) {
                 const settingsData = snap.val();
@@ -66,7 +48,7 @@ export class SettingsListener {
     async clean() {
         if(this.dbRef) this.dbRef.off();
 
-        const defaultSettings = await this.getDefaultSettings();
+        const defaultSettings = await getDefaultSettings(this.vStorage);
         this.vStorage.set({
             settings: defaultSettings
         });
@@ -87,4 +69,22 @@ function filterLocales(locales: string[]): string {
     }
 
     return 'en';
+}
+
+export const getDefaultSettings = async (vStorage: VSyncStorage): Promise<VSync.Settings> => {
+    const locales = await browser.i18n.getAcceptLanguages();
+    const locale = filterLocales(locales);
+
+    const localSettings = await vStorage.get<'settings'>('settings');
+
+    if(localSettings) {
+        return localSettings;
+    } else {
+        const defaultSettings: VSync.Settings = {
+            locale,
+            theme: 'dark'
+        }
+
+        return defaultSettings;
+    }
 }

@@ -1,4 +1,4 @@
-import { firebase } from '../../firebase';
+import { vyrebase } from 'vyrebase';
 import { VSyncStorage } from '../storage';
 
 
@@ -6,7 +6,7 @@ export class AuthListener {
     vStorage = new VSyncStorage(true);
 
     constructor() {
-        firebase.auth().onAuthStateChanged(user => {
+        vyrebase.auth().onAuthStateChanged(user => {
             if(user) {
                 console.log(`User ${user.displayName} [${user.uid}] signed in`);
                 this.vStorage.set({

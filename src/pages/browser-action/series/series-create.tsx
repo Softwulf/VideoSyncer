@@ -8,10 +8,10 @@ import { replace } from 'connected-react-router';
 import { browser } from 'webextension-polyfill-ts';
 import { UrlPicker } from './inputs/url';
 import { bind } from 'bind-decorator';
-import { firebase } from '../../../firebase';
 import { UserState } from '../../_redux/users/types';
 import swal from 'sweetalert2';
 import { vswal, toast } from 'vsync-swal';
+import { MessageSender } from 'background/messages/message-sender';
 
 type SeriesCreateReduxProps = {
     theme: ThemeState
@@ -75,23 +75,23 @@ class SeriesCreateBase extends React.Component<SeriesCreateReduxProps & HasDispa
     }
 
     @bind
-    handleFinish() {
-        firebase.database().ref(`vsync/series/${this.props.user.user.uid}`).push(this.state.series, err => {
-            if(err) {
-                vswal(
-                    'Error',
-                    `The following error occurred: <b>${JSON.stringify(err)}</b>`,
-                    'error'
-                )
-            } else {
-                this.props.dispatch(replace('/'));
-                toast(
-                    'Success!',
-                    `You just created <b>${this.state.series.name}</b>`,
-                    'success'
-                )
-            }
-        });
+    async handleFinish() {
+        try {
+            await MessageSender.requstSeriesCreate(this.state.series);
+
+            this.props.dispatch(replace('/'));
+            toast(
+                'Success!',
+                `You just created <b>${this.state.series.name}</b>`,
+                'success'
+            )
+        } catch(err) {
+            vswal(
+                'Error',
+                `The following error occurred: <b>${JSON.stringify(err)}</b>`,
+                'error'
+            )
+        }
     }
 
     render() {

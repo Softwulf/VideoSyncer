@@ -6,13 +6,13 @@ import { ApplicationState, mapDispatch, HasDispatch } from '../../_redux';
 import { bind } from 'bind-decorator';
 import { Typography, Button, colors, Divider, TextField, InputAdornment } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import { firebase } from '../../../firebase';
 import { KeyboardArrowLeft } from '@material-ui/icons';
 import { UserState } from '../../_redux/users/types';
 import { replace } from 'connected-react-router';
 import swal from 'sweetalert2';
 import { vswal, toast } from 'vsync-swal';
 import { UrlPicker } from './inputs/url';
+import { MessageSender } from 'background/messages/message-sender';
 
 type SeriesEditOwnProps = {
 
@@ -35,6 +35,58 @@ class SeriesEditBase extends React.Component<SeriesEditOwnProps & SeriesEditRedu
 
         this.state = {
 
+        }
+    }
+
+    @bind
+    async handleSave() {
+        const { name, key } = this.state.currentSeries;
+        try {
+            await MessageSender.requestSeriesEdit(key, this.state.currentSeries);
+
+            this.props.dispatch(replace('/'));
+            toast(
+                'Saved!',
+                `<b>${name}</b> was saved successfully`,
+                'success'
+            )
+        } catch(err) {
+            vswal(
+                'Error',
+                `The following error occurred: <b>${JSON.stringify(err)}</b>`,
+                'error'
+            )
+        }
+    }
+
+    @bind
+    async handleDelete() {
+        const { name, key } = this.state.currentSeries;
+        const result = await vswal({
+            title: 'Are you sure?',
+            html: `<b>${name}</b> will be gone forever`,
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: colors.red[500]
+        });
+        if(result.value) {
+            try {
+                await MessageSender.requestSeriesDelete(key);
+
+                this.props.dispatch(replace('/'));
+                toast(
+                    'Deleted!',
+                    `<b>${name}</b> was deleted successfully`,
+                    'success'
+                )
+            } catch(err) {
+                vswal(
+                    'Error',
+                    `The following error occurred: <b>${JSON.stringify(err)}</b>`,
+                    'error'
+                )
+            }
         }
     }
 
@@ -115,24 +167,7 @@ class SeriesEditBase extends React.Component<SeriesEditOwnProps & SeriesEditRedu
 
                             <div style={{display: 'flex', alignItems: 'stretch', flexDirection: 'column', flexBasis: 'content'}}>
                                 <Button 
-                                    onClick={() => {
-                                        firebase.database().ref(`vsync/series/${this.props.user.user.uid}/${this.state.currentSeries.key}`).update(this.state.currentSeries, err => {
-                                            if(err) {
-                                                vswal(
-                                                    'Error',
-                                                    `The following error occurred: <b>${JSON.stringify(err)}</b>`,
-                                                    'error'
-                                                )
-                                            } else {
-                                                this.props.dispatch(replace('/'));
-                                                toast(
-                                                    'Saved!',
-                                                    `<b>${this.state.currentSeries.name}</b> was saved successfully`,
-                                                    'success'
-                                                )
-                                            }
-                                        });
-                                    }}
+                                    onClick={this.handleSave}
                                     variant='contained'
                                     style={{
                                         backgroundColor: colors.green[500],
@@ -145,35 +180,7 @@ class SeriesEditBase extends React.Component<SeriesEditOwnProps & SeriesEditRedu
                                     marginBottom: '10px'
                                 }} />
                                 <Button 
-                                    onClick={async () => {
-                                        const { name } = this.state.currentSeries;
-                                        const result = await vswal({
-                                            title: 'Are you sure?',
-                                            html: `<b>${name}</b> will be gone forever`,
-                                            type: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Delete',
-                                            confirmButtonColor: colors.red[500]
-                                        });
-                                        if(result.value) {
-                                            firebase.database().ref(`vsync/series/${this.props.user.user.uid}/${this.state.currentSeries.key}`).remove(err => {
-                                                if(err) {
-                                                    vswal(
-                                                        'Error',
-                                                        `The following error occurred: <b>${JSON.stringify(err)}</b>`,
-                                                        'error'
-                                                    )
-                                                } else {
-                                                    this.props.dispatch(replace('/'));
-                                                    vswal(
-                                                        'Deleted!',
-                                                        `<b>${name}</b> was deleted successfully`,
-                                                        'success'
-                                                    )
-                                                }
-                                            });
-                                        }
-                                    }}
+                                    onClick={this.handleDelete}
                                     variant='contained'
                                     style={{
                                         backgroundColor: colors.red[500],

@@ -16,7 +16,6 @@ const db = firebase.database(app);
 const auth = firebase.auth();
 
 export {
-    firebase,
-    db,
-    auth
+    firebase as vyrebase,
+    db
 }

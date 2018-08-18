@@ -44,6 +44,10 @@ export class VSyncStorage {
         return browser.storage.local.set(updateObject);
     }
 
+    remove(key: keyof VSyncStorageDefinition) {
+        return browser.storage.local.remove(key);
+    }
+
     async get<T extends keyof VSyncStorageDefinition>(key: T) {
         const result = await browser.storage.local.get(key);
         return result[key] as VSyncStorageDefinition[T]

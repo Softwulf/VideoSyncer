@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { List, ListSubheader, ListItem, ListItemText, CircularProgress, Typography, Button, colors } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
-import { firebase } from '../../../firebase';
 import { UserState } from '../../_redux/users/types';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../_redux';

@@ -1,5 +1,6 @@
 {
     "rules": {
+        "no-unused-variable": false
     },
   
     "defaultSeverity": "error"
