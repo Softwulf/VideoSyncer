@@ -50,11 +50,11 @@ const remove = () => {
 }
 
 browser.runtime.connect().onDisconnect.addListener(p => {
-    debug('Video Tracker Disconnected!');
+    debug('Video Syncer Disconnected!');
     disconnected = true;
     if(reactElement) {
         (reactElement as any).getWrappedInstance().setDisconnected(disconnected);
-        window.alert('Video Tracker disconnected, please refresh tab');
+        window.alert('Video Syncer disconnected, please refresh tab');
     }
 })
 
