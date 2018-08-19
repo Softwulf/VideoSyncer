@@ -37,17 +37,13 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
     'blocking'
 ]);
 
+
 /*
- * Inject content scripts into existing tabs
+ * Connect with content scripts to let them know when they're disconnected
  */
-browser.windows.getAll({
-    populate: true
-}).then(windows => {
-    windows.forEach(window => {
-        window.tabs.forEach(tab => {
-            browser.tabs.executeScript(tab.id, {
-                file: '/video-tracker/index.js'
-            });
-        });
+browser.runtime.onConnect.addListener(port => {
+    console.debug('Content Script connected', port.name);
+    port.onDisconnect.addListener(port => {
+        console.debug('Content Script disconnected', port.name)
     })
-})
+});

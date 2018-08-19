@@ -8,8 +8,15 @@ import { ReduxProvider } from 'pages/_redux/redux-provider';
 import { ContentScriptRootView } from './views/main-view';
 import { AuthProvider } from 'components/auth-provider';
 import { VSyncStorage } from 'background/storage';
+import { browser } from 'webextension-polyfill-ts';
+import { Typography } from '@material-ui/core';
 
 const rootId = 'vsync-content-react-root';
+
+let reactElement: React.Component
+
+let matchingSeries: VSync.Series | undefined
+let disconnected: boolean = false
 
 const setup = () => {
     // Only insert div if it is not already loaded ( SPA's )
@@ -22,7 +29,7 @@ const setup = () => {
             <ReduxProvider>
                 <ThemeProvider>
                     <AuthProvider>
-                        <ContentScriptRootView />
+                        <ContentScriptRootView ref={ref => reactElement = ref} />
                     </AuthProvider>
                 </ThemeProvider>
             </ReduxProvider>,
@@ -40,30 +47,38 @@ const remove = () => {
 }
 
 
+
 remove(); // remove the current react element, if this is a re-inject
 
-// Save current date so if refresh occurs we can react accordingly
-const injectDate = new Date();
-let currentDate = injectDate;
+browser.runtime.connect().onDisconnect.addListener(p => {
+    console.debug('Video Tracker Disconnected!');
+    disconnected = true;
+    if(reactElement) {
+        (reactElement as any).getWrappedInstance().setDisconnected(disconnected);
+        window.alert('Video Tracker disconnected, please refresh tab');
+    }
+})
 
-// Check if the url matches
-
+// locally store the series list
 let seriesList = [];
 
+// check if the current url matches a series and if yes update the react component
 function checkMatch() {
-    console.debug('checking match');
-
-    const matchingSeries = seriesList.find(series => {
+    matchingSeries = seriesList.find(series => {
         return window.location.host === series.host && window.location.pathname.startsWith('/'+series.pathbase);
     });
 
     if(matchingSeries) {
         setup();
+        if(reactElement) {
+            (reactElement as any).getWrappedInstance().setMatchingSeries(matchingSeries);
+        }
     } else {
         remove();
     }
 }
 
+// subscribe to series list changes
 const VStorage = new VSyncStorage();
 
 VStorage.subscribe<'series_list'>('series_list', changes => {
@@ -71,27 +86,3 @@ VStorage.subscribe<'series_list'>('series_list', changes => {
 
     checkMatch();
 });
-
-interface DeactivateMessage {
-    type: '@@vsync/DEACTIVATE_SCRIPT'
-    date: string
-}
-
-// Remove History listener when new script is injected
-window.addEventListener('message', (event) => {
-    const msg: DeactivateMessage = event.data;
-    if(msg.type === '@@vsync/DEACTIVATE_SCRIPT') {
-        const receivedOn = new Date(parseInt(msg.date));
-        if(receivedOn > injectDate) {
-            currentDate = receivedOn;
-            console.debug('Deactivating vsync from', injectDate.toLocaleString())
-        }
-    }
-})
-
-// Send the deactivation message for the old script
-const deactivateMsg: DeactivateMessage = {
-    type: '@@vsync/DEACTIVATE_SCRIPT',
-    date: injectDate.getTime().toString()
-}
-window.self.postMessage(deactivateMsg, '*');
