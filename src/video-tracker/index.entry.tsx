@@ -10,6 +10,7 @@ import { AuthProvider } from 'components/auth-provider';
 import { VSyncStorage } from 'background/storage';
 import { browser } from 'webextension-polyfill-ts';
 import { Typography } from '@material-ui/core';
+import { debug } from 'vlogger';
 
 const rootId = 'vsync-content-react-root';
 
@@ -19,6 +20,7 @@ let matchingSeries: VSync.Series | undefined
 let disconnected: boolean = false
 
 const setup = () => {
+    debug('Setting VSync up');
     // Only insert div if it is not already loaded ( SPA's )
     if(!document.getElementById(rootId)) {
         const react_root = document.createElement('div');
@@ -39,6 +41,7 @@ const setup = () => {
 }
 
 const remove = () => {
+    debug('Removing VSync');
     const react_root = document.getElementById(rootId);
     if(react_root) {
         ReactDOM.unmountComponentAtNode(react_root);
@@ -46,12 +49,8 @@ const remove = () => {
     }
 }
 
-
-
-remove(); // remove the current react element, if this is a re-inject
-
 browser.runtime.connect().onDisconnect.addListener(p => {
-    console.debug('Video Tracker Disconnected!');
+    debug('Video Tracker Disconnected!');
     disconnected = true;
     if(reactElement) {
         (reactElement as any).getWrappedInstance().setDisconnected(disconnected);
@@ -73,6 +72,7 @@ function checkMatch() {
         if(reactElement) {
             (reactElement as any).getWrappedInstance().setMatchingSeries(matchingSeries);
         }
+        debug('Detected Series: ', matchingSeries.name);
     } else {
         remove();
     }
@@ -83,6 +83,7 @@ const VStorage = new VSyncStorage();
 
 VStorage.subscribe<'series_list'>('series_list', changes => {
     seriesList = changes.newValue;
+    debug('New Series received: ', seriesList);
 
     checkMatch();
 });

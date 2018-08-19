@@ -80,7 +80,10 @@ const generateConfig = (env) : webpack.Configuration => {
             'dist/chrome',
             'dist/firefox',
             'dist/opera'
-        ])
+        ]),
+        new webpack.DefinePlugin({
+            '___DEBUG___': JSON.stringify(!prod)
+        })
     ];
 
     const config : webpack.Configuration = {

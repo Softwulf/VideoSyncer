@@ -36,7 +36,8 @@
             ],
             "js": [
                 "video-tracker/index.js"
-            ]
+            ],
+            "all_frames": false
         }
     ],
     "icons": {
