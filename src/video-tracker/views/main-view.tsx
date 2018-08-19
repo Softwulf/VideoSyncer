@@ -117,7 +117,7 @@ class ContentScriptRootViewBase extends React.Component<ContentScriptRootReduxPr
                         color: '#FFF',
                         position: 'absolute',
                         top: '5px',
-                        right: '20px'
+                        right: '5%'
                     }}
                     >
                     <ExpandMore style={{
