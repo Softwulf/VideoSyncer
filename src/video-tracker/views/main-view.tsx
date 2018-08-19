@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { ThemeState } from 'pages/_redux/themes/types';
-import { Button, CircularProgress, Typography } from '@material-ui/core';
+import { Button, CircularProgress, Typography, Collapse, IconButton } from '@material-ui/core';
 import { ApplicationState } from 'pages/_redux';
 import { connect } from 'react-redux';
 import { UserState } from 'pages/_redux/users/types';
 import { SeriesState } from 'pages/_redux/series/types';
 import { bind } from 'bind-decorator';
+import { ExpandMore } from '@material-ui/icons';
 
 type ContentScriptRootReduxProps = {
     theme: ThemeState
@@ -15,6 +16,7 @@ type ContentScriptRootReduxProps = {
 
 type ContentScriptRootState = {
     matchingSeriesId?: VSync.Series['key']
+    expanded: boolean
 }
 
 class ContentScriptRootViewBase extends React.Component<ContentScriptRootReduxProps, ContentScriptRootState> {
@@ -22,6 +24,7 @@ class ContentScriptRootViewBase extends React.Component<ContentScriptRootReduxPr
         super(props);
 
         this.state = {
+            expanded: true
         }
     }
 
@@ -96,10 +99,47 @@ class ContentScriptRootViewBase extends React.Component<ContentScriptRootReduxPr
             )
         }
         return (
-            <div style={{padding: '20px', width: '100%', height: '100%', backgroundColor: this.props.theme.theme.palette.background.default}}>
-                <Button variant='contained' color='primary'>
-                    {this.getCurrentSeries().name}
-                </Button>
+            <div style={{
+                width: '100%',
+                height: '100%'
+            }}>
+                <IconButton
+                    onClick={() => this.setState({expanded: !this.state.expanded})}
+                    aria-expanded={this.state.expanded}
+                    aria-label='Show more'
+                    style={{
+                        transform: this.state.expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: this.props.theme.theme.transitions.create('transform', {
+                            duration: this.props.theme.theme.transitions.duration.shortest
+                        }),
+                        zIndex: 1000,
+                        backgroundColor: this.props.theme.theme.palette.primary.main,
+                        color: '#FFF',
+                        position: 'absolute',
+                        top: '5px',
+                        right: '20px'
+                    }}
+                    >
+                    <ExpandMore style={{
+                        margin: 0
+                    }} />
+                </IconButton>
+                <Collapse 
+                    in={this.state.expanded}
+                    style={{
+                    }}
+                    >
+                    <div
+                        style={{
+                            backgroundColor: this.props.theme.theme.palette.background.default,
+                            borderBottom: `2px solid ${this.props.theme.theme.palette.primary.main}`
+                        }}
+                    >
+                        <Typography variant='display4'>
+                            {this.getCurrentSeries().name}
+                        </Typography>
+                    </div>
+                </Collapse>
             </div>
         )
     }
