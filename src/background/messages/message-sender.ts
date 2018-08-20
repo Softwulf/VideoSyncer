@@ -1,5 +1,6 @@
 import { browser } from 'webextension-polyfill-ts';
 import { RequestUserSignOut, RequestUserSignIn, RequestCloseTab, RequestSeriesCreate, RequestSeriesDelete, RequestSeriesEdit, RequestSettingsUpdate } from './requests';
+import { debug } from 'vlogger';
 
 
 export const MessageSender = {
@@ -50,7 +51,7 @@ export const MessageSender = {
         browser.runtime.sendMessage(seriesDeleteMessage);
     },
 
-    requestSeriesEdit: async (seriesId: VSync.Series['key'], series: VSync.Series) => {
+    requestSeriesEdit: async (seriesId: VSync.Series['key'], series: Partial<VSync.Series>) => {
         const seriesEditMessage: RequestSeriesEdit = {
             type: '@@request/SERIES_EDIT',
             payload: {
@@ -59,6 +60,8 @@ export const MessageSender = {
             }
         }
         
+        debug('Requesting edit: ', seriesEditMessage);
+
         browser.runtime.sendMessage(seriesEditMessage);
     },
 

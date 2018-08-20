@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ListItem, ListItemText, Typography, Button, List, ListSubheader, ListItemSecondaryAction } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
+import { browser } from 'webextension-polyfill-ts';
 
 export type SeriesListProps = {
     series: VSync.Series[]
@@ -31,6 +32,13 @@ export const SeriesList: React.SFC<SeriesListProps> = (props: SeriesListProps) =
             <ListItem divider key={series.key}>
                 <ListItemText primary={series.name} secondary={series.currentTime} />
                 <ListItemSecondaryAction>
+                    <Button variant='contained' color='secondary' onClick={() => {
+                        browser.tabs.create({
+                            url: `https://${series.host}/${series.pathbase}${series.currentPath}`
+                        })
+                    }}>
+                        Launch
+                    </Button>
                     <Button variant='contained' color='primary' component={EditSeriesLink as any} {...{seriesid: series.key} as any}>
                         Edit
                     </Button>

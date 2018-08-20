@@ -25,7 +25,7 @@
                 "http://*/*"
             ],
             "js": [
-                "video-tracker/frame.js"
+                "video-tracker/frame/frame.js"
             ],
             "all_frames": true
         },

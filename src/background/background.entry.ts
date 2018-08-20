@@ -5,6 +5,7 @@ import { AuthListener } from './auth/auth-listener';
 
 import { browser } from 'webextension-polyfill-ts';
 import * as UrlParser from 'url-parse';
+import { MessageGateway } from './messages/message-gateway';
 
 new AuthListener();
 
@@ -12,6 +13,8 @@ new SeriesListener();
 new SettingsListener();
 
 new MessageListener();
+
+new MessageGateway();
 
 /*
  * Redirect requests to the videosyncer oauth redirect url to internal extension pages
