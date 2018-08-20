@@ -1,5 +1,15 @@
 {
+    "__WET_GROUP__": { "message": "Extension Info" },
+    "app_name": {
+        "message": "VideoSyncer"
+    },
+    "app_shortname": {
+        "message": "VSync"
+    },
     "app_description": {
-        "message": "VideoSyncer is the easiest way to keep track of all the TV series you're watching online"
-    }
+        "message": "VideoSyncer is the easiest way to keep track of all the TV series you're watching online",
+        "description": "The description of the extension"
+    },
+
+    "__WET_LOCALE__": { "message": "en" }
 }

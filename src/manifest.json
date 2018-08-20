@@ -1,10 +1,10 @@
 {
     "manifest_version": 2,
-    "name": "VideoSyncer",
+    "name": "__MSG_app_name__",
     "default_locale": "en",
     "author": "ElectronicManuel",
     "description": "__MSG_app_description__",
-    "short_name": "VSync",
+    "short_name": "__MSG_app_shortname__",
     "browser_action": {
         "default_icon": "assets/img/logo512.png",
         "default_title": "VideoSyncer",

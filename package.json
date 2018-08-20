@@ -1,6 +1,6 @@
 {
     "name": "@vsync/vsync",
-    "version": "6.0.6",
+    "version": "6.0.7",
     "description": "",
     "author": "ElectronicManuel",
     "license": "GPL-3.0",
@@ -34,7 +34,8 @@
         "start": "npm run compile -- -w",
         "gulp": "cross-env  TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} gulp",
         "compile": "cross-env  TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} webpack --config webpack.config.ts",
-        "build": "npm run compile -- --env.prod"
+        "build": "npm run compile -- --env.prod",
+        "translate": "cd src && wet"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.0.0-rc.1",
@@ -83,6 +84,7 @@
         "typescript": "^3.0.1",
         "uglifyjs-webpack-plugin": "^1.2.7",
         "url-loader": "^1.0.1",
+        "web-ext-translator": "^2.0.5",
         "webpack": "^4.16.5",
         "webpack-cli": "^3.1.0",
         "webpack-shell-plugin": "^0.5.0",
