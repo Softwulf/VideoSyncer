@@ -46,7 +46,39 @@ export class FrameSelector {
         event.preventDefault();
         event.stopImmediatePropagation();
 
-        const query = this.getQuery(t);
+        let query = this.getQuery(t);
+
+        if(this.searchingFor === 'video') {
+            if(t.nodeName !== 'VIDEO') {
+                const checkForVideo = (el: HTMLElement): string | undefined => {
+                    if(el.nodeName === 'VIDEO') {
+                        const vQuery = this.getQuery(el);
+                        if(vQuery) return vQuery;
+                        return undefined;
+                    } else {
+                        if(el.hasChildNodes()) {
+                            let toReturn = undefined;
+                            el.childNodes.forEach(child => {
+                                const childQuery = checkForVideo(child as any);
+                                if(childQuery) toReturn = childQuery;
+                            });
+                            return toReturn;
+                        } else {
+                            return undefined;
+                        }
+                    }
+                }
+
+                const vQuery = checkForVideo(t.parentElement);
+                debug('Video Query: ', vQuery);
+                if(!vQuery) {
+                    window.alert('No Video!');
+                    return;
+                } else {
+                    query = vQuery;
+                }
+            }
+        }
 
         if(query) {
             debug('QUERY: ', query);

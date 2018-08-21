@@ -122,11 +122,18 @@ class VSyncFrame {
                             debug(`Series updated [${this.name}]`, this.activeSeries.name);
                             break;
                         case '@@frame/REQUEST_VIDEO':
-                            const videos = document.getElementsByTagName('video');
-                            if(videos.length > 0) {
-                                this.video = videos[0];
-                                debug(`Video Found [${this.name}]`, this.video);
-                                this.messenger.videoFound();
+                            // only if no player was specified or the host matches
+                            if(!this.activeSeries.videoPlayer || this.activeSeries.videoPlayer.host === window.location.host) {
+                                const query = this.activeSeries.videoPlayer ? this.activeSeries.videoPlayer.query : 'video'
+                                debug('Used Query: ', query);
+                                const queried = document.querySelector(query);
+                                if(queried) {
+                                    if(queried.nodeName === 'VIDEO') {
+                                        this.video = queried as HTMLVideoElement;
+                                        debug(`Video Found [${this.name}]`, this.video);
+                                        this.messenger.videoFound();
+                                    }
+                                }
                             }
                             break;
                         case '@@frame/CONFIRM_VIDEO':

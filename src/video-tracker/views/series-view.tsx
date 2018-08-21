@@ -147,6 +147,7 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
 
     @bind
     removeVideo() {
+        this.messenger.stopSelection();
         this.messenger.setPaused(this.state.videoFrame, true);
         this.messenger.setFullscreen(this.state.videoFrame, false);
         this.messenger.removeVideo(this.state.videoFrame);
@@ -245,7 +246,15 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                             onClick={() => {
                                 this.messenger.requestSelection('next')
                             }}>
-                            Select
+                            S Next
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='secondary'
+                            onClick={() => {
+                                this.messenger.requestSelection('video')
+                            }}>
+                            S Video
                         </Button>
                     </div>
                     <LinearProgress
