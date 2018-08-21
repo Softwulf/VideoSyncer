@@ -10,7 +10,11 @@ export interface VideoFoundMessage extends BottomUpMessage {
     subtype: '@@top/VIDEO_FOUND'
 }
 
-export type BottomUpMessageUnion = VideoFoundMessage;
+export interface VideoEndedMessage extends BottomUpMessage {
+    subtype: '@@top/VIDEO_ENDED'
+}
+
+export type BottomUpMessageUnion = VideoFoundMessage | VideoEndedMessage;
 
 export class BottomUpMessenger {
     frameId: string
@@ -31,6 +35,15 @@ export class BottomUpMessenger {
         const msg: VideoFoundMessage = {
             type: '@@topmessage',
             subtype: '@@top/VIDEO_FOUND',
+            frameId: this.frameId
+        }
+        this.topWindow().postMessage(msg, '*');
+    }
+
+    videoEnded() {
+        const msg: VideoEndedMessage = {
+            type: '@@topmessage',
+            subtype: '@@top/VIDEO_ENDED',
             frameId: this.frameId
         }
         this.topWindow().postMessage(msg, '*');
