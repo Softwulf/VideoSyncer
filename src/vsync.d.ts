@@ -10,6 +10,7 @@ declare namespace VSync {
         endTime: number
 
         currentTime: number
+        currentMaxTime: number
         currentPath: string
 
         videoPlayer?: FrameElement

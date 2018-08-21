@@ -53,6 +53,7 @@ class VSyncFrame {
 
         const target: HTMLVideoElement = event.target as any;
         const videoTime = Math.floor(target.currentTime);
+        const maxTime = Math.floor(target.duration);
 
         if(target.paused) return;
 
@@ -67,6 +68,7 @@ class VSyncFrame {
             debug('Updating...');
             MessageSender.requestSeriesEdit(this.activeSeries.key, {
                 currentTime: videoTime,
+                currentMaxTime: maxTime,
                 latestFrame: this.id
             })
 
@@ -80,12 +82,14 @@ class VSyncFrame {
 
         const target: HTMLVideoElement = event.target as any;
         const videoTime = Math.floor(target.currentTime);
+        const maxTime = Math.floor(target.duration);
 
         const now = new Date().getTime()
 
         debug('Video was paused, saving');
         MessageSender.requestSeriesEdit(this.activeSeries.key, {
             currentTime: videoTime,
+            currentMaxTime: maxTime,
             latestFrame: this.id
         })
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography, Button } from '@material-ui/core';
+import { Typography, Button, LinearProgress } from '@material-ui/core';
 import { browser } from 'webextension-polyfill-ts';
 import { debug } from 'vlogger';
 import { bind } from 'bind-decorator';
@@ -35,17 +35,17 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
 
         window.addEventListener('message', this.handleMessage);
 
-        this.videoRequestInterval = setInterval(() => {
-            this.messenger.requestVideo();
-        }, 1000);
+        this.requestVideo();
     }
 
     componentWillUnmount() {
         debug('[UNMOUNT] Removing Series from Frames');
         this.messenger.setSeries(undefined);
-
-        if(this.videoRequestInterval) clearInterval(this.videoRequestInterval);
         window.removeEventListener('message', this.handleMessage);
+
+        this.removeVideo();
+
+        this.clearVideoRequest();
     }
 
     componentWillReceiveProps(newProps: SeriesViewProps) {
@@ -53,9 +53,17 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
             debug('[PROPS] Sending Updated Series to Frames');
             this.messenger.setSeries(newProps.series);
 
+            // another frame is playing, pause this frame
             if(newProps.series.latestFrame !== this.state.videoFrame) {
                 this.messenger.setPaused(this.state.videoFrame, true);
                 this.messenger.setTime(this.state.videoFrame, newProps.series.currentTime);
+            }
+
+            // another frame started a new episode
+            if(newProps.series.currentPath !== this.getCurrentPath()) {
+                this.removeVideo();
+
+                // TODO: let user decide which episode should be used
             }
         }
     }
@@ -68,21 +76,20 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                 debug('Top msg received: ', data.subtype);
                 switch(data.subtype) {
                     case '@@top/VIDEO_FOUND':
-                        if(this.videoRequestInterval) clearInterval(this.videoRequestInterval);
+                        this.clearVideoRequest();
+                        if(this.state.videoFrame) return; // if we already have a video player, break
 
-                        if(this.state.videoFrame) break;
                         this.messenger.confirmVideo(data.frameId);
 
                         this.setState({
                             videoFrame: data.frameId
                         });
 
-                        const extractedPath = window.location.pathname.slice(('/'+this.props.series.pathbase).length);
-                        debug(extractedPath, this.props.series.currentPath);
-                        const isNewEpisode = this.props.series.currentPath !== extractedPath
-                        if(isNewEpisode) {
+
+                        const currentPath = this.getCurrentPath();
+                        if(currentPath !== this.props.series.currentPath) { // New Episode
                             MessageSender.requestSeriesEdit(this.props.series.key, {
-                                currentPath: extractedPath,
+                                currentPath: currentPath,
                                 latestFrame: data.frameId
                             });
                             this.messenger.setTime(data.frameId, this.props.series.startTime);
@@ -106,31 +113,115 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
         }
     }
 
+    @bind
+    getCurrentPath() {
+        return window.location.pathname.slice(('/'+this.props.series.pathbase).length);
+    }
+
+    @bind
+    requestVideo() {
+        if(!this.videoRequestInterval) {
+            this.videoRequestInterval = setInterval(() => {
+                this.messenger.requestVideo();
+            }, 1000);
+        }
+    }
+
+    @bind
+    removeVideo() {
+        this.messenger.setPaused(this.state.videoFrame, true);
+        this.messenger.setFullscreen(this.state.videoFrame, false);
+        this.messenger.removeVideo(this.state.videoFrame);
+        this.setState({
+            videoFrame: undefined
+        })
+    }
+
+    @bind
+    clearVideoRequest() {
+        if(this.videoRequestInterval) clearInterval(this.videoRequestInterval);
+    }
+
     render() {
         return (
             <div style={{
                 display: 'flex',
                 flexGrow: 1,
+                flexDirection: 'column',
                 justifyContent: 'space-around',
-                alignItems: 'center'
+                alignItems: 'stretch'
             }}
             >
-                <Typography variant='title'>
-                    {this.props.series.name} - Ended: {this.state.ended ? 'Yes' : 'No'}
-                </Typography>
-                <Button variant='contained' color='secondary' onClick={() => this.messenger.setFullscreen(this.state.videoFrame, true)}>
-                    FS
-                </Button>
-                <Typography variant='caption'>
-                    {
-                        this.state.videoFrame === this.props.series.latestFrame ? 'Active' : 'Inactive'
-                    }
-                </Typography>
-                <Typography variant='caption'>
-                    {
-                        this.state.videoFrame ? this.state.videoFrame : 'No Video found'
-                    }
-                </Typography>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-around'
+                }}>
+                    <Typography variant='title'>
+                        {this.props.series.name}
+                    </Typography>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-around'
+                }}>
+                    <Typography variant='caption'>
+                        {
+                            this.state.videoFrame ? this.state.videoFrame : 'No Video found'
+                        }
+                    </Typography>
+                    <Typography variant='caption'>
+                        {
+                            this.state.videoFrame === this.props.series.latestFrame ? 'Active' : 'Inactive'
+                        }
+                    </Typography>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    marginTop: '10px'
+                }}>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                            this.messenger.setFullscreen(this.state.videoFrame, true)
+                        }}>
+                        Full
+                    </Button>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                            this.messenger.setPaused(this.state.videoFrame, false)
+                        }}>
+                        Play
+                    </Button>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                            this.messenger.setPaused(this.state.videoFrame, true)
+                        }}>
+                        Pause
+                    </Button>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                            this.messenger.setTime(this.state.videoFrame, this.props.series.currentTime-30)
+                        }}>
+                        -30
+                    </Button>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                            this.messenger.setTime(this.state.videoFrame, this.props.series.currentTime+30)
+                        }}>
+                        +30
+                    </Button>
+                </div>
+                <LinearProgress color="secondary" variant="determinate" value={(100 / this.props.series.currentMaxTime) * this.props.series.currentTime} />
             </div>
         )
     }

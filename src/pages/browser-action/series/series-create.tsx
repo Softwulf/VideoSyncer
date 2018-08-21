@@ -38,6 +38,7 @@ class SeriesCreateBase extends React.Component<SeriesCreateReduxProps & HasDispa
                 pathbase: '',
                 currentPath: '',
                 currentTime: 0,
+                currentMaxTime: 0,
                 startTime: 0,
                 endTime: 0,
                 name: ''
