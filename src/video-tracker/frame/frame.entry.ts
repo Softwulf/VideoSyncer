@@ -5,6 +5,7 @@ import { BottomUpMessenger } from '../messaging/frame-messages';
 import { v4 as uuid } from 'uuid'
 import { MessageSender } from 'background/messages/message-sender';
 import { bind } from 'bind-decorator';
+import { FrameSelector } from './selector';
 
 class VSyncFrame {
     disconnected: boolean = false
@@ -180,6 +181,11 @@ class VSyncFrame {
             debug(`Video Syncer frame ${this.name} Disconnected!`);
             this.disconnected = true;
             this.activeSeries = undefined;
+
+            if(this.video) {
+                this.video.pause();
+            }
+
             this.removeVideo();
         })
     }
@@ -202,4 +208,5 @@ class VSyncFrame {
 
 }
 
-new VSyncFrame();
+const vsyncFrame = new VSyncFrame();
+const frameSelector = new FrameSelector(vsyncFrame.id);

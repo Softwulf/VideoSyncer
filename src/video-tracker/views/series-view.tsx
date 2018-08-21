@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography, Button, LinearProgress } from '@material-ui/core';
+import { Typography, Button, LinearProgress, Paper } from '@material-ui/core';
 import { browser } from 'webextension-polyfill-ts';
 import { debug } from 'vlogger';
 import { bind } from 'bind-decorator';
@@ -108,6 +108,24 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                             ended: true
                         })
                         break;
+                    case '@@top/SELECTION_CONFIRMED':
+                        this.messenger.stopSelection()
+                        if(data.selection === 'video') {
+                            MessageSender.requestSeriesEdit(this.props.series.key, {
+                                videoPlayer: {
+                                    host: data.host,
+                                    query: data.query
+                                }
+                            })
+                        } else if(data.selection === 'next') {
+                            MessageSender.requestSeriesEdit(this.props.series.key, {
+                                nextButton: {
+                                    host: data.host,
+                                    query: data.query
+                                }
+                            })
+                        }
+                        break;
                 }
             }
         }
@@ -175,53 +193,69 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                         }
                     </Typography>
                 </div>
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                    marginTop: '10px'
-                }}>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={() => {
-                            this.messenger.setFullscreen(this.state.videoFrame, true)
-                        }}>
-                        Full
-                    </Button>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={() => {
-                            this.messenger.setPaused(this.state.videoFrame, false)
-                        }}>
-                        Play
-                    </Button>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={() => {
-                            this.messenger.setPaused(this.state.videoFrame, true)
-                        }}>
-                        Pause
-                    </Button>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={() => {
-                            this.messenger.setTime(this.state.videoFrame, this.props.series.currentTime-30)
-                        }}>
-                        -30
-                    </Button>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={() => {
-                            this.messenger.setTime(this.state.videoFrame, this.props.series.currentTime+30)
-                        }}>
-                        +30
-                    </Button>
-                </div>
-                <LinearProgress color="secondary" variant="determinate" value={(100 / this.props.series.currentMaxTime) * this.props.series.currentTime} />
+                <Paper elevation={2}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        margin: '10px'
+                    }}>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            onClick={() => {
+                                this.messenger.setFullscreen(this.state.videoFrame, true)
+                            }}>
+                            Full
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            onClick={() => {
+                                this.messenger.setPaused(this.state.videoFrame, false)
+                            }}>
+                            Play
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            onClick={() => {
+                                this.messenger.setPaused(this.state.videoFrame, true)
+                            }}>
+                            Pause
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            onClick={() => {
+                                this.messenger.setTime(this.state.videoFrame, this.props.series.currentTime-30)
+                            }}>
+                            -30
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            onClick={() => {
+                                this.messenger.setTime(this.state.videoFrame, this.props.series.currentTime+30)
+                            }}>
+                            +30
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='secondary'
+                            onClick={() => {
+                                this.messenger.requestSelection('next')
+                            }}>
+                            Select
+                        </Button>
+                    </div>
+                    <LinearProgress
+                        style={{
+                            marginTop: '5px'
+                        }}
+                        color='secondary'
+                        variant='determinate'
+                        value={(100 / this.props.series.currentMaxTime) * this.props.series.currentTime} />
+                </Paper>
             </div>
         )
     }

@@ -1,5 +1,6 @@
 import { browser } from 'webextension-polyfill-ts';
 import { debug } from 'vlogger';
+import { ElementSelection } from './selection';
 
 // Format for sending messages to sub-frames
 export interface TopDownMessage {
@@ -45,7 +46,24 @@ export interface SetFullscreenMessage extends TopDownMessage {
     fullscreen: boolean
 }
 
-export type TopDownMessageUnion = SetSeriesMessage | RequestVideoMessage | ConfirmVideoMessage | RemoveVideoMessage | SetPausedMessage | SetTimeMessage | SetFullscreenMessage
+export interface RequestSelectionMessage extends TopDownMessage {
+    subtype: '@@frame/REQUEST_SELECTION'
+    selection: ElementSelection
+}
+
+export interface StopSelectionMessage extends TopDownMessage {
+    subtype: '@@frame/STOP_SELECTION'
+}
+
+export type TopDownMessageUnion =     SetSeriesMessage
+                                    | RequestVideoMessage
+                                    | ConfirmVideoMessage
+                                    | RemoveVideoMessage
+                                    | SetPausedMessage
+                                    | SetTimeMessage
+                                    | SetFullscreenMessage
+                                    | RequestSelectionMessage
+                                    | StopSelectionMessage
 
 export class TopDownMessenger {
     private sendMessage(msg: TopDownMessage) {
@@ -116,6 +134,23 @@ export class TopDownMessenger {
             subtype: '@@frame/SET_FULLSCREEN',
             frameId,
             fullscreen
+        }
+        this.sendMessage(msg);
+    }
+
+    requestSelection(selection: ElementSelection) {
+        const msg: RequestSelectionMessage = {
+            type: '@@gateway',
+            subtype: '@@frame/REQUEST_SELECTION',
+            selection
+        }
+        this.sendMessage(msg);
+    }
+
+    stopSelection() {
+        const msg: StopSelectionMessage = {
+            type: '@@gateway',
+            subtype: '@@frame/STOP_SELECTION',
         }
         this.sendMessage(msg);
     }
