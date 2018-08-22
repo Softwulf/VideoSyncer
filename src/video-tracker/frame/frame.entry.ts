@@ -123,9 +123,8 @@ class VSyncFrame {
                             break;
                         case '@@frame/REQUEST_VIDEO':
                             // only if no player was specified or the host matches
-                            if(!this.activeSeries.videoPlayer || this.activeSeries.videoPlayer.host === window.location.host) {
-                                const query = this.activeSeries.videoPlayer ? this.activeSeries.videoPlayer.query : 'video'
-                                debug('Used Query: ', query);
+                            if(this.activeSeries && (!this.activeSeries.videoPlayerHost || this.activeSeries.videoPlayerHost === window.location.host)) {
+                                const query = 'video'
                                 const queried = document.querySelector(query);
                                 if(queried) {
                                     if(queried.nodeName === 'VIDEO') {

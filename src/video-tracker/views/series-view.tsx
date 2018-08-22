@@ -118,12 +118,18 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                             searchingFor: undefined
                         })
                         this.messenger.stopSelection()
-                        MessageSender.requestSeriesEdit(this.props.series.key, {
-                            [data.selection]: {
-                                host: data.host,
-                                query: data.query
-                            }
-                        });
+                        if(data.selection === 'videoPlayerHost') {
+                            MessageSender.requestSeriesEdit(this.props.series.key, {
+                                videoPlayerHost: data.host
+                            });
+                        } else {
+                            MessageSender.requestSeriesEdit(this.props.series.key, {
+                                [data.selection]: {
+                                    host: data.host,
+                                    query: data.query
+                                }
+                            });
+                        }
                         window.alert(`${data.selection} selected`);
                         break;
                 }
@@ -314,7 +320,7 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                             variant='contained'
                             color='secondary'
                             onClick={() => {
-                                this.requestSelection('videoPlayer')
+                                this.requestSelection('videoPlayerHost')
                             }}>
                             S Video
                         </Button>

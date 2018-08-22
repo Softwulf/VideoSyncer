@@ -1,1 +1,1 @@
-export type ElementSelection = 'videoPlayer' | 'nextButton'
+export type ElementSelection = 'nextButton' | 'videoPlayerHost'

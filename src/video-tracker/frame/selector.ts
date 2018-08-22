@@ -48,14 +48,11 @@ export class FrameSelector {
 
         let query = this.getQuery(t);
 
-        if(this.searchingFor === 'videoPlayer') {
-            if(t.nodeName !== 'VIDEO') {
-                const videoChild = t.querySelector('video');
-                if(!videoChild) {
-                    window.alert('No Video!');
-                    return;
-                }
-                query = this.getQuery(videoChild);
+        if(this.searchingFor === 'videoPlayerHost') {
+            const videoElement = document.querySelector('video');
+            if(!videoElement) {
+                window.alert('There is no video player on this page');
+                return;
             }
         }
 

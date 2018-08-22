@@ -13,7 +13,7 @@ declare namespace VSync {
         currentMaxTime: number
         currentPath: string
 
-        videoPlayer?: FrameElement
+        videoPlayerHost?: string
         nextButton?: FrameElement
 
         autoplay: boolean
