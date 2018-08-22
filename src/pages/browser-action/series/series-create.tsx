@@ -41,7 +41,8 @@ class SeriesCreateBase extends React.Component<SeriesCreateReduxProps & HasDispa
                 currentMaxTime: 0,
                 startTime: 0,
                 endTime: 0,
-                name: ''
+                name: '',
+                autoplay: true
             }
         }
     }
