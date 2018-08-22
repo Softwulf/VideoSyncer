@@ -11,7 +11,7 @@ import { DisconnectedView } from './error-views/disconnected-view';
 import { LoadingView } from './loading-view';
 import { NoSeriesView } from './error-views/no-series-view';
 import { NoUserView } from './error-views/no-user-view';
-import { SeriesView } from './series-view';
+import { SeriesManager } from './series/series-manager';
 
 type ContentScriptRootReduxProps = {
     theme: ThemeState
@@ -66,7 +66,7 @@ class ContentScriptRootViewBase extends React.Component<ContentScriptRootReduxPr
         } else if(!this.state.matchingSeries) {
             view = <NoSeriesView />
         } else {
-            view = <SeriesView series={this.state.matchingSeries} />;
+            view = <SeriesManager series={this.state.matchingSeries} />;
         }
 
         return (
