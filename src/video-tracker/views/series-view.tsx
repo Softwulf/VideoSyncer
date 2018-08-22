@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography, Button, LinearProgress, Paper } from '@material-ui/core';
+import { Typography, Button, LinearProgress, Paper, Dialog, DialogTitle, DialogActions } from '@material-ui/core';
 import { browser } from 'webextension-polyfill-ts';
 import { debug } from 'vlogger';
 import { bind } from 'bind-decorator';
@@ -7,6 +7,7 @@ import { TopDownMessenger } from '../messaging/top-messages';
 import { BottomUpMessageUnion } from '../messaging/frame-messages';
 import * as equal from 'fast-deep-equal';
 import { MessageSender } from 'background/messages/message-sender';
+import { ElementSelection } from '../messaging/selection';
 
 export type SeriesViewProps = {
     series: VSync.Series
@@ -14,18 +15,22 @@ export type SeriesViewProps = {
 
 type SeriesViewState = {
     videoFrame?: string
-    ended: boolean
+    searchingFor?: ElementSelection
+    autoplayCountdown?: number
+    autoplayDone?: boolean
 }
+
+const COUNTDOWN_LENGTH = 10;
 
 export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState> {
     messenger = new TopDownMessenger();
 
     videoRequestInterval: any
+    autoplayInterval: any
 
     constructor(props) {
         super(props);
         this.state = {
-            ended: false
         }
     }
 
@@ -102,29 +107,24 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
 
                         break;
                     case '@@top/VIDEO_ENDED':
-                        this.messenger.setPaused(this.state.videoFrame, true);
-                        this.messenger.setFullscreen(this.state.videoFrame, false);
-                        this.setState({
-                            ended: true
-                        })
+                        if(this.props.series.autoplay && !this.state.autoplayDone) {
+                            this.messenger.setPaused(this.state.videoFrame, true);
+                            this.messenger.setFullscreen(this.state.videoFrame, false);
+                            this.startAutoplay();
+                        }
                         break;
                     case '@@top/SELECTION_CONFIRMED':
+                        this.setState({
+                            searchingFor: undefined
+                        })
                         this.messenger.stopSelection()
-                        if(data.selection === 'video') {
-                            MessageSender.requestSeriesEdit(this.props.series.key, {
-                                videoPlayer: {
-                                    host: data.host,
-                                    query: data.query
-                                }
-                            })
-                        } else if(data.selection === 'next') {
-                            MessageSender.requestSeriesEdit(this.props.series.key, {
-                                nextButton: {
-                                    host: data.host,
-                                    query: data.query
-                                }
-                            })
-                        }
+                        MessageSender.requestSeriesEdit(this.props.series.key, {
+                            [data.selection]: {
+                                host: data.host,
+                                query: data.query
+                            }
+                        });
+                        window.alert(`${data.selection} selected`);
                         break;
                 }
             }
@@ -159,6 +159,68 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
     @bind
     clearVideoRequest() {
         if(this.videoRequestInterval) clearInterval(this.videoRequestInterval);
+    }
+
+    @bind
+    requestSelection(selection: ElementSelection) {
+        this.setState({
+            searchingFor: selection
+        })
+        this.messenger.requestSelection(selection);
+        window.alert('Click on the '+selection);
+    }
+
+    @bind
+    stopSelection() {
+        this.setState({
+            searchingFor: undefined
+        })
+        this.messenger.stopSelection();
+        window.alert('Selection stopped');
+    }
+
+    @bind
+    startAutoplay() {
+        if(!this.props.series.nextButton) {
+            window.alert('No next button defined, cannot autoplay');
+            this.stopAutoplay();
+            return;
+        }
+
+        if(!this.state.autoplayCountdown) {
+            this.setState({
+                autoplayCountdown: COUNTDOWN_LENGTH
+            });
+            if(this.autoplayInterval) clearInterval(this.autoplayInterval);
+            this.autoplayInterval = setInterval(() => {
+                this.setState({
+                    autoplayCountdown: this.state.autoplayCountdown-1
+                });
+                if(this.state.autoplayCountdown <= 0) {
+                    this.playNext();
+                }
+            }, 1000);
+        }
+    }
+
+    @bind
+    stopAutoplay() {
+        if(this.autoplayInterval) clearInterval(this.autoplayInterval);
+        this.setState({
+            autoplayCountdown: undefined,
+            autoplayDone: true
+        })
+    }
+
+    @bind
+    playNext() {
+        this.stopAutoplay();
+        if(!this.props.series.nextButton) {
+            window.alert('No nextbutton defined!');
+            return;
+        }
+        window.alert('Neeeext');
+        this.messenger.requestClick(this.props.series.nextButton);
     }
 
     render() {
@@ -244,7 +306,7 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                             variant='contained'
                             color='secondary'
                             onClick={() => {
-                                this.messenger.requestSelection('next')
+                                this.requestSelection('nextButton')
                             }}>
                             S Next
                         </Button>
@@ -252,7 +314,7 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                             variant='contained'
                             color='secondary'
                             onClick={() => {
-                                this.messenger.requestSelection('video')
+                                this.requestSelection('videoPlayer')
                             }}>
                             S Video
                         </Button>
@@ -265,6 +327,37 @@ export class SeriesView extends React.Component<SeriesViewProps, SeriesViewState
                         variant='determinate'
                         value={(100 / this.props.series.currentMaxTime) * this.props.series.currentTime} />
                 </Paper>
+
+                {
+                    this.state.searchingFor &&
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-around'
+                        }}>
+                            <Button
+                                color='secondary'
+                                variant='extendedFab'
+                                onClick={() => {
+                                    this.stopSelection()
+                                }}
+                                >
+                                Cancel Search
+                            </Button>
+                        </div>
+                }
+                <div>
+                <Dialog onClose={this.stopAutoplay} open={this.state.autoplayCountdown !== undefined}>
+                    <DialogTitle>Autoplay in {this.state.autoplayCountdown} seconds</DialogTitle>
+                    <DialogActions>
+                        <Button onClick={this.playNext} color='secondary'>
+                            Skip
+                        </Button>
+                        <Button onClick={this.stopAutoplay} color='primary' autoFocus>
+                            Cancel
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                </div>
             </div>
         )
     }

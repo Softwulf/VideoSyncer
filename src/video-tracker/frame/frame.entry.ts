@@ -176,6 +176,14 @@ class VSyncFrame {
                                 }
                             }
                             break;
+                        case '@@frame/REQUEST_CLICK':
+                            if(message.element.host === window.location.host) {
+                                const el = document.querySelector(message.element.query);
+                                if(el) {
+                                    (el as HTMLElement).click();
+                                }
+                            }
+                            break;
                     }
                 }
             }

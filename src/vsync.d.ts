@@ -16,6 +16,8 @@ declare namespace VSync {
         videoPlayer?: FrameElement
         nextButton?: FrameElement
 
+        autoplay: boolean
+
         latestFrame?: string
     }
 

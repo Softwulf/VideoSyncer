@@ -55,6 +55,11 @@ export interface StopSelectionMessage extends TopDownMessage {
     subtype: '@@frame/STOP_SELECTION'
 }
 
+export interface RequestClickMessage extends TopDownMessage {
+    subtype: '@@frame/REQUEST_CLICK'
+    element: VSync.FrameElement
+}
+
 export type TopDownMessageUnion =     SetSeriesMessage
                                     | RequestVideoMessage
                                     | ConfirmVideoMessage
@@ -64,6 +69,7 @@ export type TopDownMessageUnion =     SetSeriesMessage
                                     | SetFullscreenMessage
                                     | RequestSelectionMessage
                                     | StopSelectionMessage
+                                    | RequestClickMessage
 
 export class TopDownMessenger {
     private sendMessage(msg: TopDownMessage) {
@@ -151,6 +157,15 @@ export class TopDownMessenger {
         const msg: StopSelectionMessage = {
             type: '@@gateway',
             subtype: '@@frame/STOP_SELECTION',
+        }
+        this.sendMessage(msg);
+    }
+
+    requestClick(element: VSync.FrameElement) {
+        const msg: RequestClickMessage = {
+            type: '@@gateway',
+            subtype: '@@frame/REQUEST_CLICK',
+            element
         }
         this.sendMessage(msg);
     }
