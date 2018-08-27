@@ -3,6 +3,7 @@ import { ListItem, ListItemText, Typography, Button, List, ListSubheader, ListIt
 import { AddCircle } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
 import { browser } from 'webextension-polyfill-ts';
+import { secondsToHms } from 'vutil';
 
 export type SeriesListProps = {
     series: VSync.Series[]
@@ -30,7 +31,7 @@ export const SeriesList: React.SFC<SeriesListProps> = (props: SeriesListProps) =
     const list = props.series.map(series => {
         return (
             <ListItem divider key={series.key}>
-                <ListItemText primary={series.name} secondary={series.currentTime} />
+                <ListItemText primary={series.name} secondary={secondsToHms(series.currentTime)} />
                 <ListItemSecondaryAction>
                     <Button variant='contained' color='secondary' onClick={() => {
                         browser.tabs.create({

@@ -1,16 +1,16 @@
 {
     "name": "@vsync/vsync",
-    "version": "6.7.2",
+    "version": "6.7.3",
     "description": "",
     "author": "ElectronicManuel",
     "license": "GPL-3.0",
     "homepage": "https://vsync.ch",
     "bugs": {
-        "url": "https://github.com/ElectronicManuel/VideoSyncer/issues"
+        "url": "https://github.com/Softwulf/VideoSyncer/issues"
     },
     "repository": {
         "type": "git",
-        "url": "github:ElectronicManuel/VideoSyncer"
+        "url": "github:Softwulf/VideoSyncer"
     },
     "dependencies": {
         "@material-ui/core": "^1.4.3",
@@ -20,6 +20,7 @@
         "connected-react-router": "^4.4.1",
         "fast-deep-equal": "^2.0.1",
         "firebase": "^5.3.1",
+        "formik": "^1.1.1",
         "react": "^16.4.2",
         "react-dom": "^16.4.2",
         "react-redux": "^5.0.7",
@@ -30,7 +31,8 @@
         "typeface-roboto": "0.0.54",
         "url-parse": "^1.4.3",
         "uuid": "^3.3.2",
-        "webextension-polyfill-ts": "^0.8.7"
+        "webextension-polyfill-ts": "^0.8.7",
+        "yup": "^0.26.2"
     },
     "scripts": {
         "start": "npm run compile -- -w",
@@ -59,6 +61,7 @@
         "@types/uuid": "^3.4.3",
         "@types/webpack": "^4.4.9",
         "@types/yargs": "^11.1.1",
+        "@types/yup": "^0.24.9",
         "awesome-typescript-loader": "^5.2.0",
         "babel-core": "^6.26.3",
         "babel-plugin-syntax-dynamic-import": "^6.18.0",

@@ -59,14 +59,15 @@ class UrlPickerBase extends React.Component<UrlPickerProps & WithTheme, UrlPicke
     }
 
     setHost = (host: string) => {
-        const hostRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]))\.*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/
+        const ipRegex = /^([0-9]{1,3}\.){3}[0-9]{1,3}$/
+        const domainRegex = /^[a-zA-Z0-9]+([-.][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/
 
         let error = '';
         if(!host || host.length === 0) {
             error = 'Please enter a website';
         } else if(host.length > 253) {
             error = 'Websites must at max have 253 characters';
-        } else if(!host.match(hostRegex)) {
+        } else if(!host.match(ipRegex) && !host.match(domainRegex)) {
             error = 'Websites must have the correct format (eg. video.example.com)';
         }
 
@@ -102,10 +103,6 @@ class UrlPickerBase extends React.Component<UrlPickerProps & WithTheme, UrlPicke
             )
         }
         return (
-            <div style={{ wordBreak: 'break-word', textAlign: 'center', padding: '10px', display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center' }}>
-                <Typography variant='display2'>Select Website</Typography>
-                <Typography variant='body2'>VideoSyncer needs to know on which website you watch the series.</Typography>
-
                 <FormControl error={this.state.error.length > 0} fullWidth>
                     <InputLabel>Website</InputLabel>
                     <Input 
@@ -121,17 +118,15 @@ class UrlPickerBase extends React.Component<UrlPickerProps & WithTheme, UrlPicke
                         }
                     />
                     <FormHelperText>{this.state.error}</FormHelperText>
+                    <Dialog onClose={this.handleClose} open={this.state.hostDialogOpen}>
+                        <DialogTitle>Choose Website</DialogTitle>
+                        <DialogContent className='has-scrollbars'>
+                            <List>
+                                {menuItems}
+                            </List>
+                        </DialogContent>
+                    </Dialog>
                 </FormControl>
-
-                <Dialog onClose={this.handleClose} open={this.state.hostDialogOpen}>
-                    <DialogTitle>Choose Website</DialogTitle>
-                    <DialogContent className='has-scrollbars'>
-                        <List>
-                            {menuItems}
-                        </List>
-                    </DialogContent>
-                </Dialog>
-            </div>
         )
     }
 }
