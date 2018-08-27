@@ -3,7 +3,7 @@ import * as React from 'react';
 import { TextField, InputAdornment, Typography, colors, Button, Divider } from "@material-ui/core";
 import { UrlPicker } from "../inputs/url";
 import * as Yup from 'yup';
-import { withFormik, FormikProps } from 'formik';
+import { withFormik, FormikProps, Form } from 'formik';
 import { VTextInput } from 'components/form/text-input';
 import { VButton } from 'components/button';
 import { MessageSender } from 'background/messages/message-sender';
@@ -19,7 +19,6 @@ interface FormValues {
     name: string
     startTime: number
     endTime: number
-    key: string
 }
 
 interface OuterFormValues extends HasDispatch {
@@ -100,7 +99,9 @@ const SeriesEditFormBase: React.SFC<OuterFormValues & FormikProps<FormValues>> =
                     status={props.isSubmitting ? 'loading' : 'default'}
                     onClick={async () => {
                         props.setSubmitting(true);
-                        const { name, key } = props.values;
+                        const { name } = props.values;
+                        const key = props.series.key;
+
                         const result = await vswal({
                             title: 'Are you sure?',
                             html: `<b>${name}</b> will be gone forever`,
@@ -113,6 +114,7 @@ const SeriesEditFormBase: React.SFC<OuterFormValues & FormikProps<FormValues>> =
                             try {
                                 await MessageSender.requestSeriesDelete(key);
 
+                                props.setSubmitting(false);
                                 props.dispatch(replace('/'))
 
                                 toast(
@@ -126,9 +128,9 @@ const SeriesEditFormBase: React.SFC<OuterFormValues & FormikProps<FormValues>> =
                                     `The following error occurred: <b>${JSON.stringify(err)}</b>`,
                                     'error'
                                 )
+                                props.setSubmitting(false);
                             }
                         }
-                        props.setSubmitting(false);
                     }}
                     >
                     Delete
@@ -167,7 +169,9 @@ export const SeriesEditForm = connect(null, mapDispatch)(withFormik<OuterFormVal
     }),
 
     handleSubmit: async (values, { setSubmitting, ...rest }) => {
-        const { key, host, name, startTime, endTime, pathbase } = values;
+        const { host, name, startTime, endTime, pathbase } = values;
+        const key = rest.props.series.key;
+
         try {
             await MessageSender.requestSeriesEdit(key, {
                 host: host,
@@ -176,6 +180,8 @@ export const SeriesEditForm = connect(null, mapDispatch)(withFormik<OuterFormVal
                 endTime: endTime,
                 pathbase: pathbase
             });
+
+            setSubmitting(false);
 
             rest.props.dispatch(replace('/'));
 
@@ -190,7 +196,7 @@ export const SeriesEditForm = connect(null, mapDispatch)(withFormik<OuterFormVal
                 `The following error occurred: <b>${JSON.stringify(err)}</b>`,
                 'error'
             )
+            setSubmitting(false);
         }
-        setSubmitting(false);
     },
 })(SeriesEditFormBase));
