@@ -86,27 +86,37 @@ const SeriesEditFormBase: React.SFC<OuterFormValues & FormikProps<FormValues>> =
 
 
             <div style={{ display: 'flex', alignItems: 'stretch', flexDirection: 'column', flexBasis: 'content' }}>
-                <VButton
-                    onClick={() => handleSubmit()}
-                    variant='contained'
-                    style={{
-                        backgroundColor: colors.green[500],
-                        color: '#FFF'
-                    }}
-
-                    status={props.isSubmitting ? 'loading' : (props.isValid ? 'default' : 'disabled')}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between'
+                }}>
+                    <VButton
+                        onClick={() => props.resetForm()}
+                        variant='text'
+                        style={{
+                            flexGrow: 1,
+                        }}
                     >
-                    Save
-                </VButton>
-                <VButton
-                    onClick={() => props.resetForm()}
-                    style={{marginTop: '5px'}}
-                    variant='text'
-                >
-                    Reset
-                </VButton>
+                        Reset
+                    </VButton>
+                    <VButton
+                        onClick={() => handleSubmit()}
+                        variant='contained'
+                        style={{
+                            backgroundColor: colors.green[500],
+                            color: '#FFF',
+                            flexGrow: 1
+                        }}
+
+                        status={props.isSubmitting ? 'loading' : (props.isValid ? 'default' : 'disabled')}
+                        >
+                        Save
+                    </VButton>
+                </div>
                 <Divider style={{
-                    marginBottom: '5px'
+                    marginBottom: '5px',
+                    marginTop: '5px'
                 }} />
                 <VButton
                     variant='contained'
