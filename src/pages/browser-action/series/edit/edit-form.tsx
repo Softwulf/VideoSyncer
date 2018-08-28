@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { TextField, InputAdornment, Typography, colors, Button, Divider } from "@material-ui/core";
-import { UrlPicker } from "../inputs/url";
 import { withFormik, FormikProps, Form } from 'formik';
 import { VTextInput } from 'components/form/text-input';
 import { VButton } from 'components/button';

@@ -11,7 +11,6 @@ import { UserState } from '../../_redux/users/types';
 import { replace } from 'connected-react-router';
 import swal from 'sweetalert2';
 import { vswal, toast } from 'vsync-swal';
-import { UrlPicker } from './inputs/url';
 import { MessageSender } from 'background/messages/message-sender';
 import { SeriesEditForm } from './edit/edit-form';
 

@@ -6,7 +6,6 @@ import { ApplicationState, mapDispatch, HasDispatch } from '../../_redux';
 import { connect } from 'react-redux';
 import { replace } from 'connected-react-router';
 import { browser } from 'webextension-polyfill-ts';
-import { UrlPicker } from './inputs/url';
 import { bind } from 'bind-decorator';
 import { UserState } from '../../_redux/users/types';
 import swal from 'sweetalert2';
