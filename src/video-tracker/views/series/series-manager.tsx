@@ -65,7 +65,8 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
                         if(currentPath !== this.props.series.currentPath) { // New Episode
                             MessageSender.requestSeriesEdit(this.props.series.key, {
                                 currentPath: currentPath,
-                                latestFrame: data.frameId
+                                latestFrame: data.frameId,
+                                currentTime: this.props.series.startTime
                             });
                             this.messenger.setTime(data.frameId, this.props.series.startTime);
                         } else {

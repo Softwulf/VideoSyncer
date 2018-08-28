@@ -18,6 +18,8 @@ class VSyncFrame {
     lastUpdate = new Date().getTime()
     updateInterval = 1000
 
+    hasPlayed = false
+
     constructor() {
         this.id = uuid();
         this.messenger = new BottomUpMessenger(this.id);
@@ -100,6 +102,12 @@ class VSyncFrame {
     @bind
     handlePlay(event: Event) {
         debug('Video was played, activating');
+        if(!this.hasPlayed) {
+            debug('Video has not played yet, setting to current time');
+            this.hasPlayed = true;
+            const target: HTMLVideoElement = event.target as any;
+            target.currentTime = this.activeSeries.currentTime;
+        }
         MessageSender.requestSeriesEdit(this.activeSeries.key, {
             latestFrame: this.id
         })
@@ -161,7 +169,7 @@ class VSyncFrame {
                         case '@@frame/SET_TIME':
                             if(message.frameId === this.id) {
                                 if(this.video) {
-                                    debug('Setting Tiiime: ', message.time);
+                                    debug('Setting Time: ', message.time);
                                     this.video.currentTime = message.time;
                                 }
                             }
