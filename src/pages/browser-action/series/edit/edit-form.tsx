@@ -2,16 +2,17 @@ import * as React from 'react';
 
 import { TextField, InputAdornment, Typography, colors, Button, Divider } from "@material-ui/core";
 import { UrlPicker } from "../inputs/url";
-import * as Yup from 'yup';
 import { withFormik, FormikProps, Form } from 'formik';
 import { VTextInput } from 'components/form/text-input';
 import { VButton } from 'components/button';
 import { MessageSender } from 'background/messages/message-sender';
 import { toast, vswal } from 'vsync-swal';
-import { shorten } from 'vutil';
+import { shorten, SeriesValidationSchema } from 'vutil';
 import { HasDispatch, mapDispatch } from '../../../_redux';
 import { connect } from 'react-redux';
 import { replace } from 'connected-react-router';
+import { VDurationInput } from 'components/form/duration-input';
+import { VUrlPicker } from 'components/form/url-picker';
 
 interface FormValues {
     host: string
@@ -49,11 +50,14 @@ const SeriesEditFormBase: React.SFC<OuterFormValues & FormikProps<FormValues>> =
                     id='name'
                     fullWidth
                 />
-                <VTextInput<FormValues>
+                <VUrlPicker<FormValues>
                     formik={props}
                     fieldName='host'
-                    label='Website'
+                    label='Websites'
                     id='website'
+                    placeholder='Or enter one manually'
+                    pickText='Pick a website'
+                    dialogTitle='Choose Website'
                     fullWidth
                 />
                 <VTextInput<FormValues>
@@ -63,6 +67,20 @@ const SeriesEditFormBase: React.SFC<OuterFormValues & FormikProps<FormValues>> =
                     id='path'
                     fullWidth
                     startAdornment={<InputAdornment position='start'><Typography variant='caption'>{shorten(values.host, 20)}/</Typography></InputAdornment>}
+                />
+                <VDurationInput<FormValues>
+                    formik={props}
+                    fieldName='startTime'
+                    label='Starting time (seconds)'
+                    id='startTime'
+                    fullWidth
+                />
+                <VDurationInput<FormValues>
+                    formik={props}
+                    fieldName='endTime'
+                    label='Ending time (seconds)'
+                    id='endTime'
+                    fullWidth
                 />
             </div>
 
@@ -83,12 +101,12 @@ const SeriesEditFormBase: React.SFC<OuterFormValues & FormikProps<FormValues>> =
                 <VButton
                     onClick={() => props.resetForm()}
                     style={{marginTop: '5px'}}
+                    variant='text'
                 >
                     Reset
                 </VButton>
                 <Divider style={{
-                    marginTop: '10px',
-                    marginBottom: '10px'
+                    marginBottom: '5px'
                 }} />
                 <VButton
                     variant='contained'
@@ -152,21 +170,7 @@ export const SeriesEditForm = connect(null, mapDispatch)(withFormik<OuterFormVal
             key: props.series.key
         }
     },
-    validationSchema: Yup.object().shape({
-        host: Yup.string().ensure().required('You need to set a website').test('is-host', 'This must be a valid website (eg. watch.example.com)', value => {
-            const host: string = value;
-            const ipRegex = /^([0-9]{1,3}\.){3}[0-9]{1,3}$/
-            const domainRegex = /^[a-zA-Z0-9]+([-.][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/
-            if(!host.match(ipRegex) && !host.match(domainRegex)) {
-                return false;
-            }
-            return true;
-        }),
-        pathbase: Yup.string().ensure().required('You need to provide a path'),
-        name: Yup.string().ensure().required('You need to provide a name').min(2, 'The name must atleast be 2 characters long').max(20, 'The name must have at most 20 characters'),
-        startTime: Yup.number().default(0).positive('The video cannot start at a negative time').max(1000000000, 'The startime cannot exceed 1000000000 seconds'),
-        endTime: Yup.number().default(0).positive('The video cannot end at a negative time').max(1000000000, 'The end time must not exceed 1000000000 seconds')
-    }),
+    validationSchema: SeriesValidationSchema,
 
     handleSubmit: async (values, { setSubmitting, ...rest }) => {
         const { host, name, startTime, endTime, pathbase } = values;

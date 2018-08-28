@@ -31,11 +31,11 @@ export const SeriesList: React.SFC<SeriesListProps> = (props: SeriesListProps) =
     const list = props.series.map(series => {
         return (
             <ListItem divider key={series.key}>
-                <ListItemText primary={series.name} secondary={secondsToHms(series.currentTime)} />
+                <ListItemText primary={series.name} secondary={secondsToHms(series.currentTime, true)} />
                 <ListItemSecondaryAction>
                     <Button variant='contained' color='secondary' onClick={() => {
                         browser.tabs.create({
-                            url: `https://${series.host}/${series.pathbase}${series.currentPath}`
+                            url: `${series.protocol ? series.protocol : 'https'}://${series.host}/${series.pathbase}${series.currentPath}`
                         })
                     }}>
                         Launch

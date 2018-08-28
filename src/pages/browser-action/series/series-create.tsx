@@ -36,6 +36,7 @@ class SeriesCreateBase extends React.Component<SeriesCreateReduxProps & HasDispa
             series: {
                 host: '',
                 pathbase: '',
+                protocol: 'https',
                 currentPath: '',
                 currentTime: 0,
                 currentMaxTime: 0,

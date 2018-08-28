@@ -1,11 +1,19 @@
-export const secondsToHms = (seconds: number): string => {
+import * as Yup from 'yup';
+
+export const secondsToHms = (seconds: number, includeHours: boolean): string => {
     const d = Number(seconds);
-    
+
     const h = Math.floor(d / 3600);
     const m = Math.floor(d % 3600 / 60);
     const s = Math.floor(d % 3600 % 60);
+
+    const hourString = h < 10 ? ('0' + h).slice(-2) : h;
+    const minuteString = ('0' + m).slice(-2);
+    const secondString = ('0' + s).slice(-2); 
     
-    return (h > 0 ? ('0' + h).slice(-2) + ':' : '') + ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2);
+    let timeString = includeHours ? (h > 0 ? hourString + ':' : '') : '';
+
+    return timeString + minuteString + ':' + secondString;
 }
 
 export const shorten = (msg: string, len: number): string => {
@@ -13,3 +21,20 @@ export const shorten = (msg: string, len: number): string => {
     if(shortened.length === msg.length) return msg;
     return '...'+shortened
 }
+
+export const SeriesValidationSchema = Yup.object().shape({
+    host: Yup.string().ensure().required('You need to set a website').test('is-host', 'This must be a valid website (eg. watch.example.com)', value => {
+        const host: string = value;
+        const ipRegex = /^([0-9]{1,3}\.){3}[0-9]{1,3}$/
+        const domainRegex = /^[a-zA-Z0-9]+([-.][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/
+        if(!host.match(ipRegex) && !host.match(domainRegex)) {
+            return false;
+        }
+        return true;
+    }),
+    pathbase: Yup.string().ensure().required('You need to provide a path'),
+    name: Yup.string().ensure().required('You need to provide a name').min(2, 'The name must atleast be 2 characters long').max(20, 'The name must have at most 20 characters'),
+    
+    startTime: Yup.number().default(0).positive('The video cannot start at a negative time').max(1000000000, 'The startime cannot exceed 1000000000 seconds'),
+    endTime: Yup.number().default(0).positive('The video cannot end at a negative time').max(1000000000, 'The end time must not exceed 1000000000 seconds')
+})

@@ -5,6 +5,7 @@ declare namespace VSync {
 
         host: string
         pathbase: string
+        protocol: Protocol
 
         startTime: number
         endTime: number
@@ -40,4 +41,6 @@ declare namespace VSync {
         photoURL: string
         uid: string
     }
+
+    type Protocol = 'http' | 'https'
 }
