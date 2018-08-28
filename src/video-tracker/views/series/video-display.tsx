@@ -14,10 +14,6 @@ export class VideoDisplay extends React.Component<SeriesViewProps, {}> {
                 alignItems: 'stretch',
                 flexDirection: 'column'
             }}>
-                Video found :)
-                {
-                    activeTab ? 'Aaaactive' : 'Not active'
-                }
                 <VideoControls {...this.props} />
                 <VideoSelector {...this.props} />
 

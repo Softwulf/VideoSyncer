@@ -67,7 +67,8 @@ class SeriesCreateFormBase extends React.Component<OuterProps & FormikProps<Form
 
                 <div style={{
                     display: 'flex',
-                    flexGrow: 1
+                    flexGrow: 1,
+                    margin: '10px'
                 }}>
                     {this.state.activeStep === 0 && <MatchSelector formik={props} />}
                     {this.state.activeStep === 1 && <TimeSelector formik={props} />}
