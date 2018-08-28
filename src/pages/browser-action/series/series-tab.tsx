@@ -7,7 +7,7 @@ import { ApplicationState } from '../../_redux';
 import { Link, Switch, Route } from 'react-router-dom';
 import { RouterState } from 'connected-react-router';
 import { SeriesState } from '../../_redux/series/types';
-import { SeriesCreate } from './series-create';
+import { SeriesCreateForm } from './series-create';
 import { SeriesList } from './series-list';
 import { SeriesEdit } from './series-edit';
 
@@ -29,7 +29,7 @@ class SeriesTabBase extends React.Component<SeriesTabProps, {}> {
             <div style={{display: 'flex', flexGrow: 1}}>
                 <Switch>
                     <Route path='/edit/:seriesid' component={SeriesEdit} />
-                    <Route path='/new' component={SeriesCreate} />
+                    <Route path='/new' component={SeriesCreateForm} />
                     <Route render={() => {
                         return (
                             <div style={{display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'space-around', alignItems: 'stretch'}}>

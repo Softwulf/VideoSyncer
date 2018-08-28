@@ -4,14 +4,13 @@ import { AddCircle } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
 import { browser } from 'webextension-polyfill-ts';
 import { secondsToHms } from 'vutil';
+import { SingleSeriesView } from './single-series';
 
 export type SeriesListProps = {
     series: VSync.Series[]
 }
 
 const NewSeriesLink: React.SFC = (props) => <Link to='new' {...props as any} />
-
-const EditSeriesLink: React.SFC<{seriesid: string}> = (props) => <Link to={`edit/${props.seriesid}`} {...props as any} />
 
 export const SeriesList: React.SFC<SeriesListProps> = (props: SeriesListProps) => {
     
@@ -29,23 +28,7 @@ export const SeriesList: React.SFC<SeriesListProps> = (props: SeriesListProps) =
     }
 
     const list = props.series.map(series => {
-        return (
-            <ListItem divider key={series.key}>
-                <ListItemText primary={series.name} secondary={secondsToHms(series.currentTime, true)} />
-                <ListItemSecondaryAction>
-                    <Button variant='contained' color='secondary' onClick={() => {
-                        browser.tabs.create({
-                            url: `${series.protocol ? series.protocol : 'https'}://${series.host}/${series.pathbase}${series.currentPath}`
-                        })
-                    }}>
-                        Launch
-                    </Button>
-                    <Button variant='contained' color='primary' component={EditSeriesLink as any} {...{seriesid: series.key} as any}>
-                        Edit
-                    </Button>
-                </ListItemSecondaryAction>
-            </ListItem>
-        )   
+        return <SingleSeriesView series={series} />
     });
     return (
         <List subheader={<ListSubheader disableSticky>Series</ListSubheader>} style={{flexGrow: 1, overflowY: 'auto'}} className='has-scrollbars'>

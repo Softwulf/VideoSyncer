@@ -40,58 +40,6 @@ class SeriesEditBase extends React.Component<SeriesEditOwnProps & SeriesEditRedu
     }
 
     @bind
-    async handleSave() {
-        const { name, key } = this.state.currentSeries;
-        try {
-            await MessageSender.requestSeriesEdit(key, this.state.currentSeries);
-
-            this.props.dispatch(replace('/'));
-            toast(
-                'Saved!',
-                `<b>${name}</b> was saved successfully`,
-                'success'
-            )
-        } catch(err) {
-            vswal(
-                'Error',
-                `The following error occurred: <b>${JSON.stringify(err)}</b>`,
-                'error'
-            )
-        }
-    }
-
-    @bind
-    async handleDelete() {
-        const { name, key } = this.state.currentSeries;
-        const result = await vswal({
-            title: 'Are you sure?',
-            html: `<b>${name}</b> will be gone forever`,
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Delete',
-            confirmButtonColor: colors.red[500]
-        });
-        if(result.value) {
-            try {
-                await MessageSender.requestSeriesDelete(key);
-
-                this.props.dispatch(replace('/'));
-                toast(
-                    'Deleted!',
-                    `<b>${name}</b> was deleted successfully`,
-                    'success'
-                )
-            } catch(err) {
-                vswal(
-                    'Error',
-                    `The following error occurred: <b>${JSON.stringify(err)}</b>`,
-                    'error'
-                )
-            }
-        }
-    }
-
-    @bind
     fetchSeries() {
         const seriesId = this.props.match.params.seriesid;
         const currentSeries = this.props.series.series_list.find(s => s.key === seriesId);

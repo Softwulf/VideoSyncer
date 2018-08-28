@@ -12,135 +12,64 @@ import { UserState } from '../../_redux/users/types';
 import swal from 'sweetalert2';
 import { vswal, toast } from 'vsync-swal';
 import { MessageSender } from 'background/messages/message-sender';
+import { withFormik, FormikProps } from 'formik';
+import { SeriesValidationSchema, getDefaultSeries } from 'vutil';
+import { VButton } from 'components/button';
+import { MatchSelector } from './create/match-selector';
 
-type SeriesCreateReduxProps = {
+export type SeriesCreateReduxProps = {
     theme: ThemeState
     user: UserState
 }
 
-type SeriesCreateState = {
+export type SeriesCreateState = {
     activeStep: number
-    stepValid: boolean
-    series: VSync.SeriesBase
 }
+
+export type FormValues = VSync.SeriesBase
+
+export type OuterProps = SeriesCreateReduxProps & HasDispatch;
 
 const STEP_COUNT = 5;
 
-class SeriesCreateBase extends React.Component<SeriesCreateReduxProps & HasDispatch, SeriesCreateState> {
+class SeriesCreateFormBase extends React.Component<OuterProps & FormikProps<FormValues>, SeriesCreateState> {
+
     constructor(props) {
         super(props);
-        
         this.state = {
-            stepValid: false,
-            activeStep: 0,
-            series: {
-                host: '',
-                pathbase: '',
-                protocol: 'https',
-                currentPath: '',
-                currentTime: 0,
-                currentMaxTime: 0,
-                startTime: 0,
-                endTime: 0,
-                name: '',
-                autoplay: true
-            }
+            activeStep: 0
         }
     }
 
     handleNext = () => {
         this.setState(state => ({
-            activeStep: state.activeStep + 1,
+            activeStep: state.activeStep < STEP_COUNT ? state.activeStep + 1 : STEP_COUNT,
         }));
     };
     
     handleBack = () => {
         this.setState(state => ({
-            activeStep: state.activeStep - 1,
+            activeStep: state.activeStep > 0 ? state.activeStep - 1 : 0,
         }));
     };
 
-    @bind
-    updateSeries(series: Partial<VSync.SeriesBase>) {
-        this.setState({
-            series: {
-                ...this.state.series,
-                ...series
-            }
-        })
-    }
-
-    @bind
-    setStepValid(valid: boolean) {
-        this.setState({
-            stepValid: valid
-        })
-    }
-
-    @bind
-    async handleFinish() {
-        try {
-            await MessageSender.requstSeriesCreate(this.state.series);
-
-            this.props.dispatch(replace('/'));
-            toast(
-                'Success!',
-                `You just created <b>${this.state.series.name}</b>`,
-                'success'
-            )
-        } catch(err) {
-            vswal(
-                'Error',
-                `The following error occurred: <b>${JSON.stringify(err)}</b>`,
-                'error'
-            )
-        }
-    }
-
     render() {
+        const props = this.props;
+
         return (
-            <div style={{display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'stretch'}}>
-                
-                <div style={{display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'center', overflowY: 'auto'}} className='has-scrollbars'>
-                    {
-                        this.state.activeStep === 0 && <UrlPicker series={this.state.series} updateSeries={this.updateSeries} setStepValid={this.setStepValid} />
-                    }
-                    {
-                        this.state.activeStep === 1 && <div>
-                            <TextField
-                                label='Path'
-                                id='pathbase'
-                                fullWidth
-                                InputProps={{
-                                    startAdornment: <InputAdornment position='start'><Typography variant='caption'>{this.state.series.host}/</Typography></InputAdornment>,
-                                }}
-                                value={this.state.series.pathbase}
-                                onChange={(event) => this.updateSeries({pathbase: event.target.value})}
-                            />
-                        </div>
-                    }
-                    {
-                        this.state.activeStep === 2 && <div>
-                            Start / End times
-                        </div>
-                    }
-                    {
-                        this.state.activeStep === 3 && <div>
-                            <TextField
-                                label='Name'
-                                id='name'
-                                fullWidth
-                                value={this.state.series.name}
-                                onChange={(event) => this.updateSeries({name: event.target.value})}
-                            />
-                        </div>
-                    }
-                    {
-                        this.state.activeStep === 4 && <div>
-                            Finish
-                        </div>
-                    }
+            <div style={{
+                display: 'flex',
+                flexGrow: 1,
+                flexDirection: 'column'
+            }}>
+
+                <div style={{
+                    display: 'flex',
+                    flexGrow: 1
+                }}>
+                    {this.state.activeStep === 0 && <MatchSelector formik={props} />}
                 </div>
+
                 <MobileStepper
                     variant='dots'
                     steps={STEP_COUNT}
@@ -166,12 +95,20 @@ class SeriesCreateBase extends React.Component<SeriesCreateReduxProps & HasDispa
                         <div>
                             { 
                                 this.state.activeStep === STEP_COUNT-1 ?
-                                    <Button size='small' style={{backgroundColor: colors.green[500], color: '#FFF'}} disabled={!this.state.stepValid} onClick={this.handleFinish}>
+                                    <VButton
+                                        size='small'
+                                        style={{
+                                            backgroundColor: colors.green[500],
+                                            color: '#FFF'
+                                        }}
+                                        status={props.isSubmitting ? 'loading' : (props.isValid ? 'default' : 'disabled')}
+                                        onClick={() => props.handleSubmit()}
+                                        >
                                         Finish
                                         <Done style={{marginLeft: this.props.theme.theme.spacing.unit}} fontSize='inherit' />
-                                    </Button>
+                                    </VButton>
                                     :
-                                    <Button size='small' onClick={this.handleNext} disabled={this.state.activeStep === STEP_COUNT-1 || !this.state.stepValid}>
+                                    <Button size='small' onClick={this.handleNext} disabled={this.state.activeStep === STEP_COUNT-1}>
                                         Next
                                         <KeyboardArrowRight />
                                     </Button>
@@ -190,4 +127,35 @@ const mapStateToProps = (state: ApplicationState): SeriesCreateReduxProps => {
         user: state.user
     }
 }
-export const SeriesCreate = connect(mapStateToProps, mapDispatch)(SeriesCreateBase);
+export const SeriesCreateForm = connect(mapStateToProps, mapDispatch)(withFormik<OuterProps, FormValues>({
+    displayName: 'SeriesCreateForm',
+    mapPropsToValues: (props) => {
+        return getDefaultSeries()
+    },
+    validationSchema: SeriesValidationSchema,
+
+    handleSubmit: async (values, { setSubmitting, ...rest }) => {
+        const { name } = values;
+
+        try {
+            await MessageSender.requstSeriesCreate(values);
+
+            setSubmitting(false);
+
+            rest.props.dispatch(replace('/'));
+
+            toast(
+                'Success!',
+                `You just created <b>${name}</b>`,
+                'success'
+            )
+        } catch(err) {
+            vswal(
+                'Error',
+                `The following error occurred: <b>${JSON.stringify(err)}</b>`,
+                'error'
+            )
+            setSubmitting(false);
+        }
+    },
+})(SeriesCreateFormBase));

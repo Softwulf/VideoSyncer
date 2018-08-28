@@ -17,6 +17,7 @@ import { VUrlPicker } from 'components/form/url-picker';
 interface FormValues {
     host: string
     pathbase: string
+    protocol: string
     name: string
     startTime: number
     endTime: number
@@ -162,9 +163,10 @@ export const SeriesEditForm = connect(null, mapDispatch)(withFormik<OuterFormVal
     displayName: 'SeriesEditForm',
     mapPropsToValues: (props) => {
         return {
-            host: props.series.host,
             name: props.series.name,
+            host: props.series.host,
             pathbase: props.series.pathbase,
+            protocol: props.series.protocol,
             endTime: props.series.endTime,
             startTime: props.series.startTime,
             key: props.series.key

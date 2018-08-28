@@ -38,3 +38,19 @@ export const SeriesValidationSchema = Yup.object().shape({
     startTime: Yup.number().default(0).positive('The video cannot start at a negative time').max(1000000000, 'The startime cannot exceed 1000000000 seconds'),
     endTime: Yup.number().default(0).positive('The video cannot end at a negative time').max(1000000000, 'The end time must not exceed 1000000000 seconds')
 })
+
+export const getDefaultSeries = (): VSync.SeriesBase => {
+    return {
+        name: '',
+        host: '',
+        pathbase: '',
+        protocol: 'https',
+        startTime: 0,
+        endTime: 0,
+        autoplay: true,
+
+        currentTime: 0,
+        currentMaxTime: 0,
+        currentPath: ''
+    }
+}

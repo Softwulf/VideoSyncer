@@ -77,9 +77,9 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
                 </div>
 
                 {/* Content */}
-                <Typography variant='caption' color='inherit'>
-                                {this.props.router.location.pathname}
-                            </Typography>
+                {/* <Typography variant='caption' color='inherit'>
+                    {this.props.router.location.pathname}
+                </Typography> */}
                 <Typography variant='body1' component='div' className='has-scrollbars' style={{display: 'flex', flexGrow: 1, overflow: 'auto', backgroundColor: this.props.theme.theme.palette.background.default}}>
                     <Switch>
                         <Route path='/info' component={TutorialTab} />
