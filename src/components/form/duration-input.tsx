@@ -19,7 +19,7 @@ export class VDurationInput<T> extends React.Component<VInputProps<InputProps, T
                     startAdornment={
                         <InputAdornment position='start'>
                             <Typography variant='caption'>
-                                {shorten(secondsToHms(value as any, true), 10)}
+                                {shorten(secondsToHms(value as any, true), 10, 'end')}
                             </Typography>
                         </InputAdornment>
                     }

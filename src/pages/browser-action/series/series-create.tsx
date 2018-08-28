@@ -16,6 +16,9 @@ import { withFormik, FormikProps } from 'formik';
 import { SeriesValidationSchema, getDefaultSeries } from 'vutil';
 import { VButton } from 'components/button';
 import { MatchSelector } from './create/match-selector';
+import { TimeSelector } from './create/time-selector';
+import { NameSelector } from './create/name-selector';
+import { CreationOverview } from './create/creation-overview';
 
 export type SeriesCreateReduxProps = {
     theme: ThemeState
@@ -30,7 +33,7 @@ export type FormValues = VSync.SeriesBase
 
 export type OuterProps = SeriesCreateReduxProps & HasDispatch;
 
-const STEP_COUNT = 5;
+const STEP_COUNT = 4;
 
 class SeriesCreateFormBase extends React.Component<OuterProps & FormikProps<FormValues>, SeriesCreateState> {
 
@@ -68,6 +71,9 @@ class SeriesCreateFormBase extends React.Component<OuterProps & FormikProps<Form
                     flexGrow: 1
                 }}>
                     {this.state.activeStep === 0 && <MatchSelector formik={props} />}
+                    {this.state.activeStep === 1 && <TimeSelector formik={props} />}
+                    {this.state.activeStep === 2 && <NameSelector formik={props} />}
+                    {this.state.activeStep === 3 && <CreationOverview formik={props} />}
                 </div>
 
                 <MobileStepper
@@ -105,7 +111,6 @@ class SeriesCreateFormBase extends React.Component<OuterProps & FormikProps<Form
                                         onClick={() => props.handleSubmit()}
                                         >
                                         Finish
-                                        <Done style={{marginLeft: this.props.theme.theme.spacing.unit}} fontSize='inherit' />
                                     </VButton>
                                     :
                                     <Button size='small' onClick={this.handleNext} disabled={this.state.activeStep === STEP_COUNT-1}>

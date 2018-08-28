@@ -62,7 +62,7 @@ class VUrlPickerBase<T> extends React.Component<VInputProps<InputProps, T> & Url
 
 
     render() {
-        const { formik, fieldName, ...restProps } = this.props;
+        const { formik, fieldName, pickText, dialogTitle, ...restProps } = this.props;
         const value = formik.values[fieldName];
 
         const menuItems: JSX.Element[] = [];
@@ -88,7 +88,7 @@ class VUrlPickerBase<T> extends React.Component<VInputProps<InputProps, T> & Url
                         startAdornment={
                             <InputAdornment position='start'>
                                 <Button style={{color: colors.lightBlue['A200']}} onClick={this.handleOpen}>
-                                    {this.props.pickText}
+                                    {pickText}
                                 </Button>
                             </InputAdornment>
                         }
@@ -96,7 +96,7 @@ class VUrlPickerBase<T> extends React.Component<VInputProps<InputProps, T> & Url
                     />
                     <FormHelperText>{formik.errors[fieldName]}</FormHelperText>
                     <Dialog onClose={this.handleClose} open={this.state.hostDialogOpen}>
-                        <DialogTitle>{this.props.dialogTitle}</DialogTitle>
+                        <DialogTitle>{dialogTitle}</DialogTitle>
                         <DialogContent className='has-scrollbars'>
                             <List>
                                 {menuItems}

@@ -16,10 +16,17 @@ export const secondsToHms = (seconds: number, includeHours: boolean): string => 
     return timeString + minuteString + ':' + secondString;
 }
 
-export const shorten = (msg: string, len: number): string => {
-    const shortened = msg.substring(msg.length-(len-3), msg.length);
-    if(shortened.length === msg.length) return msg;
-    return '...'+shortened
+export const shorten = (msg: string, len: number, dir?: 'start' | 'end'): string => {
+    if(!dir) dir = 'start';
+    if(msg.length <= len) return msg;
+    
+    if(dir === 'start') {
+        const shortened = msg.substring(msg.length-(len-3), msg.length);
+        return '...'+shortened
+    } else {
+        const shortened = msg.substring(0, len-3);
+        return shortened+'...'
+    }
 }
 
 export const SeriesValidationSchema = Yup.object().shape({
