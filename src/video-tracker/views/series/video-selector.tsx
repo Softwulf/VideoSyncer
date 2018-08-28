@@ -1,34 +1,107 @@
 import * as React from 'react';
-import { Button } from '@material-ui/core';
+import { Button, Collapse } from '@material-ui/core';
 import { SeriesViewProps } from './series-manager';
 
-export class VideoSelector extends React.Component<SeriesViewProps, {}> {
+type VideoSelectorState = {
+    expanded: boolean
+}
+
+export class VideoSelector extends React.Component<SeriesViewProps, VideoSelectorState> {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            expanded: false
+        }
+    }
     render() {
         return (
             <div style={{
                 display: 'flex',
-                justifyContent: 'space-around',
+                flexDirection: 'column',
                 marginTop: '10px'
             }}>
                 <Button
-                    color='primary'
-                    variant='contained'
-                    onClick={() => {
-                        this.props.requestSelection('videoPlayerHost')
-                    }}
-                    >
-                    Restrict Video Player
-                </Button>
-                <Button
+                    variant='text'
                     color='secondary'
-                    variant='contained'
                     onClick={() => {
-                        this.props.requestSelection('nextButton')
+                        this.setState({
+                            expanded: !this.state.expanded
+                        })
                     }}
                     >
-                    Select Next Button
+                    {
+                        this.state.expanded ? 'Hide advanced settings' : 'Show advanced settings'
+                    }
                 </Button>
+                <Collapse
+                    in={this.state.expanded}
+                    >
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-around'
+                    }}>
+                        <Button
+                            color='primary'
+                            variant='contained'
+                            onClick={() => {
+                                this.props.requestSelection('videoPlayerHost')
+                            }}
+                            >
+                            S Video
+                        </Button>
+                        <Button
+                            color='secondary'
+                            variant='contained'
+                            onClick={() => {
+                                this.props.requestSelection('nextButton')
+                            }}
+                            >
+                            S Next
+                        </Button>
+                    </div>
+                </Collapse>
+
             </div>
+        //     <div
+        //             style={{
+        //                 display: 'flex',
+        //                 justifyContent: 'center',
+        //                 alignItems: 'center',
+        //                 padding: '20px'
+        //             }}
+        //         >
+        //     <Collapse
+        //         in={this.state.expanded}
+        //         >
+                
+        //             <div style={{
+        //                 display: 'flex',
+        //                 justifyContent: 'space-around',
+        //                 marginTop: '10px'
+        //             }}>
+                        // <Button
+                        //     color='primary'
+                        //     variant='contained'
+                        //     onClick={() => {
+                        //         this.props.requestSelection('videoPlayerHost')
+                        //     }}
+                        //     >
+                        //     Restrict Video Player
+                        // </Button>
+                        // <Button
+                        //     color='secondary'
+                        //     variant='contained'
+                        //     onClick={() => {
+                        //         this.props.requestSelection('nextButton')
+                        //     }}
+                        //     >
+                        //     Select Next Button
+                        // </Button>
+        //             </div>
+        //         </div>
+        // </Collapse>
+        // </div>
         )
     }
 }

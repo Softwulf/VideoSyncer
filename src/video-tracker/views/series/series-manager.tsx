@@ -260,7 +260,8 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
             >
                 <div style={{
                     display: 'flex',
-                    justifyContent: 'space-around'
+                    justifyContent: 'space-around',
+                    marginBottom: '10px'
                 }}>
                     <Typography variant='title'>
                         {this.props.series.name}
