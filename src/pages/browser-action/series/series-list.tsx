@@ -28,7 +28,7 @@ export const SeriesList: React.SFC<SeriesListProps> = (props: SeriesListProps) =
     }
 
     const list = props.series.map(series => {
-        return <SingleSeriesView series={series} />
+        return <SingleSeriesView series={series} key={series.key} />
     });
     return (
         <List subheader={<ListSubheader disableSticky>Series</ListSubheader>} style={{flexGrow: 1, overflowY: 'auto'}} className='has-scrollbars'>

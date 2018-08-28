@@ -2,6 +2,7 @@ import * as React from 'react';
 import { SeriesViewProps } from './series-manager';
 import { LinearProgress, Button, Paper } from '@material-ui/core';
 import { TopDownMessenger } from '../../messaging/top-messages';
+import { SeriesProgress } from 'components/series-progress';
 
 export class VideoControls extends React.Component<SeriesViewProps, {}> {
     messenger = new TopDownMessenger();
@@ -71,13 +72,9 @@ export class VideoControls extends React.Component<SeriesViewProps, {}> {
                             S Video
                         </Button>
                     </div>
-                    <LinearProgress
-                        style={{
-                            marginTop: '5px'
-                        }}
-                        color='secondary'
-                        variant='determinate'
-                        value={(100 / this.props.series.currentMaxTime) * this.props.series.currentTime} />
+                    <SeriesProgress series={this.props.series} style={{
+                        marginTop: '5px'
+                    }} />
                 </Paper>
         )
     }

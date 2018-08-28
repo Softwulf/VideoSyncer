@@ -1,4 +1,5 @@
 import { browser, Storage } from 'webextension-polyfill-ts';
+import { debug } from 'vlogger';
 
 export interface VSyncStorageDefinition {
     auth0_nonce?: string
@@ -18,13 +19,13 @@ export class VSyncStorage {
     private listeners: {
         [key: string]: Array<(changes) => any>
     } = {}
-    private debug = false;
+    private shouldDebug = false;
 
-    constructor(debug?: boolean) {
-        if(debug) this.debug = true;
+    constructor(shouldDebug?: boolean) {
+        if(shouldDebug) this.shouldDebug = true;
 
         browser.storage.onChanged.addListener((changes, area) => {
-            if(debug) console.debug(`Storage changes in [${area}]: `, changes)
+            if(shouldDebug) debug(`Storage changes in [${area}]: `, changes)
             if(area === 'local') {
                 for(const prop in changes) {
                     this.callSubscribers(prop as any, changes[prop]);

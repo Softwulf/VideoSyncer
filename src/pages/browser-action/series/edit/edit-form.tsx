@@ -148,6 +148,8 @@ const SeriesEditFormBase: React.SFC<OuterFormValues & FormikProps<FormValues>> =
                                 )
                                 props.setSubmitting(false);
                             }
+                        } else {
+                            props.setSubmitting(false);
                         }
                     }}
                     >
