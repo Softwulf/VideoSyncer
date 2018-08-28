@@ -14,8 +14,9 @@ export class VideoDisplay extends React.Component<SeriesViewProps, {}> {
                 alignItems: 'stretch',
                 flexDirection: 'column'
             }}>
-                <VideoSelector {...this.props} />
                 <VideoControls {...this.props} />
+
+                <VideoSelector {...this.props} />
 
                 <AutoplayComponent {...this.props} />
             </div>
