@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ListItem, ListItemText, ListItemSecondaryAction, Button, Typography, IconButton } from '@material-ui/core';
+import { ListItem, ListItemText, ListItemSecondaryAction, Button, Typography, IconButton, Tooltip } from '@material-ui/core';
 import { secondsToHms } from 'vutil';
 import { browser } from 'webextension-polyfill-ts';
 import { Link } from 'react-router-dom';
@@ -37,15 +37,17 @@ export const SingleSeriesView: React.SFC<SingleSeriesViewProps> = (props: Single
                 justifyContent: 'center',
                 alignItems: 'center'
             }}>
-                <IconButton
-                    color='primary'
-                    onClick={() => {
-                        browser.tabs.create({
-                            url: `${series.protocol ? series.protocol : 'https'}://${series.host}/${series.pathbase}${series.currentPath}`
-                        })
-                    }}>
-                    <LaunchRounded />
-                </IconButton>
+                <Tooltip title='Open Website'>
+                    <IconButton
+                        color='primary'
+                        onClick={() => {
+                            browser.tabs.create({
+                                url: `${series.protocol ? series.protocol : 'https'}://${series.host}/${series.pathbase}${series.currentPath}`
+                            })
+                        }}>
+                        <LaunchRounded />
+                    </IconButton>
+                </Tooltip>
                 <Typography
                     variant='caption'
                     style={{
@@ -55,31 +57,20 @@ export const SingleSeriesView: React.SFC<SingleSeriesViewProps> = (props: Single
                     >
                     {secondsToHms(series.currentTime, true)}
                 </Typography>
-                <IconButton
-                    component={EditSeriesLink as any}
-                    {...{seriesid: series.key} as any}
-                    >
-                    <EditRounded />
-                </IconButton>
+                <Tooltip title='Edit'>
+                    <IconButton
+                        component={EditSeriesLink as any}
+                        {...{seriesid: series.key} as any}
+                        >
+                        <EditRounded />
+                    </IconButton>
+                </Tooltip>
             </div>
             <div style={{
                 marginTop: '10px'
             }}>
                 <SeriesProgress series={series} />
             </div>
-            {/* <ListItemText primary={series.name} secondary={secondsToHms(series.currentTime, true)} />
-            <ListItemSecondaryAction>
-                <Button variant='contained' color='secondary' onClick={() => {
-                    browser.tabs.create({
-                        url: `${series.protocol ? series.protocol : 'https'}://${series.host}/${series.pathbase}${series.currentPath}`
-                    })
-                }}>
-                    Launch
-                </Button>
-                <Button variant='contained' color='primary' component={EditSeriesLink as any} {...{seriesid: series.key} as any}>
-                    Edit
-                </Button>
-            </ListItemSecondaryAction> */}
         </ListItem>
     )
 }

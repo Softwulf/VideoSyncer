@@ -20,12 +20,14 @@ export type SeriesManagerState = {
     searchingFor?: ElementSelection
     autoplayCountdown?: number
     autoplayDone?: boolean
+    onlyOneAutoplay?: boolean
 }
 
 export type SeriesViewProps = SeriesManagerProps & SeriesManagerState & {
     currentPath: string
     requestSelection: (selection: ElementSelection) => any
     stopSelection: () => any
+    startAutoplay: () => any
     stopAutoplay: () => any
     playNext: () => any
 }
@@ -81,7 +83,7 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
                         if(this.props.series.autoplay && !this.state.autoplayDone) {
                             this.messenger.setPaused(this.state.videoFrame, true);
                             this.messenger.setFullscreen(this.state.videoFrame, false);
-                            this.startAutoplay();
+                            this.startAutoplay(true);
                         }
                         break;
                     case '@@top/SELECTION_CONFIRMED':
@@ -196,7 +198,10 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
     }
 
     @bind
-    startAutoplay() {
+    startAutoplay(onceOnly?: boolean) {
+        this.setState({
+            onlyOneAutoplay: true
+        })
         if(!this.props.series.nextButton) {
             window.alert('No next button defined, cannot autoplay');
             this.stopAutoplay();
@@ -222,10 +227,13 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
     @bind
     stopAutoplay() {
         if(this.autoplayInterval) clearInterval(this.autoplayInterval);
-        this.setState({
-            autoplayCountdown: undefined,
-            autoplayDone: true
-        })
+        const obj: Partial<SeriesManagerState> = {
+            autoplayCountdown: undefined
+        }
+        if(this.state.onlyOneAutoplay) {
+            obj.autoplayDone = true;
+        }
+        this.setState(obj);
     }
 
     @bind
@@ -246,6 +254,7 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
             currentPath: this.getCurrentPath(),
             requestSelection: this.requestSelection,
             stopSelection: this.stopSelection,
+            startAutoplay: this.startAutoplay,
             stopAutoplay: this.stopAutoplay,
             playNext: this.playNext
         }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Collapse } from '@material-ui/core';
+import { Button, Collapse, Tooltip } from '@material-ui/core';
 import { SeriesViewProps } from './series-manager';
 
 type VideoSelectorState = {
@@ -41,67 +41,32 @@ export class VideoSelector extends React.Component<SeriesViewProps, VideoSelecto
                         display: 'flex',
                         justifyContent: 'space-around'
                     }}>
-                        <Button
-                            color='primary'
-                            variant='contained'
-                            onClick={() => {
-                                this.props.requestSelection('videoPlayerHost')
-                            }}
-                            >
-                            S Video
-                        </Button>
-                        <Button
-                            color='secondary'
-                            variant='contained'
-                            onClick={() => {
-                                this.props.requestSelection('nextButton')
-                            }}
-                            >
-                            S Next
-                        </Button>
+                        <Tooltip title='If VideoSyncer tracks the wrong video player, use this to specify which video player should be tracked'>
+                            <Button
+                                color='primary'
+                                variant='contained'
+                                onClick={() => {
+                                    this.props.requestSelection('videoPlayerHost')
+                                }}
+                                >
+                                Specify Video Player
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title='In order to use the autoplay feature VideoSyncer needs to know which button leads to the next episode'>
+                            <Button
+                                color='secondary'
+                                variant='contained'
+                                onClick={() => {
+                                    this.props.requestSelection('nextButton')
+                                }}
+                                >
+                                Locate Next Button
+                            </Button>
+                        </Tooltip>
                     </div>
                 </Collapse>
 
             </div>
-        //     <div
-        //             style={{
-        //                 display: 'flex',
-        //                 justifyContent: 'center',
-        //                 alignItems: 'center',
-        //                 padding: '20px'
-        //             }}
-        //         >
-        //     <Collapse
-        //         in={this.state.expanded}
-        //         >
-                
-        //             <div style={{
-        //                 display: 'flex',
-        //                 justifyContent: 'space-around',
-        //                 marginTop: '10px'
-        //             }}>
-                        // <Button
-                        //     color='primary'
-                        //     variant='contained'
-                        //     onClick={() => {
-                        //         this.props.requestSelection('videoPlayerHost')
-                        //     }}
-                        //     >
-                        //     Restrict Video Player
-                        // </Button>
-                        // <Button
-                        //     color='secondary'
-                        //     variant='contained'
-                        //     onClick={() => {
-                        //         this.props.requestSelection('nextButton')
-                        //     }}
-                        //     >
-                        //     Select Next Button
-                        // </Button>
-        //             </div>
-        //         </div>
-        // </Collapse>
-        // </div>
         )
     }
 }
