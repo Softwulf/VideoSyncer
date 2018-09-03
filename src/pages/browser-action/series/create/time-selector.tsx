@@ -24,22 +24,36 @@ export class TimeSelector<FormValues extends TimeSelectorValues> extends React.C
                 display: 'flex',
                 flexGrow: 1,
                 flexDirection: 'column',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                textAlign: 'center'
             }}>
-                <VDurationInput<FormValues>
-                    formik={props.formik}
-                    fieldName='startTime'
-                    label='Start Time in seconds'
-                    id='startTime'
-                    fullWidth
-                />
-                <VDurationInput<FormValues>
-                    formik={props.formik}
-                    fieldName='endTime'
-                    label='End Time in seconds (0=ignore)'
-                    id='endTime'
-                    fullWidth
-                />
+                <Typography variant='headline'>
+                    Set Times
+                </Typography>
+                <Typography variant='body1'>
+                    You can define when an episode starts and when an episode ends. This is useful for skipping credits.
+                </Typography>
+                <div style={{
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                }}>
+                    <VDurationInput<FormValues>
+                        formik={props.formik}
+                        fieldName='startTime'
+                        label='Start Time in seconds'
+                        id='startTime'
+                        fullWidth
+                    />
+                    <VDurationInput<FormValues>
+                        formik={props.formik}
+                        fieldName='endTime'
+                        label='End Time in seconds (0=ignore)'
+                        id='endTime'
+                        fullWidth
+                    />
+                </div>
             </div>
         )
     }

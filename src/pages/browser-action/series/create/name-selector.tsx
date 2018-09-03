@@ -23,8 +23,12 @@ export class NameSelector<FormValues extends NameSelectorValues> extends React.C
                 display: 'flex',
                 flexGrow: 1,
                 flexDirection: 'column',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                textAlign: 'center'
             }}>
+                <Typography variant='headline'>
+                    Give it a name
+                </Typography>
                 <VTextInput<FormValues>
                     formik={props.formik}
                     fieldName='name'
