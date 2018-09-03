@@ -6,17 +6,13 @@
             "es7",
             "es2017"
         ],
-        "module": "es2015",
+        "module": "esnext",
         "moduleResolution": "node",
         "noImplicitReturns": true,
         "sourceMap": true,
-        "target": "es5",
-        "allowJs": true,
-        "checkJs": false,
-        "jsx": "react",
-        "allowSyntheticDefaultImports": false
-    },
-    "include": [
-        "distTmp/**/*"
-    ]
+        "target": "esnext",
+        "jsx": "preserve",
+        "experimentalDecorators": true,
+        "baseUrl": "./src"
+    }
 }

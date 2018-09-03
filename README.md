@@ -13,22 +13,18 @@ Documentation can be found [here](https://doc.vsync.ch)
 #Set version here
 VERSION="X.X.X"
 npm i
-npm run build-all -- -r $VERSION
-mkdir artefact
-cd dist/firefox
-zip -rq "../../artefact/VideoSyncer_"$VERSION"_firefox.xpi" *
+npm run build
+cd dist/archives
 ```
 ## Checkout from github
 ```shell
 #!/bin/bash
-git clone https://github.com/ElectronicManuel/VideoSyncer.git
+git clone https://github.com/SoftWulf/VideoSyncer.git
 cd VideoSyncer
 #Set version here
 VERSION="X.X.X"
 git checkout "tags/v$VERSION"
 npm i
-npm run build-all -- -r $VERSION
-mkdir artefact
-cd dist/firefox
-zip -rq "../../artefact/VideoSyncer_"$VERSION"_firefox.xpi" *
+npm run build
+cd dist/archives
 ```

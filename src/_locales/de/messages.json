@@ -1,0 +1,18 @@
+{
+    "__WET_GROUP__": { "message": "Extension Info" },
+    "app_name": {
+        "message": "VideoSyncer",
+        "hash": "d1c58816a0ca3592a18f244f5a7cd505"
+    },
+    "app_shortname": {
+        "message": "VSync",
+        "hash": "ac85c88d1fb5a41d72817b4ad2197ffc"
+    },
+    "app_description": {
+        "message": "Mit VideoSyncer kannst du deine online TV Serien ganz einfach verwalten",
+        "description": "The description of the extension",
+        "hash": "51c524d1ba62db65c24730c3709a423c"
+    },
+
+    "__WET_LOCALE__": { "message": "de" }
+}
