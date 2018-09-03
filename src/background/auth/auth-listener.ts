@@ -14,9 +14,11 @@ export class AuthListener {
 
                 if(role !== 'user' && role !== 'premium' && role !== 'admin') role = 'user';
 
+                let username = user.displayName ? user.displayName : 'Anonymous';
+
                 this.vStorage.set({
                     user: {
-                        displayName: user.displayName,
+                        displayName: username,
                         photoURL: user.photoURL,
                         uid: user.uid,
                         role
