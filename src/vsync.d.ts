@@ -1,21 +1,46 @@
-declare namespace vsync {
-    interface UninitializedProfile {
-        name: string,
-        startTime: number,
-        endTime: number,
-        currentTime: number,
-        urlPattern: string,
-        currentURL?: string,
-        videoHost?: string,
-        videoQuery?: string,
-        nextHost?: string,
-        nextQuery?: string,
+declare namespace VSync {
+
+    interface SeriesBase {
+        name: string
+
+        host: string
+        pathbase: string
+        protocol: Protocol
+
+        startTime: number
+        endTime: number
+
+        currentTime: number
+        currentMaxTime: number
+        currentPath: string
+
+        videoPlayerHost?: string
+        nextButton?: FrameElement
+
+        autoplay: boolean
+
         latestFrame?: string
     }
 
-    interface Profile extends UninitializedProfile {
+    interface Series extends SeriesBase {
         key: string
     }
-}
 
-declare module 'semantic-ui-react';
+    interface Settings {
+        locale: string
+        theme: string
+    }
+
+    interface FrameElement {
+        host: string
+        query: string
+    }
+
+    interface User {
+        displayName: string
+        photoURL: string
+        uid: string
+    }
+
+    type Protocol = 'http' | 'https'
+}

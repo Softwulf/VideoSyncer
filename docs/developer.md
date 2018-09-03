@@ -12,9 +12,7 @@
 VERSION="X.X.X"
 npm i
 npm run build -- -r $VERSION
-mkdir artefact
-cd dist/firefox
-zip -rq "../../artefact/VideoSyncer_"$VERSION"_firefox.xpi" *
+cd dist/archives
 ```
 ## Checkout from github
 ```shell
@@ -26,7 +24,5 @@ VERSION="X.X.X"
 git checkout "tags/v$VERSION"
 npm i
 npm run build -- -r $VERSION
-mkdir artefact
-cd dist/firefox
-zip -rq "../../artefact/VideoSyncer_"$VERSION"_firefox.xpi" *
+cd dist/archives
 ```
