@@ -23,6 +23,7 @@ import { Switch, Route } from 'react-router';
 import { ThemeState } from '../_redux/themes/types';
 import { replace } from 'connected-react-router';
 import { MessageSender } from 'background/messages/message-sender';
+import { VHeader } from './layout/header';
 
 export type MainLayoutProps = {
     user: UserState
@@ -51,29 +52,7 @@ class MainLayoutBase extends React.Component<MainLayoutProps & HasDispatch, {}> 
 
                 {/* Header */}
                 <div style={{flexBasis: 'content'}}>
-                    <AppBar position='sticky' color='primary'>
-                        <Toolbar variant='dense' color='inherit'>
-                            <Typography variant='title' color='inherit' style={{flexGrow: 1}}>
-                                VSync
-                            </Typography>
-                            {
-                                this.props.user.user && 
-                                    <Typography variant='subheading' color='inherit' style={{paddingLeft: '5px', paddingRight: '5px'}}>
-                                        {this.props.user.user.displayName.charAt(0).toUpperCase() + this.props.user.user.displayName.substring(1)}
-                                    </Typography>
-                            }
-                            {
-                                this.props.user.user && 
-                                    <Avatar alt={this.props.user.user.displayName} src={this.props.user.user.photoURL} style={{width: 30, height: 30, marginRight: '10px'}}/>
-                            }
-                            {
-                                this.props.user.user ?
-                                    <Button style={{backgroundColor: red[900], color: '#FFF'}} variant='contained' onClick={MessageSender.requestUserSignOut}>Sign out</Button>
-                                :
-                                    <Button style={{backgroundColor: deepPurple[500], color: '#FFF'}} variant='contained' onClick={MessageSender.requestUserSignIn}>Sign in</Button>
-                            }
-                        </Toolbar>
-                    </AppBar>
+                    <VHeader />
                 </div>
 
                 {/* Content */}

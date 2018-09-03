@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { TextField, InputAdornment, Typography, colors, Button, Divider, Collapse, Dialog, DialogTitle, DialogContent } from "@material-ui/core";
+import { TextField, InputAdornment, Typography, colors, Button, Divider, Collapse, Dialog, DialogTitle, DialogContent, FormControlLabel, Checkbox } from "@material-ui/core";
+import { LockRounded, LockOpenRounded } from '@material-ui/icons';
 import { withFormik, FormikProps, Form } from 'formik';
 import { VTextInput } from 'components/form/text-input';
 import { VButton } from 'components/button';
@@ -20,6 +21,7 @@ interface FormValues {
     name: string
     startTime: number
     endTime: number
+    autoplay: boolean
 }
 
 interface OuterFormValues extends HasDispatch {
@@ -36,7 +38,7 @@ class SeriesEditFormBase extends React.Component<OuterFormValues & FormikProps<F
         super(props);
 
         this.state = {
-            advancedSettingsOpen: true
+            advancedSettingsOpen: false
         }
     }
 
@@ -122,23 +124,45 @@ class SeriesEditFormBase extends React.Component<OuterFormValues & FormikProps<F
                             Advanced Settings
                         </Button>
                         <Collapse in={this.state.advancedSettingsOpen} /*onClose={() => this.setState({ advancedSettingsOpen: false })}*/>
-                            <DialogTitle>Advanced Settings</DialogTitle>
-                            <DialogContent
+                            <div
                                 style={{
                                     display: 'flex',
+                                    flexGrow: 1,
+                                    flexShrink: 0,
                                     flexDirection: 'column',
-                                    justifyContent: 'space-between'
+                                    justifyContent: 'center',
+                                    alignItems: 'stretch'
                                 }}
-                                className='has-scrollbars'
                                 >
-                                <VTextInput<FormValues>
-                                    formik={props}
-                                    fieldName='protocol'
-                                    label='Protocol'
-                                    id='protocol'
-                                    fullWidth
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            icon={<LockOpenRounded style={{ color: colors.red[500] }} />}
+                                            checkedIcon={<LockRounded style={{ color: colors.green[500] }} />}
+                                            value='https'
+                                            checked={this.props.values.protocol === 'https'}
+                                            onChange={(event) => {
+                                                const use = event.target.checked;
+                                                this.props.setFieldValue('protocol', use ? 'https' : 'http');
+                                            }}
+                                            />
+                                    }
+                                    label={this.props.values.protocol === 'https' ? 'Disable HTTPS' : 'Enable HTTPS'}
                                 />
-                            </DialogContent>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            value='autoplay'
+                                            checked={this.props.values.autoplay}
+                                            onChange={(event) => {
+                                                const use = event.target.checked;
+                                                this.props.setFieldValue('autoplay', use);
+                                            }}
+                                        />
+                                    }
+                                    label={'Autoplay'}
+                                />
+                            </div>
                         </Collapse>
                     </div>
                 </div>
@@ -239,13 +263,14 @@ export const SeriesEditForm = connect(null, mapDispatch)(withFormik<OuterFormVal
             protocol: props.series.protocol,
             endTime: props.series.endTime,
             startTime: props.series.startTime,
+            autoplay: props.series.autoplay,
             key: props.series.key
         }
     },
     validationSchema: SeriesValidationSchema,
 
     handleSubmit: async (values, { setSubmitting, ...rest }) => {
-        const { host, name, startTime, endTime, pathbase } = values;
+        const { host, name, startTime, endTime, pathbase, protocol, autoplay } = values;
         const key = rest.props.series.key;
 
         try {
@@ -254,7 +279,9 @@ export const SeriesEditForm = connect(null, mapDispatch)(withFormik<OuterFormVal
                 name: name,
                 startTime: startTime,
                 endTime: endTime,
-                pathbase: pathbase
+                pathbase: pathbase,
+                protocol: protocol as VSync.Protocol,
+                autoplay: autoplay
             });
 
             setSubmitting(false);
