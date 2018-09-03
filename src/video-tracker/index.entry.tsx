@@ -12,6 +12,13 @@ import { browser } from 'webextension-polyfill-ts';
 import { Typography } from '@material-ui/core';
 import { debug } from 'vlogger';
 
+
+import JssProvider from 'react-jss/lib/JssProvider';
+import { create } from 'jss';
+import { createGenerateClassName, jssPreset } from '@material-ui/core/styles';
+
+import ShadowDOM from 'react-shadow';
+
 const rootId = 'vsync-content-react-root';
 
 let reactElement: React.Component
@@ -19,22 +26,50 @@ let reactElement: React.Component
 let matchingSeries: VSync.Series | undefined
 let disconnected: boolean = false
 
+let alreadySetup = false;
+
 const setup = () => {
     debug('Setting VSync up');
     // Only insert div if it is not already loaded ( SPA's )
-    if(!document.getElementById(rootId)) {
+    if(!alreadySetup) {
+        alreadySetup = true;
         const react_root = document.createElement('div');
         react_root.setAttribute('id', rootId);
-        document.body.insertBefore(react_root, document.body.firstChild);
+
+
+        // document.body.insertBefore(react_root, document.body.firstChild);
+
+        const shadowHost = document.createElement('div');
+        shadowHost.setAttribute('id', 'vsync-shadow-container');
+        const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+
+        const styleHolder = document.createElement('div');
+
+        shadowRoot.appendChild(react_root);
+        shadowRoot.appendChild(styleHolder);
+
+        document.body.insertBefore(shadowHost, document.body.firstChild);
+
+        const jss = create({
+            ...jssPreset(),
+            insertionPoint: styleHolder,
+        });
+        const generateClassName = createGenerateClassName();
 
         ReactDOM.render(
-            <ReduxProvider>
-                <ThemeProvider>
-                    <AuthProvider>
-                        <ContentScriptRootView ref={ref => reactElement = ref} />
-                    </AuthProvider>
-                </ThemeProvider>
-            </ReduxProvider>,
+            <JssProvider
+                jss={jss}
+                generateClassName={generateClassName}
+                >
+                <ReduxProvider>
+                    <ThemeProvider>
+                        <AuthProvider>
+                            <ContentScriptRootView ref={ref => reactElement = ref} />
+                        </AuthProvider>
+                    </ThemeProvider>
+                </ReduxProvider>
+            </JssProvider>
+            ,
             react_root
         )
     }
@@ -47,6 +82,8 @@ const remove = () => {
         ReactDOM.unmountComponentAtNode(react_root);
         react_root.remove();
     }
+
+    alreadySetup = false;
 }
 
 browser.runtime.connect().onDisconnect.addListener(p => {
