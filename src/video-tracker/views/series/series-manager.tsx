@@ -194,7 +194,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
             searchingFor: undefined
         })
         this.messenger.stopSelection();
-        window.alert('Selection stopped');
     }
 
     @bind
@@ -243,7 +242,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
             window.alert('No nextbutton defined!');
             return;
         }
-        window.alert('Neeeext');
         this.messenger.requestClick(this.props.series.nextButton);
     }
 
