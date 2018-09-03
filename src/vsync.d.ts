@@ -40,6 +40,7 @@ declare namespace VSync {
         displayName: string
         photoURL: string
         uid: string
+        role: 'user' | 'premium' | 'admin'
     }
 
     type Protocol = 'http' | 'https'

@@ -6,14 +6,20 @@ export class AuthListener {
     vStorage = new VSyncStorage(true);
 
     constructor() {
-        vyrebase.auth().onAuthStateChanged(user => {
+        vyrebase.auth().onAuthStateChanged(async user => {
             if(user) {
                 console.log(`User ${user.displayName} [${user.uid}] signed in`);
+                const idToken = await user.getIdTokenResult();
+                let role: VSync.User['role'] = idToken.claims.role;
+
+                if(role !== 'user' && role !== 'premium' && role !== 'admin') role = 'user';
+
                 this.vStorage.set({
                     user: {
                         displayName: user.displayName,
                         photoURL: user.photoURL,
-                        uid: user.uid
+                        uid: user.uid,
+                        role
                     }
                 });
             } else {
