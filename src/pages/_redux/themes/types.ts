@@ -12,6 +12,7 @@ export interface SetThemeAction extends Action {
     type: '@@theme/SET_THEME';
     payload: {
         name: ThemeName
+        containerId?: string
     };
 }
 

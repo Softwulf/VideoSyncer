@@ -3,10 +3,13 @@ import { ThemeState, ThemeActions, ThemeName } from './types';
 import { Theme, createMuiTheme, colors } from '@material-ui/core';
 
 import { deepOrange, amber } from '@material-ui/core/colors';
+import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
+import { debug } from 'vlogger';
 
-const getTheme = (theme: ThemeName): Theme => {
-    if (theme !== 'dark' && theme !== 'light') defaultState.name;
-    return createMuiTheme({
+const getTheme = (theme: ThemeName, containerId?: string): Theme => {
+    if (theme !== 'dark' && theme !== 'light') theme = defaultState.name;
+
+    const obj: ThemeOptions = {
         overrides: {
             MuiButton: {
                 root: {
@@ -32,7 +35,34 @@ const getTheme = (theme: ThemeName): Theme => {
             primary: colors.deepOrange,
             secondary: colors.indigo
         }
-    });
+    }
+
+    if(containerId) {
+        try {
+            const styleHolder = document.getElementById('vsync-shadow-container').shadowRoot.getElementById(containerId);
+            debug('StyleHolder found ['+containerId+']: ', styleHolder);
+
+            obj.props = {
+                ...obj.props,
+                MuiPopover: {
+                    ...obj.props.MuiPopover,
+                    container: styleHolder
+                },
+                MuiModal: {
+                    ...obj.props.MuiModal,
+                    container: styleHolder
+                },
+                MuiDialog: {
+                    ...obj.props.MuiDialog,
+                    container: styleHolder
+                }
+            }
+        } catch(err) {
+            console.error('Failed to inject container at custom location')
+        }
+    }
+
+    return createMuiTheme(obj);
 }
 
 export const defaultState: ThemeState = {
@@ -49,7 +79,7 @@ export const ThemeReducer: Reducer<ThemeState, ThemeActions> = (state = defaultS
             return {
                 ...state,
                 name: action.payload.name,
-                theme: getTheme(action.payload.name)
+                theme: getTheme(action.payload.name, action.payload.containerId)
             };
         default:
             return state;

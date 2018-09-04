@@ -16,10 +16,11 @@ import { debug } from 'vlogger';
 import JssProvider from 'react-jss/lib/JssProvider';
 import { create } from 'jss';
 import { createGenerateClassName, jssPreset } from '@material-ui/core/styles';
-
-import ShadowDOM from 'react-shadow';
+import retargetEvents from 'react-shadow-dom-retarget-events';
 
 const rootId = 'vsync-content-react-root';
+const shadowHostId = 'vsync-shadow-container';
+const styleHolderId = 'vsync-style-holder';
 
 let reactElement: React.Component
 
@@ -40,10 +41,11 @@ const setup = () => {
         // document.body.insertBefore(react_root, document.body.firstChild);
 
         const shadowHost = document.createElement('div');
-        shadowHost.setAttribute('id', 'vsync-shadow-container');
+        shadowHost.setAttribute('id', shadowHostId);
         const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
 
         const styleHolder = document.createElement('div');
+        styleHolder.setAttribute('id', styleHolderId)
 
         shadowRoot.appendChild(react_root);
         shadowRoot.appendChild(styleHolder);
@@ -62,7 +64,7 @@ const setup = () => {
                 generateClassName={generateClassName}
                 >
                 <ReduxProvider>
-                    <ThemeProvider>
+                    <ThemeProvider containerId={styleHolderId}>
                         <AuthProvider>
                             <ContentScriptRootView ref={ref => reactElement = ref} />
                         </AuthProvider>
@@ -72,6 +74,8 @@ const setup = () => {
             ,
             react_root
         )
+
+        retargetEvents(shadowRoot);
     }
 }
 
