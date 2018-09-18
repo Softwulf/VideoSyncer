@@ -30,4 +30,4 @@ build:
   artifacts:
     paths:
     - dist/archives
-    expire_in: 1 week
+    expire_in: 2 week
