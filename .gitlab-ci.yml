@@ -20,9 +20,6 @@ stages:
 services:
   - docker:dind
 
-before_script:
-  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-
 build:
   stage: build
   image: node:latest
@@ -41,6 +38,8 @@ build:
 
 deploy:
   stage: deploy
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   image: registry.gitlab.com/softwulf/webext-deploy:latest
   dependencies:
   - build
