@@ -1,7 +1,6 @@
 # This file is a template, and might need editing before it works on your project.
 # Official framework image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/node/tags/
-image: node:latest
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -13,17 +12,23 @@ image: node:latest
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
-cache:
-  paths:
-  - node_modules/
-  
 stages:
   - build
   - test
   - deploy
 
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
 build:
   stage: build
+  image: node:latest
+  cache:
+    paths:
+    - node_modules/
   script:
     - npm install
     - npm run build
@@ -31,3 +36,12 @@ build:
     paths:
     - dist/archives
     expire_in: 2 week
+
+deploy:
+  stage: deploy
+  image: registry.gitlab.com/softwulf/webext-deploy:latest
+  dependencies:
+  - build
+  script:
+  - ls $(pwd)
+  - npm start
