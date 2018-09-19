@@ -36,6 +36,8 @@ build:
     paths:
     - dist/archives
     expire_in: 2 week
+  tags:
+  - docker
 
 deploy:
   stage: deploy
