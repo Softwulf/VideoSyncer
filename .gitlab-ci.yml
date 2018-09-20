@@ -44,5 +44,4 @@ deploy:
   script:
   - pwd
   - ls $(pwd)
-  - cd /usr/src/app
-  - npm start
+  - npm start --prefix /webext-deploy
