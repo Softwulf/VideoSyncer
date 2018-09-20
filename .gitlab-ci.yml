@@ -45,7 +45,7 @@ deploy:
   - build
   variables:
     WEB_EXT_APP_NAME: VideoSyncer
-    WEB_EXT_ARTIFACT_DIR: dist/archives
+    WEB_EXT_ARTIFACT_DIR: /builds/Softwulf/VideoSyncer/dist/archives
   script:
   - pwd
   - ls $(pwd)
