@@ -41,6 +41,8 @@ deploy:
   image: registry.gitlab.com/softwulf/webext-deploy:latest
   dependencies:
   - build
+  variables:
+    WEB_EXT_APP_NAME: VideoSyncer
   script:
   - pwd
   - ls $(pwd)
