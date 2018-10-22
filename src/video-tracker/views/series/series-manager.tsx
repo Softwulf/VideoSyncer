@@ -21,6 +21,8 @@ export type SeriesManagerState = {
     autoplayCountdown?: number
     autoplayDone?: boolean
     onlyOneAutoplay?: boolean
+    videoRequestDelay: number
+    videoRequestCounter: number
 }
 
 export type SeriesViewProps = SeriesManagerProps & SeriesManagerState & {
@@ -30,9 +32,13 @@ export type SeriesViewProps = SeriesManagerProps & SeriesManagerState & {
     startAutoplay: () => any
     stopAutoplay: () => any
     playNext: () => any
+    requestVideoWithoutIncrease: () => any
 }
 
 const COUNTDOWN_LENGTH = 10;
+const REQUEST_TIMEOUT_INIT = 3;
+const REQUEST_TIMEOUT_FACTOR = 1.5;
+const REQUEST_TIMEOUT_MAX = 30;
 
 export class SeriesManager extends React.Component<SeriesManagerProps, SeriesManagerState> {
     messenger = new TopDownMessenger();
@@ -43,6 +49,8 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
     constructor(props) {
         super(props);
         this.state = {
+            videoRequestDelay: REQUEST_TIMEOUT_INIT,
+            videoRequestCounter: -1
         }
     }
 
@@ -60,7 +68,8 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
                         this.messenger.confirmVideo(data.frameId);
 
                         this.setState({
-                            videoFrame: data.frameId
+                            videoFrame: data.frameId,
+                            videoRequestDelay: REQUEST_TIMEOUT_INIT
                         });
 
                         const currentPath = this.getCurrentPath();
@@ -155,12 +164,42 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
     }
 
     @bind
+    clearVideoRequest() {
+        if(this.videoRequestInterval) clearInterval(this.videoRequestInterval);
+        this.setState({
+            videoRequestCounter: -1,
+            videoRequestDelay: REQUEST_TIMEOUT_INIT
+        })
+    }
+
+    @bind
     requestVideo() {
         if(!this.videoRequestInterval) {
-            this.videoRequestInterval = setInterval(() => {
-                this.messenger.requestVideo();
+            setInterval(() => {
+                const countdown = this.state.videoRequestCounter;
+                if(countdown <= 0) {
+                    this.messenger.requestVideo();
+                    let newDelay = Math.floor(this.state.videoRequestDelay * REQUEST_TIMEOUT_FACTOR);
+                    if(newDelay > REQUEST_TIMEOUT_MAX) newDelay = REQUEST_TIMEOUT_MAX;
+                    this.setState({
+                        videoRequestCounter: newDelay,
+                        videoRequestDelay: newDelay
+                    });
+                } else {
+                    this.setState({
+                        videoRequestCounter: this.state.videoRequestCounter - 1
+                    })
+                }
             }, 1000);
         }
+    }
+
+    @bind
+    requestVideoWithoutIncrease() {
+        this.messenger.requestVideo();
+        this.setState({
+            videoRequestCounter: this.state.videoRequestDelay
+        })
     }
 
     @bind
@@ -172,11 +211,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
         this.setState({
             videoFrame: undefined
         })
-    }
-
-    @bind
-    clearVideoRequest() {
-        if(this.videoRequestInterval) clearInterval(this.videoRequestInterval);
     }
 
     @bind
@@ -232,7 +266,7 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
         if(this.state.onlyOneAutoplay) {
             obj.autoplayDone = true;
         }
-        this.setState(obj);
+        this.setState({...obj, videoRequestDelay: this.state.videoRequestDelay, videoRequestCounter: this.state.videoRequestCounter});
     }
 
     @bind
@@ -254,7 +288,8 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
             stopSelection: this.stopSelection,
             startAutoplay: this.startAutoplay,
             stopAutoplay: this.stopAutoplay,
-            playNext: this.playNext
+            playNext: this.playNext,
+            requestVideoWithoutIncrease: this.requestVideoWithoutIncrease
         }
 
         return (

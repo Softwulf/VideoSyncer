@@ -134,6 +134,7 @@ class VSyncFrame {
                             if(this.activeSeries && (!this.activeSeries.videoPlayerHost || this.activeSeries.videoPlayerHost === window.location.host)) {
                                 const query = 'video'
                                 const queried = document.querySelector(query);
+                                debug(`Frame ${window.location.host} looking for video`, queried);
                                 if(queried) {
                                     if(queried.nodeName === 'VIDEO') {
                                         this.video = queried as HTMLVideoElement;

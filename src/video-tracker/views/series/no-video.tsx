@@ -2,7 +2,7 @@ import * as React from 'react';
 import { SeriesViewProps } from './series-manager';
 import { Typography, Button } from '@material-ui/core';
 import { MessageSender } from 'background/messages/message-sender';
-import { CropFreeRounded } from '@material-ui/icons';
+import { CropFreeRounded, ReplayRounded } from '@material-ui/icons';
 
 export class NoVideo extends React.Component<SeriesViewProps, {}> {
     render() {
@@ -17,6 +17,29 @@ export class NoVideo extends React.Component<SeriesViewProps, {}> {
                 <Typography variant='subheading'>
                     VideoSyncer could not find a video player. Some video players only appear after you click on them, so try starting the video.
                 </Typography>
+                {
+                    this.props.videoRequestCounter !== -1 &&
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}>
+                        <Typography variant='caption'>
+                            Retrying in {this.props.videoRequestCounter} seconds
+                        </Typography>
+                        <Button 
+                                variant='contained'
+                                color='primary'
+                                onClick={() => {
+                                    this.props.requestVideoWithoutIncrease()
+                                }}
+                            >
+                            <ReplayRounded style={{marginRight: '10px'}} />
+                            Retry now
+                        </Button>
+                    </div>
+                }
                 {
                     this.props.series.videoPlayerHost &&
                         <div style={{
