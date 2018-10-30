@@ -217,14 +217,14 @@ class VSyncFrame {
         if(!this.video) return;
         if(this.video.webkitEnterFullScreen) this.video.webkitEnterFullScreen();
         else if (this.video.requestFullscreen) this.video.requestFullscreen();
-        else if (this.video.webkitRequestFullscreen) this.video.webkitRequestFullscreen();
+        else if ((this.video as any).webkitRequestFullscreen) (this.video as any).webkitRequestFullscreen();
         else if ((this.video as any).mozRequestFullScreen) (this.video as any).mozRequestFullScreen();
         else if ((this.video as any).msRequestFullscreen) (document as any).msRequestFullscreen();
     }
 
     exitFullscreen() {
         if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if ((document as any).webkitExitFullscreen) (document as any).webkitExitFullscreen();
         else if ((document as any).mozCancelFullScreen) (document as any).mozCancelFullScreen();
         else if ((document as any).msExitFullscreen) (document as any).msExitFullscreen();
     }
