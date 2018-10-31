@@ -52,6 +52,8 @@ const remove = () => {
 browser.runtime.connect().onDisconnect.addListener(p => {
     debug('Video Syncer Disconnected!');
     disconnected = true;
+
+    // only alert if the tab was tracking a video
     if(reactElement) {
         (reactElement as any).getWrappedInstance().setDisconnected(disconnected);
         window.alert('Video Syncer disconnected, please refresh tab');

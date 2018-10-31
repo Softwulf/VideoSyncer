@@ -34,13 +34,13 @@ export type SeriesViewProps = SeriesManagerProps & SeriesManagerState & {
     startAutoplay: () => any
     stopAutoplay: () => any
     playNext: () => any
-    requestVideoWithoutIncrease: () => any
+    requestCounterShortening: () => any
 }
 
 const COUNTDOWN_LENGTH = 10;
 const REQUEST_TIMEOUT_INIT = 1;
 const REQUEST_TIMEOUT_FACTOR = 1.3;
-const REQUEST_TIMEOUT_MAX = 30;
+const REQUEST_TIMEOUT_MAX = 60;
 
 export class SeriesManager extends React.Component<SeriesManagerProps, SeriesManagerState> {
     messenger = new TopDownMessenger();
@@ -208,10 +208,9 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
     }
 
     @bind
-    requestVideoWithoutIncrease() {
-        this.messenger.requestVideo();
+    requestCounterShortening() {
         this.setState({
-            videoRequestCounter: this.state.videoRequestDelay
+            videoRequestCounter: 1
         })
     }
 
@@ -302,7 +301,7 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
             startAutoplay: this.startAutoplay,
             stopAutoplay: this.stopAutoplay,
             playNext: this.playNext,
-            requestVideoWithoutIncrease: this.requestVideoWithoutIncrease
+            requestCounterShortening: this.requestCounterShortening
         }
 
         return (
