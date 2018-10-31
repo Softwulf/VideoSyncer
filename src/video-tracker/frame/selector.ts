@@ -84,8 +84,8 @@ export class FrameSelector {
     @bind
     removeAllHovers() {
         const elements = document.getElementsByClassName(SELECTOR_CLASSNAME);
-        if(elements && elements.forEach) {
-            elements.forEach(element => {
+        if(elements && (elements as any).forEach) {
+            (elements as any).forEach(element => {
                 element.classList.remove(SELECTOR_CLASSNAME);
             })
         }

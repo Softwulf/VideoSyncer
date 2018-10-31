@@ -10,6 +10,8 @@ import { Typography } from '@material-ui/core';
 import { VideoDisplay } from './video-display';
 import { NoVideo } from './no-video';
 import { SelectionStopper } from './selection-stopper';
+import { RequestScriptInjection } from 'background/messages/requests';
+import { browser } from 'webextension-polyfill-ts';
 
 export type SeriesManagerProps = {
     series: VSync.Series
@@ -36,8 +38,8 @@ export type SeriesViewProps = SeriesManagerProps & SeriesManagerState & {
 }
 
 const COUNTDOWN_LENGTH = 10;
-const REQUEST_TIMEOUT_INIT = 3;
-const REQUEST_TIMEOUT_FACTOR = 1.5;
+const REQUEST_TIMEOUT_INIT = 1;
+const REQUEST_TIMEOUT_FACTOR = 1.3;
 const REQUEST_TIMEOUT_MAX = 30;
 
 export class SeriesManager extends React.Component<SeriesManagerProps, SeriesManagerState> {
@@ -175,14 +177,25 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
     @bind
     requestVideo() {
         if(!this.videoRequestInterval) {
-            setInterval(() => {
+            this.videoRequestInterval = setInterval(() => {
                 const countdown = this.state.videoRequestCounter;
                 if(countdown <= 0) {
+                    // Inject frames and request video
+                    const injectMessage: RequestScriptInjection = {
+                        type: '@@request/INJECT_SCRIPT',
+                        payload: {
+                            script: 'INJECTORS'
+                        }
+                    }
+                    browser.runtime.sendMessage(injectMessage);
+                    this.messenger.setSeries(this.props.series);
                     this.messenger.requestVideo();
-                    let newDelay = Math.floor(this.state.videoRequestDelay * REQUEST_TIMEOUT_FACTOR);
+
+                    // count down
+                    let newDelay = this.state.videoRequestDelay * REQUEST_TIMEOUT_FACTOR;
                     if(newDelay > REQUEST_TIMEOUT_MAX) newDelay = REQUEST_TIMEOUT_MAX;
                     this.setState({
-                        videoRequestCounter: newDelay,
+                        videoRequestCounter: Math.floor(newDelay),
                         videoRequestDelay: newDelay
                     });
                 } else {
