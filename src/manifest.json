@@ -26,16 +26,6 @@
                 "http://*/*"
             ],
             "js": [
-                "video-tracker/frame/frame.js"
-            ],
-            "all_frames": true
-        },
-        {
-            "matches": [
-                "https://*/*",
-                "http://*/*"
-            ],
-            "js": [
                 "video-tracker/index.js"
             ],
             "all_frames": false

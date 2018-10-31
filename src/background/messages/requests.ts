@@ -1,5 +1,12 @@
 import { Action } from 'redux';
 
+export interface RequestScriptInjection extends Action {
+    type: '@@request/INJECT_SCRIPT';
+    payload: {
+        script: 'INJECTORS' | 'FRAME'
+    }
+}
+
 export interface RequestCloseTab extends Action {
     type: '@@request/CLOSE_TAB';
 }
@@ -48,3 +55,4 @@ export type RequestActions =        RequestCloseTab
                                 |   RequestSeriesEdit
                                 |   RequestSeriesDelete
                                 |   RequestSettingsUpdate
+                                |   RequestScriptInjection

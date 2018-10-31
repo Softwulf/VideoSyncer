@@ -7,6 +7,8 @@ import { MessageSender } from 'background/messages/message-sender';
 import { bind } from 'bind-decorator';
 import { FrameSelector } from './selector';
 
+const frameTag = `${window.location.host}${window.location.pathname}`;
+
 class VSyncFrame {
     disconnected: boolean = false
     activeSeries: VSync.Series | undefined
@@ -123,6 +125,7 @@ class VSyncFrame {
     listenForMessages() {
         browser.runtime.onMessage.addListener((message: TopDownMessageUnion, sender) => {
             if(message.type && message.type === '@@gateway') {
+                debug(`[${frameTag}] received gateway message`, message)
                 if(message.subtype) {
                     switch(message.subtype) {
                         case '@@frame/SET_SERIES':
@@ -131,9 +134,17 @@ class VSyncFrame {
                             break;
                         case '@@frame/REQUEST_VIDEO':
                             // only if no player was specified or the host matches
+                            if(this.activeSeries) {
+                                debug(`${frameTag} series active`)
+                                debug(`${this.activeSeries.videoPlayerHost} === ${window.location.host} -> ${this.activeSeries.videoPlayerHost === window.location.host}`)
+                            
+                            } else {
+                                debug(`${frameTag} series inactive`)
+                            }
                             if(this.activeSeries && (!this.activeSeries.videoPlayerHost || this.activeSeries.videoPlayerHost === window.location.host)) {
                                 const query = 'video'
                                 const queried = document.querySelector(query);
+                                debug(`Frame ${frameTag} looking for video`, queried);
                                 if(queried) {
                                     if(queried.nodeName === 'VIDEO') {
                                         this.video = queried as HTMLVideoElement;
@@ -216,14 +227,14 @@ class VSyncFrame {
         if(!this.video) return;
         if(this.video.webkitEnterFullScreen) this.video.webkitEnterFullScreen();
         else if (this.video.requestFullscreen) this.video.requestFullscreen();
-        else if (this.video.webkitRequestFullscreen) this.video.webkitRequestFullscreen();
+        else if ((this.video as any).webkitRequestFullscreen) (this.video as any).webkitRequestFullscreen();
         else if ((this.video as any).mozRequestFullScreen) (this.video as any).mozRequestFullScreen();
         else if ((this.video as any).msRequestFullscreen) (document as any).msRequestFullscreen();
     }
 
     exitFullscreen() {
         if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if ((document as any).webkitExitFullscreen) (document as any).webkitExitFullscreen();
         else if ((document as any).mozCancelFullScreen) (document as any).mozCancelFullScreen();
         else if ((document as any).msExitFullscreen) (document as any).msExitFullscreen();
     }
@@ -232,3 +243,5 @@ class VSyncFrame {
 
 const vsyncFrame = new VSyncFrame();
 const frameSelector = new FrameSelector(vsyncFrame.id);
+
+debug(`Frame script loaded into [${frameTag}]`)

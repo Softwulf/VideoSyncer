@@ -4,6 +4,7 @@ import { vyrebase } from 'vyrebase';
 import { VSyncStorage } from '../storage';
 import { browser } from 'webextension-polyfill-ts';
 import { getDefaultSettings } from '../settings/settings-listener';
+import { debug } from 'vlogger';
 
 export class MessageListener {
     vStorage = new VSyncStorage()
@@ -19,6 +20,27 @@ export class MessageListener {
 
             if(message.type) {
                 switch(message.type) {
+                    case '@@request/INJECT_SCRIPT':
+                        debug(`Injecting script [${message.payload.script}]`)
+                        if(message.payload.script === 'INJECTORS') {
+                            return browser.tabs.executeScript(sender.tab.id,
+                                {
+                                    file: 'video-tracker/injector/injector.js',
+                                    allFrames: true,
+                                    matchAboutBlank: true
+                                });
+                        } else if(message.payload.script === 'FRAME') {
+                            return browser.tabs.executeScript(sender.tab.id,
+                                {
+                                    file: 'video-tracker/frame/frame.js',
+                                    matchAboutBlank: true,
+                                    frameId: sender.frameId
+                                });
+                        } else {
+                            throw {
+                                error: 'Invalid script type '+message.payload.script
+                            }
+                        }
                     case '@@request/CLOSE_TAB':
                         return browser.tabs.remove(sender.tab.id);
                     case '@@request/SIGN_IN':

@@ -1,5 +1,5 @@
 import { browser } from 'webextension-polyfill-ts';
-import { RequestUserSignOut, RequestUserSignIn, RequestCloseTab, RequestSeriesCreate, RequestSeriesDelete, RequestSeriesEdit, RequestSettingsUpdate } from './requests';
+import { RequestUserSignOut, RequestUserSignIn, RequestCloseTab, RequestSeriesCreate, RequestSeriesDelete, RequestSeriesEdit, RequestSettingsUpdate, RequestScriptInjection } from './requests';
 import { debug } from 'vlogger';
 
 
@@ -74,5 +74,16 @@ export const MessageSender = {
         }
         
         browser.runtime.sendMessage(settingsUpdateMessage);
-    }
+    },
+
+    injectScriptsToAllFrames: async () => {
+        const scriptInjectMessage: RequestScriptInjection = {
+            type: '@@request/INJECT_SCRIPT',
+            payload: {
+                script: 'INJECTORS'
+            }
+        }
+        
+        await browser.runtime.sendMessage(scriptInjectMessage);
+    },
 }
