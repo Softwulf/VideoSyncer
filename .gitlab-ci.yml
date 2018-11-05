@@ -38,13 +38,15 @@ build:
 
 deploy:
   stage: deploy
-  image: registry.gitlab.com/softwulf/webext-deploy:request
+  image: registry.gitlab.com/softwulf/webext-deploy:latest
   dependencies:
   - build
   variables:
     WEB_EXT_APP_NAME: VideoSyncer
     WEB_EXT_ARTIFACT_DIR: /builds/Softwulf/VideoSyncer/dist/archives
     WEB_EXT_CHROME_APP_ID: ofpeaemcoefdpfkimgghkkggcimkjepk
+    WEB_EXT_AMO_APP_ID: "{560ece31-4892-44b1-b1cc-331bad846f57}"
+    WEB_EXT_PACKAGE_JSON: /builds/Softwulf/VideoSyncer/package.json
   script:
   - pwd
   - ls $(pwd)
