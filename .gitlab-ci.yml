@@ -38,7 +38,7 @@ build:
 
 deploy:
   stage: deploy
-  image: registry.gitlab.com/softwulf/webext-deploy:latest
+  image: registry.gitlab.com/softwulf/webext-deploy:request
   dependencies:
   - build
   variables:
