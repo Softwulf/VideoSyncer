@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { SeriesViewProps } from './series-manager';
-import { Typography, Button, colors, List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import { Typography, Button, colors, List, ListItem, ListItemText, ListItemSecondaryAction, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, CardContent, Card, CardHeader } from '@material-ui/core';
 import { MessageSender } from 'background/messages/message-sender';
-import { CropFreeRounded, ReplayRounded, ErrorOutlineRounded } from '@material-ui/icons';
+import { CropFreeRounded, ReplayRounded, ErrorOutlineRounded, ExpandMoreRounded } from '@material-ui/icons';
 
 export class NoVideo extends React.Component<SeriesViewProps, {}> {
     render() {
@@ -12,13 +12,14 @@ export class NoVideo extends React.Component<SeriesViewProps, {}> {
                 flexGrow: 1,
                 flexDirection: 'row',
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'flex-start'
             }}>
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    flexGrow: 1
                 }}>
                     <ErrorOutlineRounded style={{
                         color: colors.red[500],
@@ -56,15 +57,40 @@ export class NoVideo extends React.Component<SeriesViewProps, {}> {
                         </div>
                     }
                 </div>
-                <div>
-                    <Typography variant='subheading'>
-                        If we cannot find your video, try following these tips
-                    </Typography>
-                    <List>
-                        <ListItem>
-                            <ListItemText primary='Click on the video player' />
-                        </ListItem>
-                        {
+                <div style={{
+                    flexGrow: 0.5,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <Card>
+                        <CardHeader title='Help us find your video' />
+                        <CardContent>
+                            <ExpansionPanel>
+                                <ExpansionPanelSummary expandIcon={<ExpandMoreRounded />}>
+                                    <Typography>The video is not loaded</Typography>
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails>
+                                    <Typography variant='caption'>
+                                        Simply start the video to ensure that the video element is actually loaded.
+                                    </Typography>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                            <ExpansionPanel>
+                                <ExpansionPanelSummary expandIcon={<ExpandMoreRounded />}>
+                                    <Typography>The video is not loaded</Typography>
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails>
+                                    <Typography variant='caption'>
+                                        Simply start the video to ensure that the video element is actually loaded.
+                                    </Typography>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                        </CardContent>
+                    </Card>
+
+                        {/* {
                             this.props.series.videoPlayerHost &&
                             <ListItem>
                                 <ListItemText primary='Remove restrictions' secondary={this.props.series.videoPlayerHost} />
@@ -84,8 +110,7 @@ export class NoVideo extends React.Component<SeriesViewProps, {}> {
                                     </Button>
                                 </ListItemSecondaryAction>
                             </ListItem>
-                        }
-                    </List>
+                        } */}
                 </div>
             </div>
         )

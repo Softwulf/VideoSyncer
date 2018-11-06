@@ -3,9 +3,17 @@ import { Typography } from '@material-ui/core';
 
 export const NoSeriesView : React.SFC = (props) => {
     return (
-        <div>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-around',
+            alignItems: 'center'
+        }}>
             <Typography variant='title'>
-                No matching series found
+                Series not found
+            </Typography>
+            <Typography variant='caption'>
+                We found no series matching with this page.
             </Typography>
         </div>
     )
