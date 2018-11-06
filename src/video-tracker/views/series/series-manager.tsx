@@ -309,16 +309,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
                 alignItems: 'stretch'
             }}
             >
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                    marginBottom: '10px'
-                }}>
-                    <Typography variant='title'>
-                        {this.props.series.name}
-                    </Typography>
-                </div>
-
                 {
                     this.state.videoFrame ?
                         <VideoDisplay {...seriesViewProps} />
