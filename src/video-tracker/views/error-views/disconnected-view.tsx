@@ -11,11 +11,14 @@ export const DisconnectedView: React.SFC = (props) => {
             alignItems: 'center'
         }}>
             <Typography variant='title'>
-                Disconnected, please refresh Tab
+                Connection lost
+            </Typography>
+            <Typography variant='caption'>
+                We lost connection to the VideoSyncer extension, please refresh the page.
             </Typography>
             <Button
-                color='secondary'
-                variant='extendedFab'
+                color='primary'
+                variant='contained'
                 onClick={() => window.location.reload()}
                 style={{
                     marginTop: '10px'

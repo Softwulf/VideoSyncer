@@ -56,7 +56,7 @@ browser.runtime.connect().onDisconnect.addListener(p => {
     // only alert if the tab was tracking a video
     if(reactElement) {
         (reactElement as any).getWrappedInstance().setDisconnected(disconnected);
-        window.alert('Video Syncer disconnected, please refresh tab');
+        window.alert('We lost connection to the VideoSyncer extension. Please refresh the page.');
     }
 })
 

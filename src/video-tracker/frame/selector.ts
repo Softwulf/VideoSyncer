@@ -51,7 +51,7 @@ export class FrameSelector {
         if(this.searchingFor === 'videoPlayerHost') {
             const videoElement = document.querySelector('video');
             if(!videoElement) {
-                window.alert('There is no video player on this page');
+                window.alert('We could not find a video here');
                 return;
             }
         }

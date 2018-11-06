@@ -114,7 +114,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
                                 }
                             });
                         }
-                        window.alert(`${data.selection} selected`);
                         break;
                 }
             }
@@ -231,7 +230,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
             searchingFor: selection
         })
         this.messenger.requestSelection(selection);
-        window.alert('Click on the '+selection);
     }
 
     @bind
@@ -248,7 +246,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
             onlyOneAutoplay: true
         })
         if(!this.props.series.nextButton) {
-            window.alert('No next button defined, cannot autoplay');
             this.stopAutoplay();
             return;
         }
@@ -285,7 +282,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
     playNext() {
         this.stopAutoplay();
         if(!this.props.series.nextButton) {
-            window.alert('No nextbutton defined!');
             return;
         }
         this.messenger.requestClick(this.props.series.nextButton);
@@ -313,16 +309,6 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
                 alignItems: 'stretch'
             }}
             >
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                    marginBottom: '10px'
-                }}>
-                    <Typography variant='title'>
-                        {this.props.series.name}
-                    </Typography>
-                </div>
-
                 {
                     this.state.videoFrame ?
                         <VideoDisplay {...seriesViewProps} />

@@ -147,7 +147,7 @@ class SeriesEditFormBase extends React.Component<OuterFormValues & FormikProps<F
                                             }}
                                             />
                                     }
-                                    label={this.props.values.protocol === 'https' ? 'Disable HTTPS' : 'Enable HTTPS'}
+                                    label={this.props.values.protocol === 'https' ? 'HTTPS enabled' : 'HTTPS disabled'}
                                 />
                                 <FormControlLabel
                                     control={
