@@ -62,10 +62,7 @@ export class NoVideo extends React.Component<SeriesViewProps, {}> {
                     </Typography>
                     <List>
                         <ListItem>
-                            <ListItemText primary='Lorem Ipsum' />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary='Lorem Ipsum' />
+                            <ListItemText primary='Click on the video player' />
                         </ListItem>
                         {
                             this.props.series.videoPlayerHost &&
