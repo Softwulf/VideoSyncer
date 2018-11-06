@@ -106,6 +106,7 @@ export class SeriesManager extends React.Component<SeriesManagerProps, SeriesMan
                             MessageSender.requestSeriesEdit(this.props.series.key, {
                                 videoPlayerHost: data.host
                             });
+                            window.alert('We will now only track this video player')
                         } else {
                             MessageSender.requestSeriesEdit(this.props.series.key, {
                                 [data.selection]: {
