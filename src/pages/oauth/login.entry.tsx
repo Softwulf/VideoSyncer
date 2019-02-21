@@ -16,6 +16,10 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../_redux';
 import { RequestCloseTab } from 'background/messages/requests';
 import { WulfAuth } from 'auth/wulf-auth';
+import { SentryProvider } from 'components/sentry-provider';
+import { initSentry } from 'vutil';
+
+initSentry('login-popup');
 
 type LoginHandlerProps = {
     theme: ThemeState
@@ -112,12 +116,14 @@ export const LoginHandler = connect((state: ApplicationState): LoginHandlerProps
 }, null)(LoginHandlerBase);
 
 ReactDOM.render(
-    <ReduxProvider>
-        <ThemeProvider>
-            <AuthProvider>
-                <LoginHandler />
-            </AuthProvider>
-        </ThemeProvider>
-    </ReduxProvider>,
+    <SentryProvider>
+        <ReduxProvider>
+            <ThemeProvider>
+                <AuthProvider>
+                    <LoginHandler />
+                </AuthProvider>
+            </ThemeProvider>
+        </ReduxProvider>
+    </SentryProvider>,
     document.getElementById('root')
 )

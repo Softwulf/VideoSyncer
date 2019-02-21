@@ -31,6 +31,7 @@
             "all_frames": false
         }
     ],
+    "content_security_policy": "script-src 'self' https://sentry.io; object-src 'self'",
     "icons": {
             "16": "assets/img/logo16.png",
             "24": "assets/img/logo24.png",

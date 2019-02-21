@@ -2,19 +2,27 @@ import { SettingsListener } from './settings/settings-listener';
 import { SeriesListener } from './series/series-listener';
 import { MessageListener } from './messages/message-listener';
 import { AuthListener } from './auth/auth-listener';
-
 import { browser } from 'webextension-polyfill-ts';
 import * as UrlParser from 'url-parse';
 import { MessageGateway } from './messages/message-gateway';
+import { initSentry } from 'vutil';
+import * as Sentry from '@sentry/browser';
 
-new AuthListener();
+initSentry('background');
 
-new SeriesListener();
-new SettingsListener();
+try {
+    new AuthListener();
 
-new MessageListener();
+    new SeriesListener();
+    new SettingsListener();
 
-new MessageGateway();
+    new MessageListener();
+
+    new MessageGateway();
+} catch(err) {
+    console.error('Failed to initialize background page', err);
+    Sentry.captureException(err);
+}
 
 /*
  * Redirect requests to the videosyncer oauth redirect url to internal extension pages

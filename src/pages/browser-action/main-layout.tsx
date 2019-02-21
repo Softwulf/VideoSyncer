@@ -24,6 +24,7 @@ import { ThemeState } from '../_redux/themes/types';
 import { replace } from 'connected-react-router';
 import { MessageSender } from 'background/messages/message-sender';
 import { VHeader } from './layout/header';
+import * as Sentry from '@sentry/browser';
 
 export type MainLayoutProps = {
     user: UserState

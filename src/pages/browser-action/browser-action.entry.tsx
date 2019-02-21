@@ -12,6 +12,7 @@ import { Switch, Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import swal from 'sweetalert2';
 
+initSentry('main-popup');
 
 class BrowserAction extends React.Component<{}, {}> {
     constructor(props) {
@@ -56,8 +57,12 @@ class BrowserAction extends React.Component<{}, {}> {
 }
 
 ReactDOM.render(
-    <BrowserAction />,
+    <SentryProvider>
+        <BrowserAction />
+    </SentryProvider>,
     document.getElementById('root')
 )
 
 import './browser-action.less';
+import { initSentry } from 'vutil';import { SentryProvider } from 'components/sentry-provider';
+

@@ -9,8 +9,12 @@ import { ContentScriptRootView } from './views/main-view';
 import { AuthProvider } from 'components/auth-provider';
 import { VSyncStorage } from 'background/storage';
 import { browser } from 'webextension-polyfill-ts';
-import { Typography } from '@material-ui/core';
 import { debug } from 'vlogger';
+import { initSentry } from 'vutil';
+import { SentryProvider } from 'components/sentry-provider';
+import * as Sentry from '@sentry/browser';
+
+initSentry('content-script');
 
 const rootId = 'vsync-content-react-root';
 
@@ -20,43 +24,60 @@ let matchingSeries: VSync.Series | undefined
 let disconnected: boolean = false
 
 const setup = () => {
-    debug('Setting VSync up');
-    // Only insert div if it is not already loaded ( SPA's )
-    if(!document.getElementById(rootId)) {
-        const react_root = document.createElement('div');
-        react_root.setAttribute('id', rootId);
-        document.body.insertBefore(react_root, document.body.firstChild);
+    try {
+        debug('Setting VSync up');
+        // Only insert div if it is not already loaded ( SPA's )
+        if(!document.getElementById(rootId)) {
+            const react_root = document.createElement('div');
+            react_root.setAttribute('id', rootId);
+            document.body.insertBefore(react_root, document.body.firstChild);
 
-        ReactDOM.render(
-            <ReduxProvider>
-                <ThemeProvider>
-                    <AuthProvider>
-                        <ContentScriptRootView ref={ref => reactElement = ref} />
-                    </AuthProvider>
-                </ThemeProvider>
-            </ReduxProvider>,
-            react_root
-        )
+            ReactDOM.render(
+                <SentryProvider>
+                    <ReduxProvider>
+                        <ThemeProvider>
+                            <AuthProvider>
+                                <ContentScriptRootView ref={ref => reactElement = ref} />
+                            </AuthProvider>
+                        </ThemeProvider>
+                    </ReduxProvider>
+                </SentryProvider>,
+                react_root
+            )
+        }
+    } catch(err) {
+        console.error('Failed setting up vsync', err);
+        Sentry.captureException(err);
     }
 }
 
 const remove = () => {
-    debug('Removing VSync');
-    const react_root = document.getElementById(rootId);
-    if(react_root) {
-        ReactDOM.unmountComponentAtNode(react_root);
-        react_root.remove();
+    try {
+        debug('Removing VSync');
+        const react_root = document.getElementById(rootId);
+        if(react_root) {
+            ReactDOM.unmountComponentAtNode(react_root);
+            react_root.remove();
+        }
+    } catch(err) {
+        console.log('Failed to remove vsync', err);
+        Sentry.captureException(err);
     }
 }
 
 browser.runtime.connect().onDisconnect.addListener(p => {
-    debug('Video Syncer Disconnected!');
-    disconnected = true;
+    try {
+        debug('Video Syncer Disconnected!');
+        disconnected = true;
 
-    // only alert if the tab was tracking a video
-    if(reactElement) {
-        (reactElement as any).getWrappedInstance().setDisconnected(disconnected);
-        window.alert('We lost connection to the VideoSyncer extension. Please refresh the page.');
+        // only alert if the tab was tracking a video
+        if(reactElement) {
+            (reactElement as any).getWrappedInstance().setDisconnected(disconnected);
+            window.alert('We lost connection to the VideoSyncer extension. Please refresh the page.');
+        }
+    } catch(err) {
+        console.error('Failed handling disconnect', err);
+        Sentry.captureException(err);
     }
 })
 
@@ -65,18 +86,23 @@ let seriesList = [];
 
 // check if the current url matches a series and if yes update the react component
 function checkMatch() {
-    matchingSeries = seriesList.find(series => {
-        return window.location.host === series.host && window.location.pathname.startsWith('/'+series.pathbase);
-    });
-
-    if(matchingSeries) {
-        setup();
-        if(reactElement) {
-            (reactElement as any).getWrappedInstance().setMatchingSeries(matchingSeries);
+    try {
+        matchingSeries = seriesList.find(series => {
+            return window.location.host === series.host && window.location.pathname.startsWith('/'+series.pathbase);
+        });
+    
+        if(matchingSeries) {
+            setup();
+            if(reactElement) {
+                (reactElement as any).getWrappedInstance().setMatchingSeries(matchingSeries);
+            }
+            debug('Detected Series: ', matchingSeries.name);
+        } else {
+            remove();
         }
-        debug('Detected Series: ', matchingSeries.name);
-    } else {
-        remove();
+    } catch(err) {
+        console.error('Failed checking for a series match', err);
+        Sentry.captureException(err);
     }
 }
 

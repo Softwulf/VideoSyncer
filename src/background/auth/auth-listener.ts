@@ -1,6 +1,6 @@
 import { vyrebase } from 'vyrebase';
 import { VSyncStorage } from '../storage';
-
+import * as Sentry from '@sentry/browser';
 
 export class AuthListener {
     vStorage = new VSyncStorage(true);
@@ -24,10 +24,28 @@ export class AuthListener {
                         role
                     }
                 });
+                Sentry.configureScope(scope => {
+                    scope.setUser({
+                        id: user.uid
+                    });
+                });
+                Sentry.addBreadcrumb({
+                    category: 'auth',
+                    level: Sentry.Severity.Info,
+                    message: `Authenticated user ${user.uid}`
+                });
             } else {
                 console.log('User signed out');
                 this.vStorage.set({
                     user: false
+                });
+                Sentry.configureScope(scope => {
+                    scope.setUser(undefined);
+                });
+                Sentry.addBreadcrumb({
+                    category: 'auth',
+                    level: Sentry.Severity.Info,
+                    message: `User signed out`
                 });
             }
         });

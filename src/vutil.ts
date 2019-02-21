@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import * as Sentry from '@sentry/browser';
 
 export const secondsToHms = (seconds: number, includeHours: boolean): string => {
     const d = Number(seconds);
@@ -60,4 +61,13 @@ export const getDefaultSeries = (): VSync.SeriesBase => {
         currentMaxTime: 0,
         currentPath: ''
     }
+}
+
+export const initSentry = (entrypoint) => {
+    Sentry.init({
+        dsn: 'https://af02a9bd343246778354cf4ed212fff3@sentry.io/1397392'
+    });
+    Sentry.configureScope(scope => {
+        scope.setTag('entrypoint', entrypoint);
+    });
 }
