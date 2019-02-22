@@ -12,12 +12,14 @@ export type SettingsTabProps = {
 
 export type SettingsTabState = {
     pickerOpen: {[name: string]: boolean}
+    forcingError: boolean
 }
 
 class SettingsTabBase extends React.Component<SettingsTabProps, SettingsTabState> {
 
     state = {
-        pickerOpen: {}
+        pickerOpen: {},
+        forcingError: false
     }
 
     handleOpen(name: string) {
@@ -38,30 +40,42 @@ class SettingsTabBase extends React.Component<SettingsTabProps, SettingsTabState
         })
     }
 
+    forceError = () => {
+        this.setState({ forcingError: true })
+    }
+
     render() {
+        if(this.state.forcingError) {
+            throw new Error('Manually forced error in settings page');
+        }
         return (
-            <List subheader={<ListSubheader>Settings</ListSubheader>} style={{flexGrow: 1}}>
-                <ListItem>
-                    <ListItemIcon>
-                        <PaletteIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='Theme' />
-                    <ListItemSecondaryAction>
-                        <Select
-                            open={this.state.pickerOpen['theme']}
-                            onClose={() => this.handleClose('theme')}
-                            onOpen={() => this.handleOpen('theme')}
-                            value={this.props.theme.name}
-                            onChange={(event) => MessageSender.requestSettingsUpdate({
-                                theme: event.target.value
-                            })}
-                        >
-                            <MenuItem value={'light'}>Light</MenuItem>
-                            <MenuItem value={'dark'}>Dark</MenuItem>
-                        </Select>
-                    </ ListItemSecondaryAction>
-                </ListItem>
-            </List>
+            <div style={{ display: 'flex', flexGrow: 1, flexDirection: 'column' }}>
+                <List subheader={<ListSubheader>Settings</ListSubheader>} style={{flexGrow: 1}}>
+                    <ListItem>
+                        <ListItemIcon>
+                            <PaletteIcon />
+                        </ListItemIcon>
+                        <ListItemText primary='Theme' />
+                        <ListItemSecondaryAction>
+                            <Select
+                                open={this.state.pickerOpen['theme']}
+                                onClose={() => this.handleClose('theme')}
+                                onOpen={() => this.handleOpen('theme')}
+                                value={this.props.theme.name}
+                                onChange={(event) => MessageSender.requestSettingsUpdate({
+                                    theme: event.target.value
+                                })}
+                            >
+                                <MenuItem value={'light'}>Light</MenuItem>
+                                <MenuItem value={'dark'}>Dark</MenuItem>
+                            </Select>
+                        </ ListItemSecondaryAction>
+                    </ListItem>
+                </List>
+                <Button variant='text' color='secondary' onClick={() => { this.forceError() }}>
+                    Force Crash VideoSyncer
+                </Button>
+            </div>
         )
     }
 }
