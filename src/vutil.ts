@@ -63,10 +63,15 @@ export const getDefaultSeries = (): VSync.SeriesBase => {
     }
 }
 
-export const initSentry = (entrypoint) => {
+declare const ___SENTRY_RELEASE___: string;
+
+export const initSentry = (entrypoint, additionalOptions?: Partial<Sentry.BrowserOptions>) => {
+    if(!additionalOptions) additionalOptions = {};
     Sentry.init({
         dsn: 'https://af02a9bd343246778354cf4ed212fff3@sentry.io/1397392',
-        
+        release: ___SENTRY_RELEASE___ === 'dev-local' ? undefined : ___SENTRY_RELEASE___,
+        environment: ___SENTRY_RELEASE___ === 'dev_local' ? undefined : 'production',
+        ...additionalOptions
     });
     Sentry.configureScope(scope => {
         scope.setTag('entrypoint', entrypoint);

@@ -21,13 +21,13 @@ let reactElement: React.Component
 let matchingSeries: VSync.Series | undefined
 let disconnected: boolean = false
 
-Sentry.init({
-    dsn: 'https://af02a9bd343246778354cf4ed212fff3@sentry.io/1397392',
+initSentry('content-script', {
     beforeSend: (event, hint) => {
         if(!matchingSeries) return null; // Don't send the event if this isn't a tracked site
         return event;
     }
-});
+})
+
 Sentry.configureScope(scope => {
     scope.setTag('entrypoint', 'content-script');
 });

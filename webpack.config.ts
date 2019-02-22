@@ -28,8 +28,8 @@ const generateConfig = (env) : webpack.Configuration => {
         ? env.prod
         : false;
     const version = (env && env.version)
-        ? env.version
-        : require('./package.json').version;
+        ? ((env.version as string).startsWith('v') ? (env.version as string).substring(1) : env.version)
+        : '0.0.0';
 
     console.log(`Preparing v${version} ...`);
 
@@ -82,7 +82,8 @@ const generateConfig = (env) : webpack.Configuration => {
             'dist/opera'
         ]),
         new webpack.DefinePlugin({
-            '___DEBUG___': JSON.stringify(!prod)
+            '___DEBUG___': JSON.stringify(!prod),
+            '___SENTRY_RELEASE___': JSON.stringify(process.env.SENTRY_RELEASE || 'dev-local')
         })
     ];
 

@@ -20,7 +20,7 @@ stages:
 services:
   - docker:dind
 
-build:
+.build_template: &build_template
   stage: build
   image: node:latest
   cache:
@@ -35,6 +35,27 @@ build:
     expire_in: 2 week
   tags:
   - docker
+
+build:
+  <<: *build_template
+  except:
+    - tags
+
+build_release:
+  <<: *build_template
+  image: registry.gitlab.com/softwulf/sentry-node:latest
+  only:
+    - tags
+  variables:
+    SENTRY_RELEASE: VideoSyncer@$CI_COMMIT_TAG
+    SENTRY_PROJECT: videosyncer
+    SENTRY_ENV: production
+  script:
+    - sh /sentry_scripts/deploy.sh
+    - npm install
+    - npm run build -- --env.prod --env.version=$CI_COMMIT_TAG
+    - sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist/base
+    - sentry-cli releases finalize $SENTRY_RELEASE
 
 deploy:
   stage: deploy
