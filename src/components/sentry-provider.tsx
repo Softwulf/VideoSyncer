@@ -14,13 +14,13 @@ export class SentryProvider extends React.Component<any, SentryProviderState> {
     }
 
     componentDidCatch(error, errorInfo) {
-        console.log('Error: ', error);
+        console.error('Error: ', error);
         this.setState({ error });
         Sentry.withScope(scope => {
             Object.keys(errorInfo).forEach(key => {
                 scope.setExtra(key, errorInfo[key]);
             });
-            //Sentry.captureException(error);
+            Sentry.captureException(error);
         });
     }
 
