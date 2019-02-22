@@ -14,14 +14,23 @@ import { initSentry } from 'vutil';
 import { SentryProvider } from 'components/sentry-provider';
 import * as Sentry from '@sentry/browser';
 
-initSentry('content-script');
-
 const rootId = 'vsync-content-react-root';
 
 let reactElement: React.Component
 
 let matchingSeries: VSync.Series | undefined
 let disconnected: boolean = false
+
+Sentry.init({
+    dsn: 'https://af02a9bd343246778354cf4ed212fff3@sentry.io/1397392',
+    beforeSend: (event, hint) => {
+        if(!matchingSeries) return null; // Don't send the event if this isn't a tracked site
+        return event;
+    }
+});
+Sentry.configureScope(scope => {
+    scope.setTag('entrypoint', 'content-script');
+});
 
 const setup = () => {
     try {
@@ -97,8 +106,14 @@ function checkMatch() {
                 (reactElement as any).getWrappedInstance().setMatchingSeries(matchingSeries);
             }
             debug('Detected Series: ', matchingSeries.name);
+            Sentry.configureScope(scope => {
+                scope.setTag('series', matchingSeries.key);
+            });
         } else {
             remove();
+            Sentry.configureScope(scope => {
+                scope.setTag('series', undefined);
+            });
         }
     } catch(err) {
         console.error('Failed checking for a series match', err);
@@ -114,4 +129,5 @@ VStorage.subscribe<'series_list'>('series_list', changes => {
     debug('New Series received: ', seriesList);
 
     checkMatch();
+    throw new Error('Testing error, WOW');
 });

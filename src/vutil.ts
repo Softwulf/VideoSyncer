@@ -65,7 +65,8 @@ export const getDefaultSeries = (): VSync.SeriesBase => {
 
 export const initSentry = (entrypoint) => {
     Sentry.init({
-        dsn: 'https://af02a9bd343246778354cf4ed212fff3@sentry.io/1397392'
+        dsn: 'https://af02a9bd343246778354cf4ed212fff3@sentry.io/1397392',
+        
     });
     Sentry.configureScope(scope => {
         scope.setTag('entrypoint', entrypoint);
