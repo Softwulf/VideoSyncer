@@ -39,7 +39,7 @@ build:
 deploy:
   stage: deploy
   only:
-  - master
+  - tags
   image: registry.gitlab.com/softwulf/webext-deploy:latest
   dependencies:
   - build
