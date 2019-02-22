@@ -43,7 +43,7 @@ build:
 
 build_release:
   <<: *build_template
-  #image: registry.gitlab.com/softwulf/sentry-node:latest
+  image: registry.gitlab.com/softwulf/sentry-node:latest
   only:
     - tags
   variables:
@@ -51,11 +51,7 @@ build_release:
     SENTRY_PROJECT: videosyncer
     SENTRY_ENV: production
   script:
-    #- sh /sentry_scripts/deploy.sh
-    - npm install -g @sentry/cli --unsafe-perm
-    - sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
-    - sentry-cli releases set-commits --auto $SENTRY_RELEASE
-    - sentry-cli releases deploys $SENTRY_RELEASE new -e $SENTRY_ENV
+    - sh /sentry_scripts/deploy.sh
     - npm install
     - npm run build -- --env.prod --env.version=$CI_COMMIT_TAG
     - sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist/base
@@ -67,7 +63,7 @@ deploy:
   - tags
   image: registry.gitlab.com/softwulf/webext-deploy:latest
   dependencies:
-  - build
+  - build_release
   variables:
     WEB_EXT_APP_NAME: VideoSyncer
     WEB_EXT_ARTIFACT_DIR: /builds/Softwulf/VideoSyncer/dist/archives
