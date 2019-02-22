@@ -70,7 +70,7 @@ deploy:
     WEB_EXT_CHROME_APP_ID: ofpeaemcoefdpfkimgghkkggcimkjepk
     WEB_EXT_AMO_APP_ID: "{560ece31-4892-44b1-b1cc-331bad846f57}"
     WEB_EXT_SOURCE_DIR: /builds/Softwulf/VideoSyncer
-    APP_VERSION: $CI_COMMIT_TAG
+    WEB_EXT_APP_VERSION: $CI_COMMIT_TAG
   script:
   - pwd
   - ls $(pwd)
