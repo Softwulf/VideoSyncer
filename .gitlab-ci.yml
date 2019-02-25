@@ -43,7 +43,7 @@ build:
 
 build_release:
   <<: *build_template
-  image: registry.gitlab.com/softwulf/sentry-node:latest
+  image: registry.gitlab.com/softwulf/sentry-agent/node:latest
   only:
     - tags
   variables:
