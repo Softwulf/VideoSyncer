@@ -51,9 +51,9 @@ build_release:
     SENTRY_PROJECT: videosyncer
     SENTRY_ENV: production
   script:
-    - sh /sentry_scripts/deploy.sh
     - npm install
     - npm run build -- --env.prod --env.version=$CI_COMMIT_TAG
+    - sh /sentry_scripts/deploy.sh
     - sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist/base
     - sentry-cli releases finalize $SENTRY_RELEASE
 
