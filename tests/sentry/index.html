@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://browser.sentry-cdn.com/4.6.3/bundle.min.js"></script>
+        <script>
+            Sentry.init({ dsn: 'https://b6a5aea061fd41d58660d1f12b1d1995@sentry.io/1397613' });
+            console.log('Page Sentry setup');
+            function reportError() {
+                Sentry.captureMessage('Test message', 'info');
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Seentry</h1>
+        <button onClick="javascript:reportError()">Report Error</button>
+    </body>
+</html>

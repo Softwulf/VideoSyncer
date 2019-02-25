@@ -129,5 +129,4 @@ VStorage.subscribe<'series_list'>('series_list', changes => {
     debug('New Series received: ', seriesList);
 
     checkMatch();
-    throw new Error('Testing error, WOW');
 });
