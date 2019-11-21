@@ -22,7 +22,7 @@ services:
 
 .build_template: &build_template
   stage: build
-  image: node:latest
+  image: node:8
   cache:
     paths:
     - node_modules/
