@@ -20,7 +20,7 @@
         "bind-decorator": "^1.0.11",
         "connected-react-router": "^4.4.1",
         "fast-deep-equal": "^2.0.1",
-        "firebase": "^5.8.3",
+        "firebase": "^7.6.1",
         "formik": "^1.1.1",
         "react": "^16.4.2",
         "react-dom": "^16.4.2",
@@ -32,7 +32,7 @@
         "typeface-roboto": "0.0.54",
         "url-parse": "^1.4.3",
         "uuid": "^3.3.2",
-        "webextension-polyfill-ts": "^0.8.9",
+        "webextension-polyfill-ts": "^0.11.0",
         "yup": "^0.26.2"
     },
     "scripts": {
