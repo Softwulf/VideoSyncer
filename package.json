@@ -32,7 +32,7 @@
         "typeface-roboto": "0.0.54",
         "url-parse": "^1.4.3",
         "uuid": "^3.3.2",
-        "webextension-polyfill-ts": "^0.8.7",
+        "webextension-polyfill-ts": "^0.8.9",
         "yup": "^0.26.2"
     },
     "scripts": {
