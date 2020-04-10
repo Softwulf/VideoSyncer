@@ -16,7 +16,7 @@
         "@material-ui/core": "^1.4.3",
         "@material-ui/icons": "^2.0.1",
         "@sentry/browser": "^4.6.3",
-        "auth0-js": "^9.7.3",
+        "auth0-js": "^9.13.2",
         "bind-decorator": "^1.0.11",
         "connected-react-router": "^4.4.1",
         "fast-deep-equal": "^2.0.1",
