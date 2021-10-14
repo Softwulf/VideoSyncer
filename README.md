@@ -1,6 +1,6 @@
-[![Dependency Status](https://david-dm.org/ElectronicManuel/VideoSyncer/status.svg)](https://david-dm.org/ElectronicManuel/VideoSyncer)
-[![Dev Dependency Status](https://david-dm.org/ElectronicManuel/VideoSyncer/dev-status.svg)](https://david-dm.org/ElectronicManuel/VideoSyncer?type=dev)
 [![Known Vulnerabilities](https://snyk.io/test/github/ElectronicManuel/VideoSyncer/badge.svg)](https://snyk.io/test/github/ElectronicManuel/VideoSyncer)
+
+# Project moved to https://gitlab.com/Softwulf/VideoSyncer
 
 # Documentation
 Documentation can be found [here](https://doc.vsync.ch)
